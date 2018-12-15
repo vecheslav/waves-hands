@@ -875,6 +875,14 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.8.0.tgz#f0e003d9ca9e7f59c7a508945d7b2ef9a04a542f"
   integrity sha512-ReZxvNHIOv88FlT7rxcXIIC0fPt4KZqZbOlivyWtXLt8ESx84zd3kMC6iK5jVeS2qt+g7ftS7ye4fi06X5rtRQ==
 
+axios@^0.18.0:
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.18.0.tgz#32d53e4851efdc0a11993b6cd000789d70c05102"
+  integrity sha1-MtU+SFHv3AoRmTts0AB4nXDAUQI=
+  dependencies:
+    follow-redirects "^1.3.0"
+    is-buffer "^1.1.5"
+
 babel-code-frame@^6.22.0, babel-code-frame@^6.26.0:
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-code-frame/-/babel-code-frame-6.26.0.tgz#63fd43f7dc1e3bb7ce35947db8fe369a3f58c74b"
@@ -2731,7 +2739,7 @@ flush-write-stream@^1.0.0:
     inherits "^2.0.1"
     readable-stream "^2.0.4"
 
-follow-redirects@^1.0.0:
+follow-redirects@^1.0.0, follow-redirects@^1.3.0:
   version "1.5.10"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.5.10.tgz#7b7a9f9aea2fdff36786a94ff643ed07f4ff5e2a"
   integrity sha512-0V5l4Cizzvqt5D44aTXbFZz+FtyXV1vrDN6qrelxtfYQKW0KO0W2T/hkE8xvGa/540LkZlkaUjO4ailYTFtHVQ==
@@ -7177,6 +7185,20 @@ watchpack@^1.5.0:
     chokidar "^2.0.2"
     graceful-fs "^4.1.2"
     neo-async "^2.5.0"
+
+waves-crypto@^1.0.39:
+  version "1.0.39"
+  resolved "https://registry.yarnpkg.com/waves-crypto/-/waves-crypto-1.0.39.tgz#b656e3f177e7702b1d889c2d98e15eef032f9767"
+  integrity sha512-NxV7PR+hXnM08Dw+BWdteYPqKnLyZ3W5YzZWTuwOop4GeR/FQfYIG/b0zKS0YQYWhoKKpaMy1jBJ1xIQwp5ZrQ==
+
+waves-transactions@^3.0.0-alpha.2:
+  version "3.0.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/waves-transactions/-/waves-transactions-3.0.0-alpha.2.tgz#60ad66ae25aacabeab2f125152b93732f50bc592"
+  integrity sha512-VTrtli6utdsJZgi5sqr6BJafkm7YiBRqXWBsGpwAIJo61At+R5Y02VFgxEcPXicaoGL+vjD3NSNiGYacW2QDvg==
+  dependencies:
+    ajv "^6.5.5"
+    axios "^0.18.0"
+    waves-crypto "^1.0.39"
 
 wbuf@^1.1.0, wbuf@^1.7.2:
   version "1.7.3"
