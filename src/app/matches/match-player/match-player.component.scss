@@ -1,0 +1,9 @@
+.match-player {
+  $avatar-size: 6rem;
+
+  &__avatar {
+    width: $avatar-size;
+    height: $avatar-size;
+    margin: 0 auto 1rem;
+  }
+}

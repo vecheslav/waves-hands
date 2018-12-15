@@ -1,12 +1,7 @@
 @import '~src/styles/variables';
 
-.header {
+.user-panel {
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
-}
-
-.preview {
-  background: $primary;
-  color: #fff;
-  height: 100%;
+  border-bottom: 1px solid $white-ter;
 }

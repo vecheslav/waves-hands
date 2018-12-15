@@ -1,0 +1,12 @@
+@import "~bulma/sass/utilities/initial-variables";
+@import "~bulma/sass/utilities/functions";
+
+// Initial variables
+$blue: #0066ff;
+$section-padding: 2rem 3rem;
+$white-ter: hsl(0, 0%, 94%);
+
+// Derived variables
+$primary: $blue;
+
+@import "~bulma/sass/utilities/derived-variables";

@@ -1,0 +1,24 @@
+.matches {
+  $size-gap: 1.5rem;
+  $num-columns: 2;
+
+  &-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &__title {
+      margin: 0 2rem 0 0;
+    }
+
+    &__actions {
+      flex: 1;
+    }
+  }
+
+  &-grid {
+    display: grid;
+    grid-gap: $size-gap;
+    grid-template-columns: repeat($num-columns, 1fr);
+  }
+}
