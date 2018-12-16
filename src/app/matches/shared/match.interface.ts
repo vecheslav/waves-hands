@@ -19,12 +19,12 @@ export enum MatchStage {
   SelectHands,
   CreatedMatch,
   CompareHands,
-  ResultMatch
+  ResultMatch,
 }
 
 export enum MatchStatus {
   Waiting,
-  Done
+  Done,
 }
 
 export enum PlayerStatus {

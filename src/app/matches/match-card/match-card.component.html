@@ -1,5 +1,6 @@
-<a href="#">
-  <div class="match-card">
+
+<div class="match-card">
+  <a href="#" class="match-card__inner">
     <div class="match-card__overview">
       <div class="level match-meta">
         <div class="level-left match-meta__id">
@@ -30,5 +31,10 @@
         </div>
       </div>
     </div>
-  </div>
-</a>
+  </a>
+  <a [routerLink]="['match', match.id]" class="start-overlay" [hidden]="!startIsShown">
+    <div class="start-overlay__inner">
+      <button class="button is-primary">Start Match</button>
+    </div>
+  </a>
+</div>

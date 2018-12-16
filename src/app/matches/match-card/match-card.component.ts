@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core'
+import { Component, HostListener, Input, OnInit } from '@angular/core'
 import { MatchStatus } from '../shared/match.interface'
 
 @Component({
@@ -12,9 +12,22 @@ export class MatchCardComponent implements OnInit {
     status: MatchStatus.Waiting
   }
 
+  startIsShown = false
+
   constructor() { }
 
   ngOnInit() {
   }
 
+  @HostListener('mouseenter')
+  onMouseEnter(): void {
+    if (this.match.status === MatchStatus.Waiting) {
+      this.startIsShown = true
+    }
+  }
+
+  @HostListener('mouseleave')
+  onMouseLeave(): void {
+    this.startIsShown = false
+  }
 }
