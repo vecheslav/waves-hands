@@ -1,22 +1,29 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core'
 import { randomBytes } from 'crypto'
 import { HandSigns, IMatchInfo } from './shared/match.interface'
-import { address, concat, base58encode } from 'waves-crypto'
+import { address, concat, base58encode, blake2b, base58decode } from 'waves-crypto'
 import { environment } from '../../environments/environment'
 import { data, setScript } from 'waves-transactions'
+import { KeeperService } from '../auth/keeper.service'
+
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class MatchesService {
 
-  constructor() { }
+  _keeperService: KeeperService
+
+  constructor(keeper: KeeperService) {
+    this._keeperService = keeper
+  }
 
   async createMatch(handSigns: HandSigns): Promise<IMatchInfo> {
-    const matchSeed  = randomBytes(32).toString('hex')
+    const matchSeed = randomBytes(32).toString('hex')
     const matchSalt = randomBytes(31)
     const matchAddress = address(matchSeed, environment.chainId)
-    // const tx = await keeper.transferWaves(matchAddress, environment.gameBetAmount)
+    const tx = await this._keeperService.transferWaves(matchAddress, environment.gameBetAmount)
 
     // wait tx
 
