@@ -4,23 +4,4 @@
   background: $white;
   padding: 1.5rem;
   border-radius: .5rem;
-  border: 1px solid $white-ter;
-  color: $text;
-
-  &__overview {
-    padding-bottom: 1rem;
-  }
-
-  &__details {
-    padding-top: 1rem;
-    border-top: 1px solid $white-ter
-  }
-}
-
-.match-meta {
-  margin: 0;
-
-  &__id {
-    color: $grey-light;
-  }
 }

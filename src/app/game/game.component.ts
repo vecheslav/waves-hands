@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core'
+import { ActivatedRoute } from '@angular/router'
+import { Match } from '../matches/shared/match.interface'
 
 @Component({
   selector: 'app-game',
@@ -6,8 +8,11 @@ import { Component, OnInit } from '@angular/core'
   styleUrls: ['./game.component.scss']
 })
 export class GameComponent implements OnInit {
+  currentMatch: Match
 
-  constructor() { }
+  constructor(private route: ActivatedRoute) {
+    this.currentMatch = this.route.snapshot.data.match
+  }
 
   ngOnInit() {
   }

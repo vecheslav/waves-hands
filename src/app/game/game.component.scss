@@ -6,9 +6,11 @@
   &-grid {
     height: 100%;
     position: relative;
+    margin: 0;
+    display: flex;
 
-    > .column.game-viewport {
-      margin-left: 50%;
+    &__side {
+
     }
   }
 
@@ -25,6 +27,7 @@
     flex: 1;
     height: 100%;
     overflow: auto;
+    margin-left: 50%;
     background: #f8f9fb;
   }
 }

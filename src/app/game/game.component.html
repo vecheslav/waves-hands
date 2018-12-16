@@ -1,11 +1,15 @@
 <div class="game">
-  <div class="columns is-gapless game-grid">
-    <div class="column game-preview">
+  <div class="game-grid">
+    <div class="game-grid__side game-preview">
       <app-preview></app-preview>
     </div>
-    <div class="column game-viewport">
+    <div class="game-grid__side game-viewport">
       <app-user-panel></app-user-panel>
       <app-matches></app-matches>
     </div>
+  </div>
+
+  <div class="game-match" *ngIf="currentMatch">
+    <app-match [match]="currentMatch"></app-match>
   </div>
 </div>

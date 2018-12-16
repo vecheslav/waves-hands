@@ -1,34 +1,13 @@
-<a href="#">
-  <div class="match">
-    <div class="match__overview">
-      <div class="level match-meta">
-        <div class="level-left match-meta__id">
-          #{{ match.id }}
-        </div>
-        <div class="level-right match-meta__share">
-          <a href="#">share</a>
-        </div>
-      </div>
-      <div class="level">
-        <div class="level-item has-text-centered">
-          <app-match-player></app-match-player>
-        </div>
-      </div>
-    </div>
+<div class="modal is-active">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <div class="match">
+      <!-- player -->
+      <div class="match-stages">
 
-    <div class="level match__details">
-      <div class="level-left">
-        <div class="level-item">
-          Bet: 1 Waves
-        </div>
       </div>
-      <div class="level-right">
-        <div class="level-item">
-          <div class="match-status">
-            Open
-          </div>
-        </div>
-      </div>
+      <!-- player -->
     </div>
   </div>
-</a>
+  <button class="modal-close is-large" aria-label="close" (click)="close()"></button>
+</div>

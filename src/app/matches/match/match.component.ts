@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core'
-import { MatchStatus } from '../shared/match.interface'
+import { Match } from '../shared/match.interface'
+import { Router } from '@angular/router'
 
 @Component({
   selector: 'app-match',
@@ -7,14 +8,14 @@ import { MatchStatus } from '../shared/match.interface'
   styleUrls: ['./match.component.scss']
 })
 export class MatchComponent implements OnInit {
-  @Input() match = {
-    id: 32,
-    status: MatchStatus.Waiting
-  }
+  @Input() match: Match
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit() {
   }
 
+  close() {
+    this.router.navigate(['../'])
+  }
 }

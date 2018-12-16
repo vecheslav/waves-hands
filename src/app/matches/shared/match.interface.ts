@@ -12,6 +12,11 @@ export interface IMatchInfo {
   salt?: string,
 }
 
+export interface Match {
+  id?: string,
+  players?: any[],
+}
+
 export enum MatchStatus {
   Waiting,
   Done

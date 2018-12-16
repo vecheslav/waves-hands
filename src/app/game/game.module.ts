@@ -4,6 +4,7 @@ import { GameComponent } from './game.component'
 import { CoreModule } from '../core/core.module'
 import { MatchesModule } from '../matches/matches.module'
 import { UserModule } from '../user/user.module'
+import { MatchResolver } from './match.resolver'
 
 @NgModule({
   declarations: [
@@ -14,6 +15,9 @@ import { UserModule } from '../user/user.module'
     CoreModule,
     MatchesModule,
     UserModule,
+  ],
+  providers: [
+    MatchResolver
   ],
   exports: [
     GameComponent

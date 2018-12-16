@@ -8,5 +8,6 @@ $white-ter: hsl(0, 0%, 94%);
 
 // Derived variables
 $primary: $blue;
+$modal-background-background-color: rgba($black, 0.6);
 
 @import "~bulma/sass/utilities/derived-variables";
