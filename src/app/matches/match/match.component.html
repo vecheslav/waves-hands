@@ -3,8 +3,41 @@
   <div class="modal-content">
     <div class="match">
       <!-- player -->
-      <div class="match-stages">
+      <div class="match-stages" [ngSwitch]="stage">
+        <div class="match-stage match-stage--select-hands" *ngSwitchCase="0">
+          <h2 class="title has-text-centered">Select your hands</h2>
+          <div class="level select-hands">
+            <div class="level-item has-text-centered" (click)="select(0)">👊️</div>
+            <div class="level-item has-text-centered" (click)="select(1)">✋</div>
+            <div class="level-item has-text-centered" (click)="select(2)">✌️</div>
+          </div>
+        </div>
 
+        <div class="match-stage match-stage--created-match" *ngSwitchCase="1">
+          <h2 class="title has-text-centered">You created a game</h2>
+        </div>
+
+        <div class="match-stage match-stage--result-match" *ngSwitchCase="4">
+          result
+        </div>
+      </div>
+      <div class="match-bottom">
+        <div class="level">
+          <div class="level-left">
+            <div class="match-player">
+              <div class="avatar match-player__avatar">
+                <img src="#" alt="Player">
+              </div>
+            </div>
+          </div>
+          <div class="level-right">
+            <div class="level selected-hands">
+              <div class="level-item has-text-centered selected-hands__item" *ngFor="let hand of selectedHandSigns">
+                <div [class]="['hand hand--' + hand]"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <!-- player -->
     </div>

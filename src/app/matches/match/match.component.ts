@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core'
-import { Match } from '../shared/match.interface'
+import { HandSign, Match, MatchStage } from '../shared/match.interface'
 import { Router } from '@angular/router'
+import { MatchesService } from '../matches.service'
 
 @Component({
   selector: 'app-match',
@@ -10,9 +11,45 @@ import { Router } from '@angular/router'
 export class MatchComponent implements OnInit {
   @Input() match: Match
 
+  stage: MatchStage = MatchStage.SelectHands
+  selectedHandSigns: HandSign[] = []
+  isJoinedToMatch = false
+
   constructor(private router: Router) { }
 
   ngOnInit() {
+  }
+
+  async select(handSign: HandSign) {
+    if (this.stage !== MatchStage.SelectHands) {
+      return
+    }
+    this.selectedHandSigns.push(handSign)
+
+    if (this.selectedHandSigns.length === 3) {
+      if (this.isJoinedToMatch) {
+        await this.join()
+      } else {
+        await this.create()
+      }
+    }
+  }
+
+  async create() {
+    try {
+      // await this.matchesService.createMatch(this.selectedHandSigns)
+      this.stage = MatchStage.CreatedMatch
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  async join() {
+    try {
+      this.stage = MatchStage.ResultMatch
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   close() {

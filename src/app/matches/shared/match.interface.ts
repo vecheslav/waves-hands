@@ -4,8 +4,6 @@ export enum HandSign {
   Scissors,
 }
 
-export type HandSigns = [HandSign, HandSign, HandSign]
-
 export interface IMatchInfo {
   address: string,
   timestamp: number,
@@ -15,6 +13,13 @@ export interface IMatchInfo {
 export interface Match {
   id?: string,
   players?: any[],
+}
+
+export enum MatchStage {
+  SelectHands,
+  CreatedMatch,
+  CompareHands,
+  ResultMatch
 }
 
 export enum MatchStatus {

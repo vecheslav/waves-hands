@@ -5,3 +5,37 @@
   padding: 1.5rem;
   border-radius: .5rem;
 }
+
+.match-stage {
+  margin: 1.5rem 0;
+}
+
+.select-hands {
+  font-size: 3rem;
+
+  > div {
+    cursor: pointer;
+  }
+}
+
+.match-player {
+  $avatar-size: 3rem;
+
+  &__avatar {
+    width: $avatar-size;
+    height: $avatar-size;
+  }
+}
+
+.selected-hands {
+
+  &__item {
+    width: 2.5rem;
+    height: 2.5rem;
+
+    border: 2px solid $white-ter;
+    border-radius: 50%;
+    padding: .3rem;
+  }
+}
+

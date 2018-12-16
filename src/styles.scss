@@ -23,4 +23,20 @@ html, body {
   }
 }
 
+.hand {
+  &:before {
+    font-size: 1.5rem;
+  }
+
+  &--0:before {
+    content: '👊️';
+  }
+  &--1:before {
+    content: '✋';
+  }
+  &--2:before {
+    content: '✌️';
+  }
+}
+
 @import '~bulma';
