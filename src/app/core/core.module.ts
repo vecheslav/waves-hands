@@ -13,4 +13,9 @@ import { PreviewComponent } from './preview/preview.component'
     PreviewComponent
   ]
 })
-export class CoreModule { }
+export class CoreModule {
+  constructor() {
+
+  }
+
+}
