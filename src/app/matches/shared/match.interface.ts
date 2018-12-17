@@ -11,8 +11,11 @@ export interface IMatchInfo {
 }
 
 export interface Match {
-  id?: string,
+  id?: number,
+  address?: string,
   players?: any[],
+  winner?: string,
+  status?: MatchStatus,
 }
 
 export enum MatchStage {
@@ -23,12 +26,7 @@ export enum MatchStage {
 }
 
 export enum MatchStatus {
+  New,
   Waiting,
   Done,
-}
-
-export enum PlayerStatus {
-  Waiting,
-  Winner,
-  Looser,
 }

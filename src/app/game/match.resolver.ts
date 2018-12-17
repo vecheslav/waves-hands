@@ -10,9 +10,9 @@ export class MatchResolver implements Resolve<Observable<Match>> {
   }
 
   resolve(route: ActivatedRouteSnapshot): Observable<Match> {
-    const matchId = route.paramMap.get('id')
-    if (matchId) {
-      return of({ id: matchId })
+    const matchAddress = route.paramMap.get('address')
+    if (matchAddress) {
+      return of({ address: matchAddress })
     } else {
       return of({})
     }

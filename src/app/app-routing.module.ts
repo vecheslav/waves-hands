@@ -17,7 +17,7 @@ const routes: Routes = [
     },
   },
   {
-    path: 'match/:id',
+    path: 'match/:address',
     component: GameComponent,
     resolve: {
       match: MatchResolver

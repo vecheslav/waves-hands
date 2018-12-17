@@ -18,7 +18,7 @@ export class MatchComponent implements OnInit {
   constructor(private router: Router) { }
 
   ngOnInit() {
-    this.isJoinedToMatch = !!this.match.id
+    this.isJoinedToMatch = !!this.match.address
   }
 
   async select(handSign: HandSign) {
@@ -47,7 +47,6 @@ export class MatchComponent implements OnInit {
 
   async join() {
     try {
-      console.log(MatchStage.ResultMatch)
       this.stage = MatchStage.ResultMatch
     } catch (err) {
       console.error(err)

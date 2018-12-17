@@ -2,7 +2,25 @@
   <div class="modal-background"></div>
   <div class="modal-content">
     <div class="match">
-      <!-- player -->
+      <div class="match-top" *ngIf="isJoinedToMatch">
+        <div class="level">
+          <div class="level-left">
+            <div class="level selected-hands">
+              <div class="level-item has-text-centered selected-hands__item" *ngFor="let hand of selectedHandSigns">
+                <div [class]="['hand hand--' + hand]"></div>
+              </div>
+            </div>
+          </div>
+          <div class="level-right">
+            <div class="match-player">
+              <div class="avatar match-player__avatar">
+                <img src="#" alt="Player">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="match-stages" [ngSwitch]="stage">
         <div class="match-stage match-stage--select-hands" *ngSwitchCase="0">
           <h2 class="title has-text-centered">Select your hands</h2>
@@ -21,6 +39,7 @@
           result
         </div>
       </div>
+
       <div class="match-bottom">
         <div class="level">
           <div class="level-left">
@@ -39,7 +58,6 @@
           </div>
         </div>
       </div>
-      <!-- player -->
     </div>
   </div>
   <button class="modal-close is-large" aria-label="close" (click)="close()"></button>

@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core'
-import { PlayerStatus } from '../shared/match.interface'
 
 @Component({
   selector: 'app-match-player',
@@ -9,8 +8,6 @@ import { PlayerStatus } from '../shared/match.interface'
 export class MatchPlayerComponent implements OnInit {
   @Input() player: any = {
   }
-
-  status: PlayerStatus = PlayerStatus.Waiting
 
   constructor() { }
 
