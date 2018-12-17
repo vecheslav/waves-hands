@@ -7,14 +7,14 @@ import { UserModule } from '../user/user.module'
 import { MatchResolver } from './match.resolver'
 
 @NgModule({
-  declarations: [
-    GameComponent,
-  ],
   imports: [
     CommonModule,
     CoreModule,
     MatchesModule,
     UserModule,
+  ],
+  declarations: [
+    GameComponent,
   ],
   providers: [
     MatchResolver
