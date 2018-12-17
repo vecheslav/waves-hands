@@ -9,6 +9,7 @@ export const environment = {
   gameBetAmount: 100000000,
   chainId: ChainId.Testnet,
   defaultTimeout: 1000 * 60,
+  apiEndpoint: 'https://testnodes.wavesnodes.com/'
 }
 
 /*

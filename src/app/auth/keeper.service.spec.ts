@@ -7,6 +7,6 @@ describe('KeeperService', () => {
 
   it('should be created', () => {
     const service: KeeperService = TestBed.get(KeeperService)
-    expect(service).toBeTruthy()
+    expect(service).toBeDefined()
   })
 })
