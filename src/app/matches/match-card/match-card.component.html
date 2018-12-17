@@ -1,6 +1,6 @@
 
 <div class="match-card">
-  <a [routerLink]="['match', match.address]" class="match-card__inner">
+  <div class="match-card__inner">
     <div class="match-card__overview">
       <div class="level match-meta">
         <div class="level-left match-meta__id">
@@ -50,7 +50,7 @@
         </div>
       </div>
     </div>
-  </a>
+  </div>
   <a [routerLink]="['match', match.address]" class="start-overlay" [hidden]="!startIsShown">
     <div class="start-overlay__inner">
       <button class="button is-primary">Start Match</button>
