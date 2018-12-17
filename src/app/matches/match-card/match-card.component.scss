@@ -29,15 +29,57 @@
 
 .match-meta {
   margin: 0;
+  font-size: .9rem;
 
   &__id {
     color: $grey-light;
   }
 }
 
+.match-share {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  color: $grey-lighter;
+  cursor: pointer;
+
+  &:hover {
+    color: $blue;
+  }
+
+  .icon {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}
+
 .match-players {
   .level-item {
     flex-direction: column;
+  }
+
+  &--result {
+    .player-status {
+      text-transform: uppercase;
+      font-size: .8rem;
+      background: rgba($red, 0.1);
+      padding: .2rem .4rem;
+      border-radius: .3rem;
+      color: $red;
+
+      &:before {
+        content: 'Looser';
+      }
+
+      &--winner {
+        background: rgba($blue, 0.1);
+        color: $blue;
+
+        &:before {
+          content: 'Winner';
+        }
+      }
+    }
   }
 }
 

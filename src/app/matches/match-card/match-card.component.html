@@ -4,32 +4,29 @@
     <div class="match-card__overview">
       <div class="level match-meta">
         <div class="level-left match-meta__id">
-          #{{ match.id }}
-        </div>
-        <div class="level-right match-meta__share">
-          <a href="#">share</a>
+          #45
         </div>
       </div>
       <div class="level has-text-centered match-players" *ngIf="!match.winner">
         <div class="level-item">
           <app-match-player></app-match-player>
           <div class="player-status">
-            Waiting players..
+            Waiting players...
           </div>
         </div>
       </div>
-      <div class="level has-text-centered match-players" *ngIf="match.winner">
+      <div class="level has-text-centered match-players match-players--result" *ngIf="match.winner">
         <div class="level-item">
           <app-match-player [player]="match.players[0]"></app-match-player>
-          <div class="player-status">
-            Winner
+          <div class="player-status"
+               [class.player-status--winner]="match.players[0].address === match.winner">
           </div>
         </div>
         <div class="level-item">vs</div>
         <div class="level-item">
           <app-match-player [player]="match.players[1]"></app-match-player>
-          <div class="player-status">
-            Looser
+          <div class="player-status"
+               [class.player-status--winner]="match.players[1].address === match.winner">
           </div>
         </div>
       </div>
@@ -51,9 +48,18 @@
       </div>
     </div>
   </div>
-  <a [routerLink]="['match', match.address]" class="start-overlay" [hidden]="!startIsShown">
+
+  <a [routerLink]="['match', match.address]"
+     class="start-overlay"
+     [hidden]="!startIsShown">
     <div class="start-overlay__inner">
       <button class="button is-primary">Start Match</button>
     </div>
   </a>
+
+  <div class="match-share">
+    <div href="#" class="match-share__link" (click)="true">
+      <svg class="icon"><use xlink:href="icons.svg#icon-share"></use></svg>
+    </div>
+  </div>
 </div>
