@@ -4,6 +4,10 @@ export enum HandSign {
   Scissors,
 }
 
+export interface Player {
+  address: string
+}
+
 export interface IMatchInfo {
   address: string,
   timestamp: number,
@@ -13,7 +17,7 @@ export interface IMatchInfo {
 export interface Match {
   id?: number,
   address?: string,
-  players?: any[],
+  players?: Player[],
   winner?: string,
   status?: MatchStatus,
 }
