@@ -12,7 +12,7 @@ export class MatchResolver implements Resolve<Observable<IMatch>> {
   resolve(route: ActivatedRouteSnapshot): Observable<IMatch> {
     const matchAddress = route.paramMap.get('address')
     if (matchAddress) {
-      return of({ address: matchAddress })
+      return of({ address: matchAddress, players: [{ address: '1231dasdasd1' }] })
     } else {
       return of({})
     }
