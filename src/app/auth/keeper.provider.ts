@@ -20,7 +20,6 @@ export class KeeperProvider {
       await new Promise(resolve => setTimeout(resolve, 200))
 
       this._keeper = this._getKeeper()
-      this.status.isExist = true
 
       return this.status
     } catch (err) {
@@ -40,9 +39,11 @@ export class KeeperProvider {
   private _getKeeper(): IKeeper {
     if (typeof window.Waves !== 'undefined') {
       console.log('Using Keeper detected')
+      this.status.isExist = true
       return <IKeeper>(window.Waves)
     } else {
-      throw new Error('No Keeper detected')
+      this.status.isExist = false
+      console.warn('No Keeper detected')
     }
   }
 }
