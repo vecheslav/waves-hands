@@ -1,3 +1,5 @@
+import { ITransferTransaction, TTx } from 'waves-transactions/transactions'
+
 export interface KeeperAuth {
   address: string,
   data: string,
@@ -9,8 +11,8 @@ export interface KeeperAuth {
 
 export interface IKeeper {
   auth(param?: { data: string }): Promise<KeeperAuth>
-  signTransaction(p: { type: number, data: any }): Promise<any>
-  transferWaves(recipient: string, amount: number): Promise<any>
+  signTransaction(p: { type: number, data: any }): Promise<TTx>
+  prepareWavesTransfer(recipient: string, amount: number): Promise<ITransferTransaction>
 }
 
 export interface KeeperStatus {

@@ -1,5 +1,5 @@
 import { Component, HostListener, Input, OnInit } from '@angular/core'
-import { Match, MatchStatus } from '../shared/match.interface'
+import { IMatch, MatchStatus } from '../shared/match.interface'
 
 @Component({
   selector: 'app-match-card',
@@ -7,10 +7,10 @@ import { Match, MatchStatus } from '../shared/match.interface'
   styleUrls: ['./match-card.component.scss']
 })
 export class MatchCardComponent implements OnInit {
-  @Input() match: Match = {
+  @Input() match: IMatch = {
     address: 'address',
     status: MatchStatus.Waiting
-  } as Match
+  } as IMatch
 
   startIsShown = false
 

@@ -11,3 +11,4 @@ export const chains = {
     nodeUri: 'https://testnodes.wavesnodes.com',
   }
 }
+

@@ -10,10 +10,17 @@ export interface IMatchInfo {
   salt?: string,
 }
 
-export interface Match {
+export type PlayerMoves = [HandSign, HandSign, HandSign]
+
+export interface IPlayer {
+  address: string,
+  moves?: PlayerMoves
+}
+
+export interface IMatch {
   id?: number,
   address?: string,
-  players?: any[],
+  players?: IPlayer[],
   winner?: string,
   status?: MatchStatus,
 }

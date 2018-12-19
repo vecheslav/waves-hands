@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { randomBytes } from 'crypto'
-import { HandSign, IMatchInfo } from './shared/match.interface'
+import { HandSign, IMatchInfo, PlayerMoves } from './shared/match.interface'
 import { address, concat, base58encode } from 'waves-crypto'
 import { environment } from '../../environments/environment'
 import { data } from 'waves-transactions'
@@ -23,12 +23,11 @@ export class MatchesService {
     const matchSeed = randomBytes(32).toString('hex')
     const matchSalt = randomBytes(31)
     const matchAddress = address(matchSeed, environment.chainId)
-    const tx = await this._keeperService.transferWaves(matchAddress, environment.gameBetAmount)
+    const tx = await this._keeperService.prepareWavesTransfer(matchAddress, environment.gameBetAmount)
 
     await this._coreService.broadcastAndWait(tx)
-    // wait tx
 
-
+    // transfer complete
 
     const dataTx = data({
       data: handSigns.map((s, i) => ({
@@ -37,8 +36,6 @@ export class MatchesService {
       }))
     })
 
-    // broadcast
-    // wait
     return {
       address: matchAddress,
       timestamp: 123,
@@ -49,4 +46,11 @@ export class MatchesService {
   async getMatchList(): Promise<IMatchInfo[]> {
     return []
   }
+}
+
+
+const prepareContract = (moves: PlayerMoves) => {
+  const a = `
+
+  `
 }

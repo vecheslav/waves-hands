@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core'
 import { IKeeper, KeeperStatus } from './shared/keeper.interface'
+import { ITransferTransaction } from 'waves-transactions/transactions'
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +28,7 @@ export class KeeperService {
     }
   }
 
-  async transferWaves(recipient: string, amount: number): Promise<any> {
+  async prepareWavesTransfer(recipient: string, amount: number): Promise<any> {
     await this._getKeeper().signTransaction({
       type: 4, data: {
         'amount': {
@@ -40,9 +41,9 @@ export class KeeperService {
         },
         'recipient': recipient,
       },
-    }).then(x => {
-      x.fee = parseInt(x.fee, undefined)
-      x.amount = parseInt(x.amount, undefined)
+    }).then((x: ITransferTransaction) => {
+      x.fee = parseInt(x.fee.toString(), undefined)
+      x.amount = parseInt(x.amount.toString(), undefined)
       return x
 
     })

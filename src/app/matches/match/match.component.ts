@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core'
-import { HandSign, Match, MatchStage } from '../shared/match.interface'
+import { HandSign, IMatch, MatchStage } from '../shared/match.interface'
 import { Router } from '@angular/router'
 import { MatchesService } from '../matches.service'
 
@@ -9,7 +9,7 @@ import { MatchesService } from '../matches.service'
   styleUrls: ['./match.component.scss']
 })
 export class MatchComponent implements OnInit {
-  @Input() match: Match
+  @Input() match: IMatch
 
   stage: MatchStage = MatchStage.SelectHands
   selectedHandSigns: HandSign[] = []

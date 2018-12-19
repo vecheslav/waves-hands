@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
-import { Match } from '../matches/shared/match.interface'
+import { IMatch } from '../matches/shared/match.interface'
 import { CoreService } from '../core/core.service'
-import { address } from 'waves-crypto'
+import { address, randomUint8Array } from 'waves-crypto'
+import { KeeperService } from '../auth/keeper.service'
 
 @Component({
   selector: 'app-game',
@@ -10,10 +11,9 @@ import { address } from 'waves-crypto'
   styleUrls: ['./game.component.scss']
 })
 export class GameComponent implements OnInit {
-  currentMatch: Match
+  currentMatch: IMatch
 
-  constructor(private route: ActivatedRoute, private core: CoreService) {
-
+  constructor(private route: ActivatedRoute, private core: CoreService, private keeper: KeeperService) {
 
     this.currentMatch = this.route.snapshot.data.match
   }
@@ -21,14 +21,10 @@ export class GameComponent implements OnInit {
   async ngOnInit() {
 
     const seed = '763488b5e20e46ceab073708d1c99c1dd2b5b21fd9614a22856a30d1a8621a37'
-    const addr = address(seed)
-    console.log(addr)
-
-    // const randomSeed = randomBytes(32).toString('hex')
-    // const randomAddress = address(randomSeed)
-    // const tx = transfer({ recipient: randomAddress, amount: 10000000 })
-    // const { id } = await this.core.broadcastAndWait(tx)
-    // console.log(id)
+    // 3Mr6iZj6yx5p32ySonqGupfqqELhCrdFfDM
+    const randomSeed = randomUint8Array(32).toString()
+    const randomAddress = address(randomSeed, 'T')
+    this.keeper.prepareWavesTransfer(randomAddress, 100000000)
   }
 
 }
