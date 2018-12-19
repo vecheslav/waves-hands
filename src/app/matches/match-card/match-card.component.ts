@@ -30,4 +30,8 @@ export class MatchCardComponent implements OnInit {
   onMouseLeave(): void {
     this.startIsShown = false
   }
+
+  share() {
+    console.log(this.match.address)
+  }
 }

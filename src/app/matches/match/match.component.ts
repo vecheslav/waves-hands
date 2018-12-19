@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core'
-import { HandSign, IMatch, MatchStage } from '../shared/match.interface'
+import { HandSign, IMatch, MatchStage, Player } from '../shared/match.interface'
 import { Router } from '@angular/router'
 import { MatchesService } from '../matches.service'
+import { KeeperService } from '../../auth/keeper.service'
 
 @Component({
   selector: 'app-match',
@@ -14,11 +15,13 @@ export class MatchComponent implements OnInit {
   stage: MatchStage = MatchStage.SelectHands
   selectedHandSigns: HandSign[] = []
   isJoinedToMatch = false
+  currentPlayer: Player
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private keeperService: KeeperService) { }
 
   ngOnInit() {
     this.isJoinedToMatch = !!this.match.address
+    this.currentPlayer = this.keeperService.getCurrentPlayer()
   }
 
   async select(handSign: HandSign) {

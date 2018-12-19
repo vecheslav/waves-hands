@@ -1,35 +1,30 @@
 import { Injectable } from '@angular/core'
 import { IKeeper, KeeperStatus } from './shared/keeper.interface'
 import { ITransferTransaction } from 'waves-transactions/transactions'
+import { Player } from '../matches/shared/match.interface'
+import { KeeperProvider } from './keeper.provider'
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class KeeperService {
   keeper: IKeeper
+  keeperStatus: KeeperStatus
 
-  status: KeeperStatus = {
-    isExist: false
+  constructor(private keeperProvider: KeeperProvider) {
+    this.keeperStatus = this.keeperProvider.status
+
+    this.keeper = this.keeperProvider.keeper
   }
 
-  constructor() { }
-
-  async init() {
-    this.keeper = await this._getKeeper()
-    this.status.isExist = true
+  isAvailable() {
+    return this.keeperStatus.isExist
   }
 
-  private _getKeeper(): IKeeper {
-    if (typeof (<any>window).Waves !== 'undefined') {
-      console.log('Using Keeper detected')
-      return <IKeeper>((<any>window).Waves)
-    } else {
-      throw new Error('No Keeper detected')
-    }
+  getCurrentPlayer(): Player {
+    return { address: 'add12313ress1' }
   }
 
   async prepareWavesTransfer(recipient: string, amount: number): Promise<ITransferTransaction> {
-    return await this._getKeeper().signTransaction({
+    return await this.keeper.signTransaction({
       type: 4, data: {
         'amount': {
           'assetId': 'WAVES',

@@ -5,12 +5,14 @@ import { MatchCardComponent } from './match-card/match-card.component'
 import { MatchPlayerComponent } from './match-player/match-player.component'
 import { MatchComponent } from './match/match.component'
 import { RouterModule } from '@angular/router'
+import { AuthModule } from '../auth/auth.module'
 
 @NgModule({
   declarations: [MatchesComponent, MatchCardComponent, MatchPlayerComponent, MatchComponent],
   imports: [
     CommonModule,
-    RouterModule
+    RouterModule,
+    AuthModule
   ],
   exports: [
     MatchesComponent,

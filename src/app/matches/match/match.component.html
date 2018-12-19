@@ -12,11 +12,7 @@
             </div>
           </div>
           <div class="level-right">
-            <div class="match-player">
-              <div class="avatar match-player__avatar">
-                <img src="#" alt="Player">
-              </div>
-            </div>
+            <app-match-player [player]="match.players[0]"></app-match-player>
           </div>
         </div>
       </div>
@@ -43,11 +39,7 @@
       <div class="match-bottom">
         <div class="level">
           <div class="level-left">
-            <div class="match-player">
-              <div class="avatar match-player__avatar">
-                <img src="#" alt="Player">
-              </div>
-            </div>
+            <app-match-player [player]="currentPlayer"></app-match-player>
           </div>
           <div class="level-right">
             <div class="level selected-hands">
