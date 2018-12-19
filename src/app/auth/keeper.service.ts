@@ -28,8 +28,8 @@ export class KeeperService {
     }
   }
 
-  async prepareWavesTransfer(recipient: string, amount: number): Promise<any> {
-    await this._getKeeper().signTransaction({
+  async prepareWavesTransfer(recipient: string, amount: number): Promise<ITransferTransaction> {
+    return await this._getKeeper().signTransaction({
       type: 4, data: {
         'amount': {
           'assetId': 'WAVES',
@@ -45,7 +45,6 @@ export class KeeperService {
       x.fee = parseInt(x.fee.toString(), undefined)
       x.amount = parseInt(x.amount.toString(), undefined)
       return x
-
     })
   }
 }
