@@ -60,7 +60,11 @@ export class MatchesService {
 
     console.log(`Player 1 move completed`)
 
-    const setScriptTx = prepareSetScriptTx(matchSeed, environment.serviceAddress)
+    const setScriptTx = prepareSetScriptTx(
+      matchSeed,
+      environment.serviceAddress,
+      environment.chainId
+    )
 
     await broadcastAndWait(setScriptTx)
 
@@ -73,18 +77,20 @@ export class MatchesService {
   async joinGame(matchPublicKey: string, matchAddress: string, playerSeed: string, moves: number[]) {
 
     const playerPublicKey = publicKey(playerSeed)
-    const h = (await this.http.get<{ height: number }>('https://testnodes.wavesnodes.com/blocks/last').toPromise()).height
+    const h = (await this.http.get<{ height: number }>(environment.apiEndpoint + 'blocks/last').toPromise()).height
     console.log(`Height is ${h}`)
 
-    const { salt, moveHash, move } = this.hideMoves(moves)
+    const { moveHash, move } = this.hideMoves(moves)
 
-    const dataTx = data({
+    const tmp = data({
       senderPublicKey: matchPublicKey, data: [
         { key: 'height', value: h },
         { key: 'p2MoveHash', value: moveHash },
         { key: 'player2Key', value: base58decode(playerPublicKey) }
       ], fee: 500000
-    }, playerSeed)
+    })
+
+    const dataTx = await this.keeper.prepareDataTx(tmp.data, tmp.senderPublicKey, parseInt(tmp.fee.toString(), undefined))
 
     try {
       await this.core.broadcastAndWait(dataTx)
@@ -94,17 +100,18 @@ export class MatchesService {
 
     console.log(`Player 2 move completed`)
 
-    const p2Transfer = transfer({ recipient: matchAddress, amount: 1 * wave }, playerSeed)
+    const p2Transfer = await this.keeper.prepareWavesTransfer(matchAddress, 1 * wave)
 
     const { id } = await this.core.broadcastAndWait(p2Transfer)
 
-    const revealP2Move = data({
+    const tmp2 = data({
       senderPublicKey: matchPublicKey, data: [
         { key: 'p2Move', value: move },
         { key: 'payment', value: base58decode(id) }
       ], fee: 500000
     }, playerSeed)
 
+    const revealP2Move = await this.keeper.prepareDataTx(tmp2.data, tmp2.senderPublicKey, parseInt(tmp2.fee.toString(), undefined))
 
     try {
       await this.core.broadcastAndWait(revealP2Move)
@@ -130,7 +137,7 @@ export class MatchesService {
       console.log(JSON.stringify(error.response.data))
     }
 
-    const player2Move = await (this.http.get<{ value: string }>(`https://testnodes.wavesnodes.com/addresses/data/${matchAddress}/p2Move`))
+    const player2Move = await (this.http.get<{ value: string }>(`${environment.apiEndpoint}addresses/data/${matchAddress}/p2Move`))
       .toPromise().then(x => BASE64_STRING(x.value.slice(7)))
 
     const compare = (m1: number, m2: number) =>
@@ -179,11 +186,10 @@ export class MatchesService {
   }
 }
 
-
-export const prepareSetScriptTx = (matchSeed: string, serviceAddress: string) => {
+export const prepareSetScriptTx = (matchSeed: string, serviceAddress: string, chainId: string) => {
   const code = `
 
-  let me = tx.sender
+let me = tx.sender
 let serviceAddress = addressFromString("${serviceAddress}")
 let heightKey = "height"
 let stage1 = "p2MoveHash"
@@ -285,7 +291,7 @@ match (tx) {
   `
   const script = Buffer.from(compile(code).result).toString('base64')
 
-  const tx = setScript({ script, chainId: environment.chainId }, matchSeed)
+  const tx = setScript({ script, chainId }, matchSeed)
 
   return tx
 }

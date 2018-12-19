@@ -18,3 +18,9 @@ export interface IKeeper {
 export interface KeeperStatus {
   isExist: boolean
 }
+
+export interface DataEntry {
+  type: string,
+  key: string,
+  value: string
+}
