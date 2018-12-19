@@ -4,6 +4,10 @@ export enum HandSign {
   Scissors,
 }
 
+export interface Player {
+  address: string
+}
+
 export interface IMatchInfo {
   address: string,
   timestamp: number,
