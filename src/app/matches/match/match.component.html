@@ -33,8 +33,16 @@
             </div>
           </div>
 
-          <div class="match-stage match-stage--created-match" *ngSwitchCase="1">
+          <div class="match-stage match-stage--created-match has-text-centered" *ngSwitchCase="1">
+            <div>
+              <span class="is-size-1">🤟</span>
+            </div>
             <h2 class="title has-text-centered">You created a game</h2>
+            <p class="subtitle">Share the game link to friends, or wait for players to join.</p>
+            <div class="md-1">
+              <button class="button is-primary" (click)="share()">Share link</button>
+            </div>
+            <a [routerLink]="['/']">Close window</a>
           </div>
 
           <div class="match-stage match-stage--result-match" *ngSwitchCase="3">
