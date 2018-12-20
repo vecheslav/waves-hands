@@ -1,0 +1,19 @@
+@import '~src/styles/variables';
+
+$loader-size: 3rem;
+
+.circle-loader {
+  &__inner {
+    margin: 0 auto;
+  }
+
+  &__inner,
+  .loader {
+    width: $loader-size;
+    height: $loader-size;
+  }
+
+  .loader {
+    border-width: 3px;
+  }
+}

@@ -15,7 +15,7 @@ export class KeeperService {
     this.keeper = this.keeperProvider.keeper
   }
 
-  isAvailable() {
+  isAvailable(): boolean {
     return this.keeperStatus.isExist
   }
 
@@ -23,7 +23,7 @@ export class KeeperService {
     return { address: 'add12313ress1' }
   }
 
-  async prepareWavesTransfer(recipient: string, amount: number): Promise<ITransferTransaction> {
+  async prepareWavesTransfer(recipient: string, amount: number): Promise<any> {
     return await this.keeper.signTransaction({
       type: 4, data: {
         'amount': {
@@ -36,10 +36,11 @@ export class KeeperService {
         },
         'recipient': recipient,
       },
-    }).then((x: ITransferTransaction) => {
-      x.fee = parseInt(x.fee.toString(), undefined)
-      x.amount = parseInt(x.amount.toString(), undefined)
-      return x
+    }).then((x: any) => {
+      const data = JSON.parse(x)
+      data.fee = parseInt(data.fee.toString(), undefined)
+      data.amount = parseInt(data.amount.toString(), undefined)
+      return data
     })
   }
 

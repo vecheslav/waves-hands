@@ -1,13 +1,19 @@
 @import '~src/styles/variables';
 
-.match {
+.match-wrapper {
   background: $white;
   padding: 2rem;
   border-radius: .5rem;
 }
 
+.match {
+}
+
+.match-stages {
+  margin: 2rem 0;
+}
+
 .match-stage {
-  margin: 3rem 0;
 }
 
 .select-hands {
@@ -25,6 +31,10 @@
     width: $avatar-size;
     height: $avatar-size;
   }
+}
+
+.match-loading {
+  padding: 2rem 1rem;
 }
 
 .selected-hands {

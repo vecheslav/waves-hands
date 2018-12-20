@@ -29,11 +29,11 @@ export class KeeperProvider {
   }
 
   get keeper() {
-    if (!this._keeper) {
-      this._keeper = this._getKeeper()
-    }
+    // if (!this._keeper) {
+    //   this._keeper = this._getKeeper()
+    // }
 
-    return this._keeper
+    return this._getKeeper()
   }
 
   private _getKeeper(): IKeeper {

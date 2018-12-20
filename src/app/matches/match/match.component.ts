@@ -17,11 +17,18 @@ export class MatchComponent implements OnInit {
   isJoinedToMatch = false
   currentPlayer: Player
 
-  constructor(private router: Router, private keeperService: KeeperService) { }
+  keeperIsAvailable = true
+  isLoading = false
+
+  constructor(private router: Router,
+              private keeperService: KeeperService,
+              private matchesService: MatchesService) { }
 
   ngOnInit() {
     this.isJoinedToMatch = !!this.match.address
     this.currentPlayer = this.keeperService.getCurrentPlayer()
+
+    this._reset()
   }
 
   async select(handSign: HandSign) {
@@ -31,6 +38,8 @@ export class MatchComponent implements OnInit {
     this.selectedHandSigns.push(handSign)
 
     if (this.selectedHandSigns.length === 3) {
+      this.isLoading = true
+
       if (this.isJoinedToMatch) {
         await this.join()
       } else {
@@ -41,22 +50,33 @@ export class MatchComponent implements OnInit {
 
   async create() {
     try {
-      // await this.matchesService.createMatch(this.selectedHandSigns)
+      await this.matchesService.createGame(this.selectedHandSigns)
       this.stage = MatchStage.CreatedMatch
+      this.isLoading = false
     } catch (err) {
       console.error(err)
+      this._reset()
     }
   }
 
   async join() {
     try {
       this.stage = MatchStage.ResultMatch
+      this.isLoading = false
     } catch (err) {
       console.error(err)
+      this._reset()
     }
   }
 
   close() {
     this.router.navigate(['../'])
+  }
+
+  private _reset() {
+    this.stage = MatchStage.SelectHands
+    this.keeperIsAvailable = this.keeperService.isAvailable()
+    this.isLoading = false
+    this.selectedHandSigns = []
   }
 }

@@ -27,8 +27,6 @@ export class MatchesService {
   }
 
   async createGame(moves: number[]) {
-    const broadcastAndWait = this.core.broadcastAndWait
-
     const matchSeed = randomBytes(32).toString('hex')
     const matchAddress = address(matchSeed, environment.chainId)
     const matchPublicKey = publicKey(matchSeed)
@@ -38,7 +36,7 @@ export class MatchesService {
 
     const { salt, moveHash, move } = this.hideMoves(moves)
 
-    await broadcastAndWait(p1Transfer)
+    await this.core.broadcastAndWait(p1Transfer)
 
     console.log(`Player 1 transfer completed`)
 
@@ -56,7 +54,7 @@ export class MatchesService {
       ]
     }, matchSeed)
 
-    await broadcastAndWait(p1DataTx)
+    await this.core.broadcastAndWait(p1DataTx)
 
     console.log(`Player 1 move completed`)
 
@@ -66,7 +64,7 @@ export class MatchesService {
       environment.chainId
     )
 
-    await broadcastAndWait(setScriptTx)
+    await this.core.broadcastAndWait(setScriptTx)
 
     console.log(`Match script set, address: ${matchAddress}`)
     console.log(`Public Key: ${matchPublicKey}`)
