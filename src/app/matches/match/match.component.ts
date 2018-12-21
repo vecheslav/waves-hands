@@ -50,7 +50,7 @@ export class MatchComponent implements OnInit {
 
   async create() {
     try {
-      await this.matchesService.createGame(this.selectedHandSigns)
+      await this.matchesService.createMatch(this.selectedHandSigns)
       this.stage = MatchStage.CreatedMatch
       this.isLoading = false
     } catch (err) {

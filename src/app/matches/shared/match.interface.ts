@@ -1,32 +1,29 @@
 export enum HandSign {
-  Rock,
-  Paper,
-  Scissors,
+  Rock = 0,
+  Paper = 1,
+  Scissors = 2,
 }
 
 export interface Player {
   address: string
 }
 
-export interface IMatchInfo {
-  address: string,
-  timestamp: number,
-  salt?: string,
-}
-
 export type PlayerMoves = [HandSign, HandSign, HandSign]
 
 export interface IPlayer {
-  address: string,
+  address: string
+  publicKey: string
   moves?: PlayerMoves
 }
 
 export interface IMatch {
-  id?: number,
-  address?: string,
-  players?: IPlayer[],
-  winner?: string,
-  status?: MatchStatus,
+  address: string
+  publicKey: string
+  moveHash?: Uint8Array
+  move?: Uint8Array
+  creator: IPlayer
+  opponent?: IPlayer
+  status: MatchStatus
 }
 
 export enum MatchStage {
