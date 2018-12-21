@@ -16,6 +16,12 @@ export interface IPlayer {
   moves?: PlayerMoves
 }
 
+export enum MatchStatus {
+  New,
+  Waiting,
+  Done,
+}
+
 export interface IMatch {
   address: string
   publicKey: string
@@ -26,15 +32,19 @@ export interface IMatch {
   status: MatchStatus
 }
 
+export const EmptyMatch: IMatch = {
+  address: '',
+  publicKey: '',
+  creator: {
+    address: '',
+    publicKey: '',
+  },
+  status: MatchStatus.New,
+}
+
 export enum MatchStage {
   SelectHands,
   CreatedMatch,
   CompareHands,
   ResultMatch,
-}
-
-export enum MatchStatus {
-  New,
-  Waiting,
-  Done,
 }

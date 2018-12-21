@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core'
+import { compiledScript } from './shared/contract'
 
 @Component({
   selector: 'app-matches',
@@ -10,7 +11,7 @@ export class MatchesComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-
+    console.log(compiledScript)
   }
 
 }

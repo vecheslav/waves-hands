@@ -8,7 +8,7 @@ import { CoreService } from '../core/core.service'
 import { HttpClient } from '@angular/common/http'
 import { compiledScript } from './shared/contract'
 import { randomAccount } from './shared/util'
-import { IMatch, MatchStatus, PlayerMoves } from './shared/match.interface'
+import { IMatch, MatchStatus, PlayerMoves, HandSign } from './shared/match.interface'
 
 const wave = 100000000
 
@@ -29,10 +29,11 @@ export class MatchesService {
   }
 
   async getMatchList() {
-
+    // https://api.testnet.wavesplatform.com/v0/transactions/data?key=matchKey&sort=desc&limit=100
+    this.http.get(environment.api.txEnpoint + '')
   }
 
-  async createMatch(moves: PlayerMoves): Promise<IMatch> {
+  async createMatch(moves: HandSign[]): Promise<IMatch> {
 
     const { seed, address: addr, publicKey: pk } = randomAccount()
 
@@ -79,7 +80,7 @@ export class MatchesService {
       address: addr, publicKey: pk, moveHash, move, status: MatchStatus.New, creator: {
         address: player1Address,
         publicKey: player1Key,
-        moves: moves
+        moves: moves as PlayerMoves
       }
     }
   }
@@ -87,7 +88,7 @@ export class MatchesService {
   async joinGame(matchPublicKey: string, matchAddress: string, playerSeed: string, moves: number[]) {
 
     const playerPublicKey = publicKey(playerSeed)
-    const h = (await this.http.get<{ height: number }>(environment.apiEndpoint + 'blocks/last').toPromise()).height
+    const h = (await this.http.get<{ height: number }>(environment.api.baseEndpoint + 'blocks/last').toPromise()).height
     console.log(`Height is ${h}`)
 
     const { moveHash, move } = this.hideMoves(moves)
@@ -147,7 +148,7 @@ export class MatchesService {
       console.log(JSON.stringify(error.response.data))
     }
 
-    const player2Move = await (this.http.get<{ value: string }>(`${environment.apiEndpoint}addresses/data/${matchAddress}/p2Move`))
+    const player2Move = await (this.http.get<{ value: string }>(`${environment.api.baseEndpoint}addresses/data/${matchAddress}/p2Move`))
       .toPromise().then(x => BASE64_STRING(x.value.slice(7)))
 
     const compare = (m1: number, m2: number) =>
