@@ -17,8 +17,9 @@ const wave = 100000000
 })
 export class MatchesService {
 
-  constructor(private keeper: KeeperService, private core: CoreService, private http: HttpClient) {
-  }
+  private matches: Record<string, IMatch> = {}
+
+  constructor(private keeper: KeeperService, private core: CoreService, private http: HttpClient) { }
 
   hideMoves(moves: number[]) {
     const salt = randomBytes(29)
@@ -29,8 +30,32 @@ export class MatchesService {
   }
 
   async getMatchList() {
-    // https://api.testnet.wavesplatform.com/v0/transactions/data?key=matchKey&sort=desc&limit=100
-    this.http.get(environment.api.txEnpoint + '')
+
+    interface DataTxEntry {
+      key: string
+      type: string
+      value: string
+    }
+
+    interface DataTx {
+      data: {
+        type: 12,
+        height: number,
+        id: 'AvJPztkpVwRhucjz9WsdToEikqrv3sKbBHSgyaMXkL76',
+        timestamp: string,
+        proofs: string[],
+        sender: string,
+        senderPublicKey: string,
+        fee: number,
+        data: DataTxEntry[]
+      }
+    }
+
+    interface DataTxResponse {
+      data: DataTx[]
+    }
+
+    const response = await this.http.get<DataTxResponse>(environment.api.txEnpoint + 'v0/transactions/data?key=matchKey&sort=desc&limit=100').toPromise()
   }
 
   async createMatch(moves: HandSign[]): Promise<IMatch> {
