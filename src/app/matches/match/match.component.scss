@@ -6,7 +6,9 @@
   border-radius: .5rem;
 }
 
-.match {
+.md {
+  &-05 { margin-bottom: .5rem; }
+  &-1 { margin-bottom: 1rem; }
 }
 
 .match-stages {
@@ -14,6 +16,10 @@
 }
 
 .match-stage {
+
+  &__action {
+    margin-bottom: 1rem;
+  }
 }
 
 .select-hands {
