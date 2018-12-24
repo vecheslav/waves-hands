@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { IKeeper, KeeperStatus } from './shared/keeper.interface'
+import { IKeeper, KeeperStatus, KeeperAuth } from './shared/keeper.interface'
 import { DataEntry, IDataTransaction } from 'waves-transactions/transactions'
 import { Player } from '../matches/shared/match.interface'
 import { KeeperProvider } from './keeper.provider'
@@ -23,6 +23,10 @@ export class KeeperService {
 
   getCurrentPlayer(): Player {
     return { address: 'add12313ress1' }
+  }
+
+  async auth(): Promise<KeeperAuth> {
+    return await this.keeper.auth()
   }
 
   async prepareWavesTransfer(recipient: string, amount: number): Promise<any> {

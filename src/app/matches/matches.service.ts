@@ -60,18 +60,6 @@ export class MatchesService {
       return response.data
     }
 
-
-
-    // export interface IMatch {
-    //   address: string
-    //   publicKey: string
-    //   moveHash?: Uint8Array
-    //   move?: Uint8Array
-    //   creator: IPlayer
-    //   opponent?: IPlayer
-    //   status: MatchStatus
-    // }
-
     const r = await getDataTransactionsByKey('matchKey')
 
     const getDataByKey = (key: string, resp: DataTx[]) => {
@@ -197,9 +185,8 @@ export class MatchesService {
     }
   }
 
-  async joinGame(matchPublicKey: string, matchAddress: string, playerSeed: string, moves: number[]) {
+  async joinGame(matchPublicKey: string, matchAddress: string, playerPublicKey: string, moves: number[]) {
 
-    const playerPublicKey = publicKey(playerSeed)
     const h = (await this.http.get<{ height: number }>(environment.api.baseEndpoint + 'blocks/last').toPromise()).height
     console.log(`Height is ${h}`)
 
@@ -232,7 +219,7 @@ export class MatchesService {
         { key: 'p2Move', value: move },
         { key: 'payment', value: base58decode(id) }
       ], fee: 500000
-    }, playerSeed)
+    })
 
     const revealP2Move = await this.keeper.prepareDataTx(tmp2.data, tmp2.senderPublicKey, parseInt(tmp2.fee.toString(), undefined))
 
