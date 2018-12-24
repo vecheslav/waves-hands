@@ -8,7 +8,7 @@ import { CoreService } from '../core/core.service'
 import { HttpClient } from '@angular/common/http'
 import { compiledScript } from './shared/contract'
 import { randomAccount } from './shared/util'
-import { IMatch, MatchStatus, PlayerMoves, HandSign, EmptyMatch } from './shared/match.interface'
+import { IMatch, MatchStatus, PlayerMoves, HandSign } from './shared/match.interface'
 import { TTx, TRANSACTION_TYPE } from 'waves-transactions/transactions'
 
 const wave = 100000000
