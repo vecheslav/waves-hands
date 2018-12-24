@@ -25,10 +25,16 @@ describe('MatchesService', () => {
     expect(service).toBeDefined()
   })
 
-  it('match should be created', async () => {
-    const service: MatchesService = TestBed.get(MatchesService)
-    const match = await service.createMatch([0, 1, 2])
+  // it('match should be created', async () => {
+  //   const service: MatchesService = TestBed.get(MatchesService)
+  //   const match = await service.createMatch([0, 1, 2])
 
-    console.log(match)
+  //   console.log(match)
+  // })
+
+  it('getMatchList', async () => {
+    const service: MatchesService = TestBed.get(MatchesService)
+    const matches = await service.getMatchList()
+    console.log(matches)
   })
 })

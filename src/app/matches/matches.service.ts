@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { randomBytes } from 'crypto'
-import { concat, publicKey, sha256, base58decode, BASE64_STRING, address } from 'waves-crypto'
+import { concat, publicKey, sha256, base58decode, BASE64_STRING, address, base58encode } from 'waves-crypto'
 import { environment } from '../../environments/environment'
 import { data, setScript, massTransfer } from 'waves-transactions'
 import { KeeperService } from '../auth/keeper.service'
@@ -8,7 +8,7 @@ import { CoreService } from '../core/core.service'
 import { HttpClient } from '@angular/common/http'
 import { compiledScript } from './shared/contract'
 import { randomAccount } from './shared/util'
-import { IMatch, MatchStatus, PlayerMoves, HandSign } from './shared/match.interface'
+import { IMatch, MatchStatus, PlayerMoves, HandSign, EmptyMatch } from './shared/match.interface'
 
 const wave = 100000000
 
@@ -29,7 +29,7 @@ export class MatchesService {
     return { salt, moveHash, move }
   }
 
-  async getMatchList() {
+  async getMatchList(): Promise<IMatch[]> {
 
     interface DataTxEntry {
       key: string
@@ -55,7 +55,94 @@ export class MatchesService {
       data: DataTx[]
     }
 
-    const response = await this.http.get<DataTxResponse>(environment.api.txEnpoint + 'v0/transactions/data?key=matchKey&sort=desc&limit=100').toPromise()
+    const getDataTransactionsByKey = async (key: string): Promise<DataTx[]> => {
+      const response = await this.http.get<DataTxResponse>(environment.api.txEnpoint + `transactions/data?key=${key}&sort=desc&limit=100`).toPromise()
+      return response.data
+    }
+
+
+
+    // export interface IMatch {
+    //   address: string
+    //   publicKey: string
+    //   moveHash?: Uint8Array
+    //   move?: Uint8Array
+    //   creator: IPlayer
+    //   opponent?: IPlayer
+    //   status: MatchStatus
+    // }
+
+    const r = await getDataTransactionsByKey('matchKey')
+
+    const getDataByKey = (key: string, resp: DataTx[]) => {
+      const found = resp.map(x => x.data.data.filter(y => y.key === key)).filter(x => x.length > 0)
+      return found.length === 1 ? found[0][0].value : undefined
+    }
+
+    const getValueByKey = (key: string, dataTx: DataTx) => {
+      const found = dataTx.data.data.filter(d => d.key === key)
+      return found.length === 1 ? found[0].value : undefined
+    }
+
+    const matches: Record<string, IMatch> = r.reduce((a, b) => {
+      const p1Key = getDataByKey('player1Key', [b])
+      if (!p1Key) {
+        return a
+      }
+      const creatorPk = base58encode(BASE64_STRING(p1Key.slice(7)))
+      const creatorAddress = address({ public: creatorPk })
+      return ({
+        ...a, [b.data.sender]: {
+          address: b.data.sender,
+          publicKey: b.data.senderPublicKey,
+          creator: {
+            address: creatorAddress,
+            publicKey: creatorPk
+          },
+          status: MatchStatus.New
+        }
+      })
+    }, {})
+
+    const _ = (await getDataTransactionsByKey('p2MoveHash'))
+      .forEach(p => {
+        const p2Key = getValueByKey('player2Key', p)
+        const pk = base58encode(BASE64_STRING(p2Key.slice(7)))
+        const addr = address({ public: pk })
+
+        const match = matches[p.data.sender]
+        if (match) {
+          match.opponent = {
+            publicKey: pk,
+            address: addr
+          }
+        }
+      })
+
+    const p2Moves = (await getDataTransactionsByKey('p2Move'))
+      .map(p => ({ match: p.data.sender, move: getValueByKey('p2Move', p) }))
+
+
+    const p1Moves = (await getDataTransactionsByKey('p1Move'))
+      .map(p => ({ match: p.data.sender, move: getValueByKey('p1Move', p) }))
+
+    p2Moves.forEach(m => {
+      if (matches[m.match]) {
+        const moves = BASE64_STRING(m.move.slice(7)).slice(0, 3)
+        matches[m.match].opponent.moves = [moves[0], moves[1], moves[2]]
+        matches[m.match].status = MatchStatus.Waiting
+      }
+    })
+
+    p1Moves.forEach(m => {
+      if (matches[m.match]) {
+        const moves = BASE64_STRING(m.move.slice(7)).slice(0, 3)
+        matches[m.match].creator.moves = [moves[0], moves[1], moves[2]]
+        matches[m.match].status = MatchStatus.Done
+      }
+    })
+
+    return Object.values(matches)
   }
 
   async createMatch(moves: HandSign[]): Promise<IMatch> {

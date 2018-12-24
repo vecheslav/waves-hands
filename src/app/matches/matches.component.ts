@@ -11,7 +11,6 @@ export class MatchesComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    console.log(compiledScript)
   }
 
 }

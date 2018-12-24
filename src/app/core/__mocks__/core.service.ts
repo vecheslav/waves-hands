@@ -18,7 +18,7 @@ export class CoreServiceMock {
       timestamp: 12,
       version: 0,
       proofs: []
-    } as IAliasTransaction)
+    } as TTx)
   }
 
   async broadcastAndWait(tx: TTx): Promise<TTx> {
