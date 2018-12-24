@@ -61,6 +61,7 @@ export class MatchComponent implements OnInit {
 
   async join() {
     try {
+      await this.matchesService.joinGame(this.match.address, this.match.publicKey, '21321', this.selectedHandSigns)
       this.stage = MatchStage.ResultMatch
       this.isLoading = false
     } catch (err) {

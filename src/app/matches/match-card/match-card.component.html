@@ -2,14 +2,9 @@
 <div class="match-card">
   <div class="match-card__inner">
     <div class="match-card__overview">
-      <div class="level match-meta">
-        <div class="level-left match-meta__id">
-          #45
-        </div>
-      </div>
       <div class="level has-text-centered match-players" *ngIf="!match.winner">
         <div class="level-item">
-          <app-match-player></app-match-player>
+          <app-match-player [player]="match.creator"></app-match-player>
           <div class="player-status">
             Waiting players...
           </div>
@@ -17,16 +12,16 @@
       </div>
       <div class="level has-text-centered match-players match-players--result" *ngIf="match.winner">
         <div class="level-item">
-          <app-match-player [player]="match.players[0]"></app-match-player>
+          <app-match-player [player]="match.creator"></app-match-player>
           <div class="player-status"
-               [class.player-status--winner]="match.players[0].address === match.winner">
+               [class.player-status--winner]="match.creator.address === match.winner">
           </div>
         </div>
         <div class="level-item">vs</div>
         <div class="level-item">
-          <app-match-player [player]="match.players[1]"></app-match-player>
+          <app-match-player [player]="match.opponent"></app-match-player>
           <div class="player-status"
-               [class.player-status--winner]="match.players[1].address === match.winner">
+               [class.player-status--winner]="match.opponent.address === match.winner">
           </div>
         </div>
       </div>
@@ -57,9 +52,16 @@
     </div>
   </a>
 
-  <!--<div class="match-share">-->
-    <!--<div class="match-share__link" (click)="share()">-->
-      <!--<svg class="icon"><use xlink:href="icons.svg#icon-share"></use></svg>-->
-    <!--</div>-->
-  <!--</div>-->
+  <div class="level match-meta">
+    <div class="level-left">
+      <a href="#" target="_blank" class="match-meta__id">
+        {{ match.address }}
+      </a>
+    </div>
+    <div class="level-right match-share">
+      <div class="match-share__link" (click)="share()">
+        <svg class="icon"><use xlink:href="icons.svg#icon-share"></use></svg>
+      </div>
+    </div>
+  </div>
 </div>

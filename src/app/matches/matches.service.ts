@@ -60,18 +60,6 @@ export class MatchesService {
       return response.data
     }
 
-
-
-    // export interface IMatch {
-    //   address: string
-    //   publicKey: string
-    //   moveHash?: Uint8Array
-    //   move?: Uint8Array
-    //   creator: IPlayer
-    //   opponent?: IPlayer
-    //   status: MatchStatus
-    // }
-
     const r = await getDataTransactionsByKey('matchKey')
 
     const getDataByKey = (key: string, resp: DataTx[]) => {

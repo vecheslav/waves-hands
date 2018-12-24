@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core'
-import { compiledScript } from './shared/contract'
+import { MatchesService } from './matches.service'
+import { IMatch } from './shared/match.interface'
 
 @Component({
   selector: 'app-matches',
@@ -7,10 +8,12 @@ import { compiledScript } from './shared/contract'
   styleUrls: ['./matches.component.scss']
 })
 export class MatchesComponent implements OnInit {
+  matches: IMatch[]
 
-  constructor() { }
+  constructor(private matchesService: MatchesService) { }
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.matches = await this.matchesService.getMatchList()
   }
 
 }
