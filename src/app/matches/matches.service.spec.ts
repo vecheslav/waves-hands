@@ -32,9 +32,15 @@ describe('MatchesService', () => {
   //   console.log(match)
   // })
 
-  it('getMatchList', async () => {
-    const service: MatchesService = TestBed.get(MatchesService)
-    const matches = await service.getMatchList()
-    console.log(matches)
-  })
+  // it('getMatchList', async () => {
+  //   const service: MatchesService = TestBed.get(MatchesService)
+  //   const matches = await service.getMatchList()
+  //   console.log(matches)
+  // })
+
+   it('getMatch', async () => {
+     const service: MatchesService = TestBed.get(MatchesService)
+     const matches = await service.getMatch('3ND5M2ZTSjWFCpizvg3PD2KXzh7Di3xkD9d')
+     console.log(matches)
+   })
 })

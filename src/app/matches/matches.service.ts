@@ -9,8 +9,38 @@ import { HttpClient } from '@angular/common/http'
 import { compiledScript } from './shared/contract'
 import { randomAccount } from './shared/util'
 import { IMatch, MatchStatus, PlayerMoves, HandSign, EmptyMatch } from './shared/match.interface'
+import { TTx, TRANSACTION_TYPE } from 'waves-transactions/transactions'
 
 const wave = 100000000
+
+interface DataTxEntry {
+  key: string
+  type: string
+  value: string
+}
+
+interface DataTx {
+  data: {
+    type: 12,
+    height: number,
+    id: string,
+    timestamp: string,
+    proofs: string[],
+    sender: string,
+    senderPublicKey: string,
+    fee: number,
+    data: DataTxEntry[]
+  }
+}
+
+interface DataTxResponse {
+  data: DataTx[]
+}
+
+const getDataByKey = <T>(key: string, resp: DataTx[], map?: (data: string) => T) => {
+  const found = resp.map(x => x.data.data.filter(y => y.key === key)).filter(x => x.length > 0)
+  return found.length === 1 ? (map ? map(found[0][0].value) : found[0][0].value) : undefined
+}
 
 @Injectable({
   providedIn: 'root'
@@ -29,32 +59,59 @@ export class MatchesService {
     return { salt, moveHash, move }
   }
 
-  async getMatchList(): Promise<IMatch[]> {
+  async getMatch(addr: string): Promise<IMatch> {
+    const r = (await this.http.get(environment.api.baseEndpoint + `transactions/address/${addr}/limit/100`).toPromise())[0] as TTx[]
 
-    interface DataTxEntry {
-      key: string
-      type: string
-      value: string
+    const d = r.filter(x => x.type === TRANSACTION_TYPE.DATA).map(x => ({ data: x }))
+    const p2MoveHash = getDataByKey('p2MoveHash', <DataTx[]><any>d)
+    const p2Move = getDataByKey('p2Move', <DataTx[]><any>d, x => BASE64_STRING(x.slice(7)).slice(0, 3))
+    const p1Move = getDataByKey('p1Move', <DataTx[]><any>d, x => BASE64_STRING(x.slice(7)).slice(0, 3))
+    const player1Key = getDataByKey('player1Key', <DataTx[]><any>d, x => base58encode(BASE64_STRING(x.slice(7))))
+    const player2Key = getDataByKey('player2Key', <DataTx[]><any>d, x => base58encode(BASE64_STRING(x.slice(7))))
+    const matchKey = getDataByKey('matchKey', <DataTx[]><any>d, x => base58encode(BASE64_STRING(x.slice(7))))
+
+    if (!player1Key || !matchKey) {
+      return undefined
     }
 
-    interface DataTx {
-      data: {
-        type: 12,
-        height: number,
-        id: 'AvJPztkpVwRhucjz9WsdToEikqrv3sKbBHSgyaMXkL76',
-        timestamp: string,
-        proofs: string[],
-        sender: string,
-        senderPublicKey: string,
-        fee: number,
-        data: DataTxEntry[]
+    let status = MatchStatus.New
+    let opponent
+    let creator
+
+    if (player1Key) {
+      creator = {
+        address: address({ public: player1Key }),
+        publicKey: player1Key,
       }
     }
 
-    interface DataTxResponse {
-      data: DataTx[]
+    if (p2MoveHash) {
+      opponent = {
+        address: address({ public: player2Key }),
+        publicKey: player2Key,
+      }
     }
 
+    if (p2Move) {
+      status = MatchStatus.Waiting
+      opponent.move = p2Move
+    }
+
+    if (p1Move) {
+      creator.move = p1Move
+      status = MatchStatus.Done
+    }
+
+    return {
+      address: addr,
+      creator,
+      opponent,
+      status,
+      publicKey: matchKey
+    }
+  }
+
+  async getMatchList(): Promise<IMatch[]> {
     const getDataTransactionsByKey = async (key: string): Promise<DataTx[]> => {
       const response = await this.http.get<DataTxResponse>(environment.api.txEnpoint + `transactions/data?key=${key}&sort=desc&limit=100`).toPromise()
       return response.data
@@ -62,30 +119,24 @@ export class MatchesService {
 
     const r = await getDataTransactionsByKey('matchKey')
 
-    const getDataByKey = (key: string, resp: DataTx[]) => {
-      const found = resp.map(x => x.data.data.filter(y => y.key === key)).filter(x => x.length > 0)
-      return found.length === 1 ? found[0][0].value : undefined
-    }
-
     const getValueByKey = (key: string, dataTx: DataTx) => {
       const found = dataTx.data.data.filter(d => d.key === key)
       return found.length === 1 ? found[0].value : undefined
     }
 
     const matches: Record<string, IMatch> = r.reduce((a, b) => {
-      const p1Key = getDataByKey('player1Key', [b])
+      const p1Key = getDataByKey('player1Key', [b], x => base58encode(BASE64_STRING(x.slice(7))))
       if (!p1Key) {
         return a
       }
-      const creatorPk = base58encode(BASE64_STRING(p1Key.slice(7)))
-      const creatorAddress = address({ public: creatorPk })
+      const creatorAddress = address({ public: p1Key })
       return ({
         ...a, [b.data.sender]: {
           address: b.data.sender,
           publicKey: b.data.senderPublicKey,
           creator: {
             address: creatorAddress,
-            publicKey: creatorPk
+            publicKey: p1Key
           },
           status: MatchStatus.New
         }
