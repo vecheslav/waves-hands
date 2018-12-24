@@ -6,13 +6,15 @@ import { KeeperProvider } from './keeper.provider'
 
 @Injectable()
 export class KeeperService {
-  keeper: IKeeper
-  keeperStatus: KeeperStatus
-
   constructor(private keeperProvider: KeeperProvider) {
-    this.keeperStatus = this.keeperProvider.status
+  }
 
-    this.keeper = this.keeperProvider.keeper
+  get keeperStatus(): KeeperStatus {
+    return this.keeperProvider.status
+  }
+
+  get keeper(): IKeeper {
+    return this.keeperProvider.keeper
   }
 
   isAvailable(): boolean {

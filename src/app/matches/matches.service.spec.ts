@@ -1,15 +1,34 @@
 import { TestBed } from '@angular/core/testing'
 
 import { MatchesService } from './matches.service'
-import { HttpClientModule } from '@angular/common/http'
 import { AuthModule } from '../auth/auth.module'
+import { HttpClientModule } from '@angular/common/http'
+import { CoreService } from '../core/core.service'
+import { KeeperServiceMock } from '../auth/__mocks__/keeper.service'
+import { KeeperService } from '../auth/keeper.service'
+import { CoreServiceMock } from '../core/__mocks__/core.service'
 
 describe('MatchesService', () => {
-  beforeEach(() => TestBed.configureTestingModule({ imports: [HttpClientModule, AuthModule] }))
+  beforeEach(() => TestBed.configureTestingModule({
+    imports: [
+      AuthModule,
+      HttpClientModule,
+    ],
+    providers: [
+      { provide: KeeperService, useValue: new KeeperServiceMock() },
+      { provide: CoreService, useValue: new CoreServiceMock() }
+    ]
+  }))
 
   it('should be created', () => {
     const service: MatchesService = TestBed.get(MatchesService)
     expect(service).toBeDefined()
   })
 
+  it('match should be created', async () => {
+    const service: MatchesService = TestBed.get(MatchesService)
+    const match = await service.createMatch([0, 1, 2])
+
+    console.log(match)
+  })
 })
