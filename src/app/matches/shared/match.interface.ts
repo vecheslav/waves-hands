@@ -22,14 +22,19 @@ export enum MatchStatus {
   Done,
 }
 
+export enum MatchResult {
+  Creator,
+  Opponent,
+  Draw,
+}
+
 export interface IMatch {
   address: string
   publicKey: string
-  moveHash?: Uint8Array
-  move?: Uint8Array
   creator: IPlayer
   opponent?: IPlayer
-  status: MatchStatus
+  status: MatchStatus,
+  result?: MatchResult,
 }
 
 export const EmptyMatch: IMatch = {
@@ -40,6 +45,7 @@ export const EmptyMatch: IMatch = {
     publicKey: '',
   },
   status: MatchStatus.New,
+  result: MatchResult.Creator,
 }
 
 export enum MatchStage {

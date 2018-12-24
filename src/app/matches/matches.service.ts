@@ -8,7 +8,7 @@ import { CoreService } from '../core/core.service'
 import { HttpClient } from '@angular/common/http'
 import { compiledScript } from './shared/contract'
 import { randomAccount } from './shared/util'
-import { IMatch, MatchStatus, PlayerMoves, HandSign } from './shared/match.interface'
+import { IMatch, MatchStatus, PlayerMoves, HandSign, MatchResult } from './shared/match.interface'
 import { TTx, TRANSACTION_TYPE } from 'waves-transactions/transactions'
 
 const wave = 100000000
@@ -40,6 +40,16 @@ interface DataTxResponse {
 const getDataByKey = <T>(key: string, resp: DataTx[], map?: (data: string) => T) => {
   const found = resp.map(x => x.data.data.filter(y => y.key === key)).filter(x => x.length > 0)
   return found.length === 1 ? (map ? map(found[0][0].value) : found[0][0].value) : undefined
+}
+
+const compareMoves = (m1: number, m2: number) =>
+  ((m1 === 0 && m2 === 2) ||
+    (m1 === 1 && m2 === 0) ||
+    (m1 === 2 && m2 === 1)) ? 1 : (m1 === m2 ? 0 : -1)
+
+const whoHasWon = (p1: number[], p2: number[]) => {
+  const score = p2.slice(0, 3).reduce((s, p2move, i) => s + compareMoves(p1[i], p2move), 0)
+  return score > 0 ? MatchResult.Creator : (score === 0 ? MatchResult.Draw : MatchResult.Opponent)
 }
 
 @Injectable({
@@ -107,7 +117,7 @@ export class MatchesService {
       creator,
       opponent,
       status,
-      publicKey: matchKey
+      publicKey: matchKey,
     }
   }
 
@@ -174,17 +184,19 @@ export class MatchesService {
     })
 
     p1Moves.forEach(m => {
-      if (matches[m.match]) {
+      const match = matches[m.match]
+      if (match) {
         const moves = BASE64_STRING(m.move.slice(7)).slice(0, 3)
-        matches[m.match].creator.moves = [moves[0], moves[1], moves[2]]
-        matches[m.match].status = MatchStatus.Done
+        match.creator.moves = [moves[0], moves[1], moves[2]]
+        match.status = MatchStatus.Done
+        match.result = whoHasWon(match.creator.moves, match.opponent.moves)
       }
     })
 
     return Object.values(matches)
   }
 
-  async createMatch(moves: HandSign[]): Promise<IMatch> {
+  async createMatch(moves: HandSign[]): Promise<{ move: Uint8Array, moveHash: Uint8Array, match: IMatch }> {
 
     const { seed, address: addr, publicKey: pk } = randomAccount()
 
@@ -228,10 +240,14 @@ export class MatchesService {
 
 
     return {
-      address: addr, publicKey: pk, moveHash, move, status: MatchStatus.New, creator: {
-        address: player1Address,
-        publicKey: player1Key,
-        moves: moves as PlayerMoves
+      move,
+      moveHash,
+      match: {
+        address: addr, publicKey: pk, status: MatchStatus.New, creator: {
+          address: player1Address,
+          publicKey: player1Key,
+          moves: moves as PlayerMoves
+        }
       }
     }
   }
@@ -301,17 +317,12 @@ export class MatchesService {
     const player2Move = await (this.http.get<{ value: string }>(`${environment.api.baseEndpoint}addresses/data/${matchAddress}/p2Move`))
       .toPromise().then(x => BASE64_STRING(x.value.slice(7)))
 
-    const compare = (m1: number, m2: number) =>
-      ((m1 === 0 && m2 === 2) ||
-        (m1 === 1 && m2 === 0) ||
-        (m1 === 2 && m2 === 1)) ? 1 : (m1 === m2 ? 0 : -1)
-
-    const score = player2Move.slice(0, 3).reduce((s, p2, i) => s + compare(move[i], p2), 0)
+    const result = whoHasWon(Array.from(move), Array.from(player2Move))
 
     const left = 197400000
     const commission = 1 * wave / 200
     let payout
-    if (score === 0) {
+    if (result === MatchResult.Draw) {
       const fee = 300000 + 400000
       payout = massTransfer({
         transfers: [
@@ -324,7 +335,7 @@ export class MatchesService {
       })
     } else {
       const fee = 200000 + 400000
-      const winner = score > 0 ? player1Address : player2Address
+      const winner = result === MatchResult.Creator ? player1Address : player2Address
       payout = massTransfer({
         transfers: [
           { amount: commission, recipient: environment.serviceAddress },
