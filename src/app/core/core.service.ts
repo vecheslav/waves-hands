@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
 import { TTx } from 'waves-transactions/transactions'
 import { retryWhen, delay, take, concat } from 'rxjs/operators'
-import { Observable, throwError } from 'rxjs'
+import { throwError } from 'rxjs'
 import { environment } from 'src/environments/environment'
 
 @Injectable({
@@ -12,7 +12,7 @@ export class CoreService {
   constructor(private http: HttpClient) { }
 
   async broadcast(tx: TTx): Promise<TTx> {
-    return this.http.post<TTx>('transactions/broadcast', tx)
+    return this.http.post<TTx>(environment.api.baseEndpoint + 'transactions/broadcast', tx)
       .pipe(retryWhen(n =>
         n.pipe(
           delay(environment.retryDelay),
@@ -23,7 +23,7 @@ export class CoreService {
   }
 
   async waitForTx(txId: string): Promise<TTx> {
-    return this.http.get<TTx>(`transactions/info/${txId}`)
+    return this.http.get<TTx>(environment.api.baseEndpoint + `transactions/info/${txId}`)
       .pipe(retryWhen(n => n.pipe(delay(environment.retryDelay))))
       .toPromise()
   }
