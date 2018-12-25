@@ -1,75 +1,92 @@
-<div class="modal is-active">
-  <div class="modal-background"></div>
-  <div class="modal-content">
-    <div class="match-wrapper">
+<div class="game-match">
 
-      <div class="match-not-available" *ngIf="!keeperIsAvailable">
-        Keeper is not available
-      </div>
+  <div class="modal is-active">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+      <div class="match-wrapper">
 
-      <div class="match" *ngIf="keeperIsAvailable">
-        <div class="match-top" *ngIf="isJoinedToMatch">
-          <div class="level">
-            <div class="level-left">
-              <div class="level selected-hands">
-                <div class="level-item has-text-centered selected-hands__item" *ngFor="let hand of selectedHandSigns">
-                  <div [class]="['hand hand--' + hand]"></div>
+        <div class="match-not-available has-text-centered" *ngIf="!keeperIsAvailable">
+          <h2 class="title is-5">Keeper is not available</h2>
+        </div>
+
+        <div class="match-not-available has-text-centered" *ngIf="keeperIsAvailable && !user">
+          <h2 class="title is-5">You are not logged in</h2>
+        </div>
+
+        <div class="match" *ngIf="keeperIsAvailable && user">
+          <div class="match-top" *ngIf="isJoinedToMatch">
+            <div class="level">
+              <div class="level-left">
+                <div class="level selected-hands">
+                  <div class="level-item has-text-centered selected-hands__item" *ngFor="let hand of selectedHandSigns">
+                    <div [class]="['hand hand--' + hand]"></div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="level-right">
-              <app-match-player [player]="match.creator"></app-match-player>
-            </div>
-          </div>
-        </div>
-
-        <div class="match-stages" [ngSwitch]="stage" *ngIf="!isLoading">
-          <div class="match-stage match-stage--select-hands" *ngSwitchCase="0">
-            <h2 class="title has-text-centered">Select your hands</h2>
-            <div class="level select-hands">
-              <div class="level-item has-text-centered" (click)="select(0)">👊️</div>
-              <div class="level-item has-text-centered" (click)="select(1)">✋</div>
-              <div class="level-item has-text-centered" (click)="select(2)">✌️</div>
-            </div>
-          </div>
-
-          <div class="match-stage match-stage--created-match has-text-centered" *ngSwitchCase="1">
-            <div>
-              <span class="is-size-1">🤟</span>
-            </div>
-            <h2 class="title has-text-centered">You created a game</h2>
-            <p class="subtitle">Share the game link to friends, or wait for players to join.</p>
-            <div class="md-1">
-              <button class="button is-primary" (click)="share()">Share link</button>
-            </div>
-            <a [routerLink]="['/']">Close window</a>
-          </div>
-
-          <div class="match-stage match-stage--result-match" *ngSwitchCase="3">
-            result
-          </div>
-        </div>
-        <div class="match-loading" *ngIf="isLoading">
-          <app-circle-loader></app-circle-loader>
-        </div>
-
-        <div class="match-bottom">
-          <div class="level">
-            <div class="level-left">
-              <app-match-player [player]="currentPlayer"></app-match-player>
-            </div>
-            <div class="level-right">
-              <div class="level selected-hands">
-                <div class="level-item has-text-centered selected-hands__item" *ngFor="let hand of selectedHandSigns">
-                  <div [class]="['hand hand--' + hand]"></div>
-                </div>
+              <div class="level-right">
+                <app-match-player [player]="match.creator"></app-match-player>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
+          <div class="match-stages" [ngSwitch]="stage" *ngIf="!isLoading">
+            <div class="match-stage match-stage--select-hands" *ngSwitchCase="0">
+              <h2 class="title has-text-grey-dark has-text-centered">Select your hands</h2>
+              <div class="level select-hands">
+                <div class="level-item has-text-centered" (click)="select(0)">👊️</div>
+                <div class="level-item has-text-centered" (click)="select(1)">✋</div>
+                <div class="level-item has-text-centered" (click)="select(2)">✌️</div>
+              </div>
+            </div>
+
+            <div class="match-stage match-stage--created-match has-text-centered" *ngSwitchCase="1">
+              <div>
+                <span class="is-size-1">🤟</span>
+              </div>
+              <h2 class="title has-text-centered">You created a game</h2>
+              <p class="subtitle">Share the game link to friends, or wait for players to join.</p>
+              <div class="md-1">
+                <button class="button is-primary" (click)="share()">Share link</button>
+              </div>
+              <a [routerLink]="['/']">Close window</a>
+            </div>
+
+            <div class="match-stage match-stage--result-match" *ngSwitchCase="3">
+              result
+            </div>
+          </div>
+          <div class="match-loading" *ngIf="isLoading">
+            <app-circle-loader></app-circle-loader>
+          </div>
+
+          <div class="match-bottom">
+            <div class="level">
+              <div class="level-left user-panel__user">
+                <div class="level-left">
+                  <div class="user-panel__avatar">
+                    <app-match-player [player]="user"></app-match-player>
+                  </div>
+                </div>
+                <div class="level-right">
+                  <div class="user-panel__details">
+                    <span class="address">{{ user?.address }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="level-right">
+                <div class="level selected-hands">
+                  <div class="level-item has-text-centered selected-hands__item" *ngFor="let hand of selectedHandSigns">
+                    <div [class]="['hand hand--' + hand]"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
+    <button class="modal-close is-large" aria-label="close" (click)="close()"></button>
   </div>
-  <button class="modal-close is-large" aria-label="close" (click)="close()"></button>
+
 </div>

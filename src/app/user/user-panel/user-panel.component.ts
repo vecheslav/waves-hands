@@ -1,15 +1,38 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core'
+import { UserService } from '../user.service'
+import { IUser } from '../user.interface'
 
 @Component({
   selector: 'app-user-panel',
   templateUrl: './user-panel.component.html',
   styleUrls: ['./user-panel.component.scss']
 })
-export class UserPanelComponent implements OnInit {
+export class UserPanelComponent implements OnInit, OnDestroy {
+  user: IUser
 
-  constructor() { }
+  private _userSubscriber
 
-  ngOnInit() {
+  constructor(private userServices: UserService) {
+    this._userSubscriber = this.userServices.user$.subscribe((user: IUser) => {
+      this.user = user
+    })
   }
 
+  async ngOnInit() {
+    this.user = await this.userServices.getCurrentUser()
+  }
+
+  ngOnDestroy() {
+    this._userSubscriber.unsubscribe()
+  }
+
+  async signin() {
+    if (!this.user) {
+      this.user = await this.userServices.authUser()
+    }
+  }
+
+  async logout() {
+    await this.userServices.logout()
+  }
 }

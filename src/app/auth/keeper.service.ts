@@ -21,12 +21,8 @@ export class KeeperService {
     return this.keeperStatus.isExist
   }
 
-  getCurrentPlayer(): Player {
-    return { address: 'add12313ress1' }
-  }
-
-  async auth(): Promise<KeeperAuth> {
-    return await this.keeper.auth()
+  async auth(param?: { data: string }): Promise<KeeperAuth> {
+    return await this.keeper.auth(param)
   }
 
   async prepareWavesTransfer(recipient: string, amount: number): Promise<any> {

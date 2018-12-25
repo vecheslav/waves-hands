@@ -1,34 +1,49 @@
-import { Component, Input, OnInit } from '@angular/core'
+import { Component, Input, OnDestroy, OnInit } from '@angular/core'
 import { HandSign, IMatch, MatchStage, Player } from '../shared/match.interface'
-import { Router } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 import { MatchesService } from '../matches.service'
 import { KeeperService } from '../../auth/keeper.service'
+import { IUser } from '../../user/user.interface'
+import { UserService } from '../../user/user.service'
 
 @Component({
   selector: 'app-match',
   templateUrl: './match.component.html',
   styleUrls: ['./match.component.scss']
 })
-export class MatchComponent implements OnInit {
-  @Input() match: IMatch
+export class MatchComponent implements OnInit, OnDestroy {
+  match: IMatch
 
   stage: MatchStage = MatchStage.SelectHands
   selectedHandSigns: HandSign[] = []
   isJoinedToMatch = false
-  currentPlayer: Player
+  user: IUser
 
   keeperIsAvailable = true
   isLoading = false
 
+  private _userSubscriber
+
   constructor(private router: Router,
+              private route: ActivatedRoute,
               private keeperService: KeeperService,
-              private matchesService: MatchesService) { }
+              private matchesService: MatchesService,
+              private userServices: UserService) {
+    this.match = this.route.snapshot.data.match
+
+    this._userSubscriber = this.userServices.user$.subscribe((user: IUser) => {
+      this.user = user
+    })
+  }
 
   ngOnInit() {
     this.isJoinedToMatch = !!this.match.address
-    this.currentPlayer = this.keeperService.getCurrentPlayer()
 
     this._reset()
+  }
+
+  ngOnDestroy() {
+    this._userSubscriber.unsubscribe()
   }
 
   async select(handSign: HandSign) {
@@ -61,7 +76,7 @@ export class MatchComponent implements OnInit {
 
   async join() {
     try {
-      await this.matchesService.joinGame(this.match.address, this.match.publicKey, '21321', this.selectedHandSigns)
+      // await this.matchesService.joinGame(this.match.address, this.match.publicKey, '21321', this.selectedHandSigns)
       this.stage = MatchStage.ResultMatch
       this.isLoading = false
     } catch (err) {

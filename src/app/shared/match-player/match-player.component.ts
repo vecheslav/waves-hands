@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core'
-import { Player } from '../shared/match.interface'
+import { Player } from '../../matches/shared/match.interface'
 
 const Identity = require('identity-img')
 

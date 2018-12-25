@@ -55,3 +55,21 @@
   }
 }
 
+.user-panel {
+  &__avatar {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  &__details {
+    margin-left: 1rem;
+
+    .address {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 160px;
+      display: block;
+    }
+  }
+}
+

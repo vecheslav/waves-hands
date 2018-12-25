@@ -5,11 +5,13 @@ import { CoreModule } from '../core/core.module'
 import { MatchesModule } from '../matches/matches.module'
 import { UserModule } from '../user/user.module'
 import { MatchResolver } from './match.resolver'
+import { RouterModule } from '@angular/router'
 
 @NgModule({
   imports: [
     CommonModule,
     CoreModule,
+    RouterModule,
     MatchesModule,
     UserModule,
   ],

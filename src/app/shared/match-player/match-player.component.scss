@@ -1,0 +1,13 @@
+$avatar-size: 4rem;
+
+.match-player {
+  width: 100%;
+  height: 100%;
+  max-width: $avatar-size;
+  max-height: $avatar-size;
+
+  &__avatar {
+    width: 100%;
+    height: 100%;
+  }
+}

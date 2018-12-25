@@ -15,7 +15,7 @@ export class GameComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, private core: CoreService, private keeper: KeeperService) {
 
-    this.currentMatch = this.route.snapshot.data.match
+    // this.currentMatch = this.route.snapshot.data.match
   }
 
   async ngOnInit() {

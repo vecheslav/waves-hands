@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core'
 import { MatchesService } from './matches.service'
 import { IMatch } from './shared/match.interface'
+import { ActivatedRoute } from '@angular/router'
 
 @Component({
   selector: 'app-matches',
@@ -10,7 +11,8 @@ import { IMatch } from './shared/match.interface'
 export class MatchesComponent implements OnInit {
   matches: IMatch[]
 
-  constructor(private matchesService: MatchesService) { }
+  constructor(private route: ActivatedRoute, private matchesService: MatchesService) {
+  }
 
   async ngOnInit() {
     this.matches = await this.matchesService.getMatchList()
