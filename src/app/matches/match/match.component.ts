@@ -76,7 +76,12 @@ export class MatchComponent implements OnInit, OnDestroy {
 
   async join() {
     try {
-      // await this.matchesService.joinGame(this.match.address, this.match.publicKey, '21321', this.selectedHandSigns)
+      await this.matchesService.joinGame(
+        this.match.address,
+        this.match.publicKey,
+        this.user.publicKey,
+        this.selectedHandSigns
+      )
       this.stage = MatchStage.ResultMatch
       this.isLoading = false
     } catch (err) {

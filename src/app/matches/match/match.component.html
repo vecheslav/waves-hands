@@ -23,8 +23,17 @@
                   </div>
                 </div>
               </div>
-              <div class="level-right">
-                <app-match-player [player]="match.creator"></app-match-player>
+              <div class="level-right user-panel user-panel--right">
+                <div class="level-left">
+                  <div class="user-panel__details">
+                    <a href="#" target="_blank" class="address">{{ match.creator?.address }}</a>
+                  </div>
+                </div>
+                <div class="level-right">
+                  <div class="user-panel__avatar">
+                    <app-match-player [player]="match.creator"></app-match-player>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -61,7 +70,7 @@
 
           <div class="match-bottom">
             <div class="level">
-              <div class="level-left user-panel__user">
+              <div class="level-left user-panel">
                 <div class="level-left">
                   <div class="user-panel__avatar">
                     <app-match-player [player]="user"></app-match-player>
@@ -69,7 +78,7 @@
                 </div>
                 <div class="level-right">
                   <div class="user-panel__details">
-                    <span class="address">{{ user?.address }}</span>
+                    <a href="#" target="_blank" class="address">{{ user?.address }}</a>
                   </div>
                 </div>
               </div>

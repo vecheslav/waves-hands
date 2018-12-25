@@ -39,14 +39,14 @@ export class KeeperService {
         'recipient': recipient,
       },
     }).then((x: any) => {
-      const data = JSON.parse(x)
-      data.fee = parseInt(data.fee.toString(), undefined)
-      data.amount = parseInt(data.amount.toString(), undefined)
-      return data
+      const res = JSON.parse(x)
+      res.fee = parseInt(res.fee.toString(), undefined)
+      res.amount = parseInt(res.amount.toString(), undefined)
+      return res
     })
   }
 
-  async prepareDataTx(data: DataEntry[], senderPublicKey: string, fee: number): Promise<IDataTransaction> {
+  async prepareDataTx(data: DataEntry[], senderPublicKey: string, fee: number): Promise<any> {
     return await this.keeper.signTransaction({
       type: 12,
       data: {
@@ -57,9 +57,10 @@ export class KeeperService {
         data,
         senderPublicKey,
       },
-    }).then((x: IDataTransaction) => {
-      x.fee = parseInt(x.fee.toString(), undefined)
-      return x
+    }).then((x: any) => {
+      const res = JSON.parse(x)
+      res.fee = parseInt(res.fee.toString(), undefined)
+      return res
     })
   }
 }

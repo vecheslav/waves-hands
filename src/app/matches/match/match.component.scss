@@ -67,9 +67,19 @@
     .address {
       overflow: hidden;
       text-overflow: ellipsis;
-      width: 160px;
+      width: 180px;
       display: block;
+      color: $grey-light;
+
+      &:hover {
+        color: $primary;
+      }
     }
   }
 }
 
+.user-panel--right {
+  .user-panel__details {
+    margin: 0 1rem 0 0;
+  }
+}
