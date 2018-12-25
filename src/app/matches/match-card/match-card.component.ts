@@ -9,7 +9,7 @@ import { IMatch, MatchStatus } from '../shared/match.interface'
 export class MatchCardComponent implements OnInit {
   @Input() match: IMatch = {
     address: 'address',
-    status: MatchStatus.Waiting
+    status: MatchStatus.New
   } as IMatch
 
   startIsShown = false
@@ -21,7 +21,7 @@ export class MatchCardComponent implements OnInit {
 
   @HostListener('mouseenter')
   onMouseEnter(): void {
-    if (this.match.status === MatchStatus.Waiting) {
+    if (this.match.status === MatchStatus.New) {
       this.startIsShown = true
     }
   }

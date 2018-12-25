@@ -1,8 +1,10 @@
 @import '~src/styles/variables';
 
+$card-padding: 1.5rem;
+
 .match-card {
   background: $white;
-  padding: 1.5rem;
+  padding: $card-padding;
   border-radius: .5rem;
   border: 1px solid $white-ter;
   color: $text;
@@ -14,6 +16,7 @@
   }
 
   &__overview {
+    padding-top: 2.5rem;
     padding-bottom: 1rem;
   }
 
@@ -28,18 +31,25 @@
 }
 
 .match-meta {
-  margin: 0;
   font-size: .9rem;
+  position: absolute;
+  top: $card-padding;
+  left: $card-padding;
+  right: $card-padding;
 
   &__id {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 128px;
     color: $grey-light;
+
+    &:hover {
+      color: $blue;
+    }
   }
 }
 
 .match-share {
-  position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
   color: $grey-lighter;
   cursor: pointer;
 

@@ -272,7 +272,8 @@ export class MatchesService {
     try {
       await this.core.broadcastAndWait(dataTx)
     } catch (error) {
-      console.log(JSON.stringify(error.response.data))
+      console.error(error)
+      // console.log(JSON.stringify(error.response.data))
     }
 
     console.log(`Player 2 move completed`)

@@ -4,4 +4,24 @@
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid $white-ter;
+
+  &__user {
+    align-items: center;
+  }
+
+  &__avatar {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  &__details {
+    margin-left: 1rem;
+
+    .address {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 160px;
+      display: block;
+    }
+  }
 }

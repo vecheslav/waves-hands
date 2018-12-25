@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core'
-import { compiledScript } from './shared/contract'
+import { MatchesService } from './matches.service'
+import { IMatch } from './shared/match.interface'
+import { ActivatedRoute } from '@angular/router'
 
 @Component({
   selector: 'app-matches',
@@ -7,10 +9,16 @@ import { compiledScript } from './shared/contract'
   styleUrls: ['./matches.component.scss']
 })
 export class MatchesComponent implements OnInit {
+  matches: IMatch[]
 
-  constructor() { }
+  isLoading = true
 
-  ngOnInit() {
+  constructor(private route: ActivatedRoute, private matchesService: MatchesService) {
+  }
+
+  async ngOnInit() {
+    this.matches = await this.matchesService.getMatchList()
+    this.isLoading = false
   }
 
 }

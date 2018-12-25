@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
 import { TTx } from 'waves-transactions/transactions'
 import { retryWhen, delay, take, concat } from 'rxjs/operators'
-import { Observable } from 'rxjs'
+import { Observable, throwError } from 'rxjs'
 import { environment } from 'src/environments/environment'
 
 @Injectable({
@@ -17,7 +17,7 @@ export class CoreService {
         n.pipe(
           delay(environment.retryDelay),
           take(environment.broadcastRetryLimit),
-          concat(Observable.throw(new Error(`Retry limit exceeded! Tried ${environment.broadcastRetryLimit} times.`)))
+          concat(throwError(`Retry limit exceeded! Tried ${environment.broadcastRetryLimit} times.`))
         )))
       .toPromise()
   }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { ActivatedRouteSnapshot, Resolve } from '@angular/router'
-import { Observable, of } from 'rxjs'
+import { from, Observable, of } from 'rxjs'
 import { IMatch, EmptyMatch } from '../matches/shared/match.interface'
 import { MatchesService } from '../matches/matches.service'
 
@@ -13,6 +13,11 @@ export class MatchResolver implements Resolve<Observable<IMatch>> {
 
   resolve(route: ActivatedRouteSnapshot): Observable<IMatch> {
     const matchAddress = route.paramMap.get('address')
-    return of(EmptyMatch)
+
+    if (matchAddress) {
+      return from(this.matchService.getMatch(matchAddress))
+    } else {
+      return of(EmptyMatch)
+    }
   }
 }
