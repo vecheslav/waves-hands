@@ -21,4 +21,8 @@
     grid-gap: $size-gap;
     grid-template-columns: repeat($num-columns, 1fr);
   }
+
+  &-loading {
+    padding: 4rem 1rem;
+  }
 }

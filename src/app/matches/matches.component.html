@@ -13,16 +13,12 @@
     </div>
   </div>
 
-  <div class="matches-grid">
+  <div class="matches-grid" *ngIf="!isLoading">
     <div class="matches-item" *ngFor="let match of matches">
       <app-match-card [match]="match"></app-match-card>
     </div>
-
-    <!--<div class="matches-item">-->
-      <!--<app-match-card></app-match-card>-->
-    <!--</div>-->
-    <!--<div class="matches-item">-->
-      <!--<app-match-card [match]="{ address: 'address', status: 2, players: [{ address: 'dasd12e1eawd' }, { address: 'd313asd12e1eawd' }], winner: 'dasd12e1eawd' }"></app-match-card>-->
-    <!--</div>-->
+  </div>
+  <div class="matches-loading" *ngIf="isLoading">
+    <app-circle-loader></app-circle-loader>
   </div>
 </section>

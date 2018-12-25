@@ -1,3 +1,5 @@
+import { IUser } from '../../user/user.interface'
+
 export enum HandSign {
   Rock = 0,
   Paper = 1,
@@ -10,9 +12,7 @@ export interface Player {
 
 export type PlayerMoves = [HandSign, HandSign, HandSign]
 
-export interface IPlayer {
-  address: string
-  publicKey: string
+export interface IPlayer extends IUser {
   moves?: PlayerMoves
 }
 

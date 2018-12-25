@@ -11,11 +11,14 @@ import { ActivatedRoute } from '@angular/router'
 export class MatchesComponent implements OnInit {
   matches: IMatch[]
 
+  isLoading = true
+
   constructor(private route: ActivatedRoute, private matchesService: MatchesService) {
   }
 
   async ngOnInit() {
     this.matches = await this.matchesService.getMatchList()
+    this.isLoading = false
   }
 
 }

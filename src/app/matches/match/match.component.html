@@ -5,12 +5,12 @@
     <div class="modal-content">
       <div class="match-wrapper">
 
-        <div class="match-not-available has-text-centered" *ngIf="!keeperIsAvailable">
-          <h2 class="title is-5">Keeper is not available</h2>
+        <div class="notification match-not-available" *ngIf="!keeperIsAvailable">
+          Keeper is not available
         </div>
 
-        <div class="match-not-available has-text-centered" *ngIf="keeperIsAvailable && !user">
-          <h2 class="title is-5">You are not logged in</h2>
+        <div class="notification match-not-available" *ngIf="keeperIsAvailable && !user">
+          You are not logged in
         </div>
 
         <div class="match" *ngIf="keeperIsAvailable && user">
@@ -18,7 +18,7 @@
             <div class="level">
               <div class="level-left">
                 <div class="level selected-hands">
-                  <div class="level-item has-text-centered selected-hands__item" *ngFor="let hand of selectedHandSigns">
+                  <div class="level-item has-text-centered selected-hands__item" *ngFor="let hand of match.creator?.moves">
                     <div [class]="['hand hand--' + hand]"></div>
                   </div>
                 </div>
