@@ -13,10 +13,12 @@ export class MatchCardComponent implements OnInit {
   } as IMatch
 
   startIsShown = false
+  shareUrl: string
 
   constructor() { }
 
   ngOnInit() {
+    this.shareUrl = window.location.href + 'match/' + this.match.address
   }
 
   @HostListener('mouseenter')
@@ -29,9 +31,5 @@ export class MatchCardComponent implements OnInit {
   @HostListener('mouseleave')
   onMouseLeave(): void {
     this.startIsShown = false
-  }
-
-  share() {
-    console.log(this.match.address)
   }
 }

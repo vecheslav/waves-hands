@@ -10,6 +10,7 @@ import { compiledScript } from './shared/contract'
 import { randomAccount } from './shared/util'
 import { IMatch, MatchStatus, PlayerMoves, HandSign, MatchResult } from './shared/match.interface'
 import { TTx, TRANSACTION_TYPE } from 'waves-transactions/transactions'
+import { BehaviorSubject } from 'rxjs'
 
 const wave = 100000000
 

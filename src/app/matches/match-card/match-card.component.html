@@ -59,9 +59,7 @@
       </a>
     </div>
     <div class="level-right match-share">
-      <div class="match-share__link" (click)="share()">
-        <svg class="icon"><use xlink:href="icons.svg#icon-share"></use></svg>
-      </div>
+      <app-share-match [url]="shareUrl"></app-share-match>
     </div>
   </div>
 </div>

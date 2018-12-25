@@ -5,7 +5,7 @@ $card-padding: 1.5rem;
 .match-card {
   background: $white;
   padding: $card-padding;
-  border-radius: .5rem;
+  border-radius: $radius-large;
   border: 1px solid $white-ter;
   color: $text;
   position: relative;
@@ -46,20 +46,6 @@ $card-padding: 1.5rem;
     &:hover {
       color: $blue;
     }
-  }
-}
-
-.match-share {
-  color: $grey-lighter;
-  cursor: pointer;
-
-  &:hover {
-    color: $blue;
-  }
-
-  .icon {
-    width: 1.2rem;
-    height: 1.2rem;
   }
 }
 
