@@ -57,7 +57,7 @@
               <h2 class="title has-text-centered">You created a game</h2>
               <p class="subtitle">Share the game link to friends, or wait for players to join.</p>
               <div class="md-1">
-                <button class="button is-primary" (click)="share()">Share link</button>
+                <app-share-match [url]="shareUrl" [options]="{ type: 'buttons' }"></app-share-match>
               </div>
               <a [routerLink]="['/']">Close window</a>
             </div>

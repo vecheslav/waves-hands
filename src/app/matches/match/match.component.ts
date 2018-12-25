@@ -21,6 +21,7 @@ export class MatchComponent implements OnInit, OnDestroy {
 
   keeperIsAvailable = true
   isLoading = false
+  shareUrl: string
 
   private _userSubscriber
 
@@ -65,7 +66,9 @@ export class MatchComponent implements OnInit, OnDestroy {
 
   async create() {
     try {
-      await this.matchesService.createMatch(this.selectedHandSigns)
+      const { match } = await this.matchesService.createMatch(this.selectedHandSigns)
+      this.match = match
+      this.shareUrl = window.location.href + 'match/' + this.match.address
       this.stage = MatchStage.CreatedMatch
       this.isLoading = false
     } catch (err) {

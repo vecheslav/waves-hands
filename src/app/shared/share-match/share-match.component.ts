@@ -1,4 +1,9 @@
-import { Component, HostListener, Input, OnInit } from '@angular/core'
+import { Component, Input, OnInit } from '@angular/core'
+
+export enum ShareType {
+  Icon = 'icon',
+  Buttons = 'buttons'
+}
 
 @Component({
   selector: 'app-share-match',
@@ -7,6 +12,9 @@ import { Component, HostListener, Input, OnInit } from '@angular/core'
 })
 export class ShareMatchComponent implements OnInit {
   @Input() url: string
+  @Input() options = {
+    type: ShareType.Icon
+  }
 
   tooltipIsShown = false
 
@@ -15,12 +23,10 @@ export class ShareMatchComponent implements OnInit {
   ngOnInit() {
   }
 
-  @HostListener('mouseenter')
   onMouseEnter(): void {
     this.tooltipIsShown = true
   }
 
-  @HostListener('mouseleave')
   onMouseLeave(): void {
     this.tooltipIsShown = false
   }
