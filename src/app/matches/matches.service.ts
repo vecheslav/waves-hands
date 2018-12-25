@@ -12,7 +12,6 @@ import { IMatch, MatchStatus, PlayerMoves, HandSign, MatchResult } from './share
 import { TTx, TRANSACTION_TYPE, IDataTransaction } from 'waves-transactions/transactions'
 import { api, testnetConfig, IWavesApi } from './shared/api'
 import { fromAngular } from './shared/api-angular'
-import { resolve } from 'q'
 
 const wave = 100000000
 

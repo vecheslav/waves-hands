@@ -54,14 +54,12 @@
 
   <div class="level match-meta">
     <div class="level-left">
-      <a href="#" target="_blank" class="match-meta__id">
+      <a href="https://wavesexplorer.com/address/{{ match.address }}" target="_blank" class="match-meta__id">
         {{ match.address }}
       </a>
     </div>
     <div class="level-right match-share">
-      <div class="match-share__link" (click)="share()">
-        <svg class="icon"><use xlink:href="icons.svg#icon-share"></use></svg>
-      </div>
+      <app-share-match [url]="shareUrl"></app-share-match>
     </div>
   </div>
 </div>

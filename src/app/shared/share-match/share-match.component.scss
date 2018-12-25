@@ -1,0 +1,73 @@
+@import "~src/styles/variables";
+
+.share-match {
+  position: relative;
+}
+
+.share-icon {
+  color: $grey-lighter;
+  cursor: pointer;
+
+  &:hover {
+    color: $blue;
+  }
+
+  > .icon {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}
+
+.share-tooltip {
+  position: absolute;
+  bottom: 1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20rem;
+  padding-bottom: 0.5rem;
+  display: flex;
+  justify-content: center;
+  z-index: 2;
+
+  &__inner {
+    background: rgba($black, .7);
+    border-radius: $radius;
+    color: $white;
+    margin: 0 auto;
+    width: auto;
+    padding: .6rem .3rem;
+  }
+
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: 0rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: .5rem .5rem 0 .5rem;
+    border-color: rgba($black, .7) transparent transparent transparent;
+  }
+}
+
+.share-link {
+  display: flex;
+  color: $grey-lighter;
+  padding: 0 .5rem;
+  border-right: 1px solid rgba($white-bis, .2);
+
+  &:last-child {
+    border: 0;
+  }
+
+  &:hover {
+    color: $white;
+  }
+
+  .icon {
+    width: 1rem;
+    height: 1rem;
+  }
+}
