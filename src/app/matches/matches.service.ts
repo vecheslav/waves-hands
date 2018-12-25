@@ -90,14 +90,14 @@ export class MatchesService {
 
     if (player1Key) {
       creator = {
-        address: address({ public: player1Key }),
+        address: address({ public: player1Key }, environment.chainId),
         publicKey: player1Key,
       }
     }
 
     if (p2MoveHash) {
       opponent = {
-        address: address({ public: player2Key }),
+        address: address({ public: player2Key }, environment.chainId),
         publicKey: player2Key,
       }
     }
@@ -139,7 +139,7 @@ export class MatchesService {
       if (!p1Key) {
         return a
       }
-      const creatorAddress = address({ public: p1Key })
+      const creatorAddress = address({ public: p1Key }, environment.chainId)
       return ({
         ...a, [b.data.sender]: {
           address: b.data.sender,
@@ -157,7 +157,7 @@ export class MatchesService {
       .forEach(p => {
         const p2Key = getValueByKey('player2Key', p)
         const pk = base58encode(BASE64_STRING(p2Key.slice(7)))
-        const addr = address({ public: pk })
+        const addr = address({ public: pk }, environment.chainId)
 
         const match = matches[p.data.sender]
         if (match) {
