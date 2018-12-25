@@ -9,8 +9,9 @@ import { HttpClient } from '@angular/common/http'
 import { compiledScript } from './shared/contract'
 import { randomAccount } from './shared/util'
 import { IMatch, MatchStatus, PlayerMoves, HandSign, MatchResult } from './shared/match.interface'
-import { TTx, TRANSACTION_TYPE } from 'waves-transactions/transactions'
-import { BehaviorSubject } from 'rxjs'
+import { TTx, TRANSACTION_TYPE, IDataTransaction } from 'waves-transactions/transactions'
+import { api, testnetConfig, IWavesApi } from './shared/api'
+import { fromAngular } from './shared/api-angular'
 
 const wave = 100000000
 
@@ -43,6 +44,14 @@ const getDataByKey = <T>(key: string, resp: DataTx[], map?: (data: string) => T)
   return found.length === 1 ? (map ? map(found[0][0].value) : found[0][0].value) : undefined
 }
 
+
+const getDataByKey2 = <T>(key: string, resp: IDataTransaction[], map?: (data: string) => T) => {
+  const found = resp.map(x => x.data.filter(y => y.key === key)).filter(x => x.length > 0)
+  return found.length === 1 ? (map ? map(found[0][0].value.toString()) : found[0][0].value.toString()) : undefined
+}
+
+
+
 const compareMoves = (m1: number, m2: number) =>
   ((m1 === 0 && m2 === 2) ||
     (m1 === 1 && m2 === 0) ||
@@ -59,8 +68,11 @@ const whoHasWon = (p1: number[], p2: number[]) => {
 export class MatchesService {
 
   private matches: Record<string, IMatch> = {}
+  private api: IWavesApi
 
-  constructor(private keeper: KeeperService, private core: CoreService, private http: HttpClient) { }
+  constructor(private keeper: KeeperService, private core: CoreService, private http: HttpClient) {
+    this.api = api(testnetConfig, fromAngular(http))
+  }
 
   hideMoves(moves: number[]) {
     const salt = randomBytes(29)
@@ -128,7 +140,7 @@ export class MatchesService {
       return response.data
     }
 
-    const r = await getDataTransactionsByKey('matchKey')
+    const r = await this.api.findDataTxsByKey('matchKey')
 
     const getValueByKey = (key: string, dataTx: DataTx) => {
       const found = dataTx.data.data.filter(d => d.key === key)
@@ -136,15 +148,15 @@ export class MatchesService {
     }
 
     const matches: Record<string, IMatch> = r.reduce((a, b) => {
-      const p1Key = getDataByKey('player1Key', [b], x => base58encode(BASE64_STRING(x.slice(7))))
+      const p1Key = getDataByKey2('player1Key', [b], x => base58encode(BASE64_STRING(x.slice(7))))
       if (!p1Key) {
         return a
       }
       const creatorAddress = address({ public: p1Key }, environment.chainId)
       return ({
-        ...a, [b.data.sender]: {
-          address: b.data.sender,
-          publicKey: b.data.senderPublicKey,
+        ...a, [b.sender]: {
+          address: b.sender,
+          publicKey: b.senderPublicKey,
           creator: {
             address: creatorAddress,
             publicKey: p1Key
@@ -255,7 +267,7 @@ export class MatchesService {
 
   async joinGame(matchPublicKey: string, matchAddress: string, playerPublicKey: string, moves: number[]) {
 
-    const h = (await this.http.get<{ height: number }>(environment.api.baseEndpoint + 'blocks/last').toPromise()).height
+    const h = await this.api.getHeight()
     console.log(`Height is ${h}`)
 
     const { moveHash, move } = this.hideMoves(moves)
