@@ -66,7 +66,7 @@ export class MatchComponent implements OnInit, OnDestroy {
 
   async create() {
     try {
-      const { match } = await this.matchesService.createMatch(this.selectedHandSigns)
+      const match = await this.matchesService.createMatch(this.selectedHandSigns)
       this.match = match
       this.shareUrl = window.location.origin + '/match/' + this.match.address
       this.stage = MatchStage.CreatedMatch
@@ -79,12 +79,12 @@ export class MatchComponent implements OnInit, OnDestroy {
 
   async join() {
     try {
-      await this.matchesService.joinGame(
-        this.match.address,
-        this.match.publicKey,
-        this.user.publicKey,
-        this.selectedHandSigns
-      )
+      // await this.matchesService.joinGame(
+      //   this.match.address,
+      //   this.match.publicKey,
+      //   this.user.publicKey,
+      //   this.selectedHandSigns
+      // )
       this.stage = MatchStage.ResultMatch
       this.isLoading = false
     } catch (err) {

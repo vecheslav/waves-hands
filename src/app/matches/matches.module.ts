@@ -7,6 +7,8 @@ import { RouterModule } from '@angular/router'
 import { AuthModule } from '../auth/auth.module'
 import { SharedModule } from '../shared/shared.module'
 import { UserModule } from '../user/user.module'
+import { MatchesService } from './matches.service'
+import { MatchesHelper } from './shared/matches.helper'
 
 @NgModule({
   declarations: [MatchesComponent, MatchCardComponent, MatchComponent],
@@ -15,7 +17,11 @@ import { UserModule } from '../user/user.module'
     RouterModule,
     AuthModule,
     SharedModule,
-    UserModule
+    UserModule,
+  ],
+  providers: [
+    MatchesService,
+    MatchesHelper
   ],
   exports: [
     MatchesComponent,
