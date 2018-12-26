@@ -15,42 +15,40 @@ import { fromAngular } from './shared/api-angular'
 
 const wave = 100000000
 
-interface DataTxEntry {
-  key: string
-  type: string
-  value: string
-}
-
-interface DataTx {
-  data: {
-    type: 12,
-    height: number,
-    id: string,
-    timestamp: string,
-    proofs: string[],
-    sender: string,
-    senderPublicKey: string,
-    fee: number,
-    data: DataTxEntry[]
+declare global {
+  interface Array<T> {
+    firstOrUndefined(): T
   }
 }
 
-interface DataTxResponse {
-  data: DataTx[]
+Array.prototype.firstOrUndefined = function () {
+  return this.length > 0 ? this[0] : undefined
 }
 
-const getDataByKey = <T>(key: string, resp: DataTx[], map?: (data: string) => T) => {
-  const found = resp.map(x => x.data.data.filter(y => y.key === key)).filter(x => x.length > 0)
-  return found.length === 1 ? (map ? map(found[0][0].value) : found[0][0].value) : undefined
+const getString = (key: string, dataTx: IDataTransaction): string => {
+  const found = dataTx.data.find(x => x.key === key)
+  if (found) {
+    return found.value.toString()
+  }
 }
 
+const getBinary = (key: string, dataTx: IDataTransaction): Uint8Array => {
+  const found = dataTx.data.find(x => x.key === key)
+  if (found) {
+    return BASE64_STRING(found.value.toString().slice(7))
+  }
+}
 
-const getDataByKey2 = <T>(key: string, resp: IDataTransaction[], map?: (data: string) => T) => {
+const getBinaries = (key: string, dataTxs: IDataTransaction[]): Array<Uint8Array> =>
+  dataTxs.map(x => x.data.filter(d => d.key === key))
+    .filter(x => x.length > 0)
+    .reduce((a, b) => [...a, ...b], [])
+    .map(x => BASE64_STRING(x.value.toString().slice(7)))
+
+const getDataByKey = <T>(key: string, resp: IDataTransaction[], map?: (data: string) => T) => {
   const found = resp.map(x => x.data.filter(y => y.key === key)).filter(x => x.length > 0)
   return found.length === 1 ? (map ? map(found[0][0].value.toString()) : found[0][0].value.toString()) : undefined
 }
-
-
 
 const compareMoves = (m1: number, m2: number) =>
   ((m1 === 0 && m2 === 2) ||
@@ -83,15 +81,17 @@ export class MatchesService {
   }
 
   async getMatch(addr: string): Promise<IMatch> {
-    const r = (await this.http.get(environment.api.baseEndpoint + `transactions/address/${addr}/limit/100`).toPromise())[0] as TTx[]
 
-    const d = r.filter(x => x.type === TRANSACTION_TYPE.DATA).map(x => ({ data: x }))
-    const p2MoveHash = getDataByKey('p2MoveHash', <DataTx[]><any>d)
-    const p2Move = getDataByKey('p2Move', <DataTx[]><any>d, x => BASE64_STRING(x.slice(7)).slice(0, 3))
-    const p1Move = getDataByKey('p1Move', <DataTx[]><any>d, x => BASE64_STRING(x.slice(7)).slice(0, 3))
-    const player1Key = getDataByKey('player1Key', <DataTx[]><any>d, x => base58encode(BASE64_STRING(x.slice(7))))
-    const player2Key = getDataByKey('player2Key', <DataTx[]><any>d, x => base58encode(BASE64_STRING(x.slice(7))))
-    const matchKey = getDataByKey('matchKey', <DataTx[]><any>d, x => base58encode(BASE64_STRING(x.slice(7))))
+    const r = await this.api.getTxsByAddress(addr)
+
+    const d = r.filter(x => x.type === TRANSACTION_TYPE.DATA) as IDataTransaction[]
+
+    const p2MoveHash = getBinaries('p2MoveHash', d).firstOrUndefined()
+    const p2Move = getBinaries('p2Move', d).firstOrUndefined()
+    const p1Move = getBinaries('p1Move', d).firstOrUndefined()
+    const player1Key = getBinaries('player1Key', d).map(x => base58encode(x)).firstOrUndefined()
+    const player2Key = getBinaries('player2Key', d).map(x => base58encode(x)).firstOrUndefined()
+    const matchKey = getBinaries('matchKey', d).map(x => base58encode(x)).firstOrUndefined()
 
     if (!player1Key || !matchKey) {
       return undefined
@@ -135,20 +135,10 @@ export class MatchesService {
   }
 
   async getMatchList(): Promise<IMatch[]> {
-    const getDataTransactionsByKey = async (key: string): Promise<DataTx[]> => {
-      const response = await this.http.get<DataTxResponse>(environment.api.txEnpoint + `transactions/data?key=${key}&sort=desc&limit=100`).toPromise()
-      return response.data
-    }
-
-    const r = await this.api.findDataTxsByKey('matchKey')
-
-    const getValueByKey = (key: string, dataTx: DataTx) => {
-      const found = dataTx.data.data.filter(d => d.key === key)
-      return found.length === 1 ? found[0].value : undefined
-    }
+    const r = await this.api.getDataTxsByKey('matchKey')
 
     const matches: Record<string, IMatch> = r.reduce((a, b) => {
-      const p1Key = getDataByKey2('player1Key', [b], x => base58encode(BASE64_STRING(x.slice(7))))
+      const p1Key = getDataByKey('player1Key', [b], x => base58encode(BASE64_STRING(x.slice(7))))
       if (!p1Key) {
         return a
       }
@@ -166,31 +156,31 @@ export class MatchesService {
       })
     }, {})
 
-    const _ = (await getDataTransactionsByKey('p2MoveHash'))
-      .forEach(p => {
-        const p2Key = getValueByKey('player2Key', p)
-        const pk = base58encode(BASE64_STRING(p2Key.slice(7)))
-        const addr = address({ public: pk }, environment.chainId)
 
-        const match = matches[p.data.sender]
+
+    const _ = (await this.api.getDataTxsByKey('p2MoveHash'))
+      .forEach(p => {
+        const p2Key = base58encode(getBinary('player2Key', p))
+        const addr = address({ public: p2Key }, environment.chainId)
+
+        const match = matches[p.sender]
         if (match) {
           match.opponent = {
-            publicKey: pk,
+            publicKey: p2Key,
             address: addr
           }
         }
       })
 
-    const p2Moves = (await getDataTransactionsByKey('p2Move'))
-      .map(p => ({ match: p.data.sender, move: getValueByKey('p2Move', p) }))
+    const p2Moves = (await this.api.getDataTxsByKey('p2Move'))
+      .map(p => ({ match: p.sender, move: getBinary('p2Move', p).slice(0, 3) }))
 
-
-    const p1Moves = (await getDataTransactionsByKey('p1Move'))
-      .map(p => ({ match: p.data.sender, move: getValueByKey('p1Move', p) }))
+    const p1Moves = (await this.api.getDataTxsByKey('p1Move'))
+      .map(p => ({ match: p.sender, move: getBinary('p1Move', p).slice(0, 3) }))
 
     p2Moves.forEach(m => {
       if (matches[m.match]) {
-        const moves = BASE64_STRING(m.move.slice(7)).slice(0, 3)
+        const moves = m.move
         matches[m.match].opponent.moves = [moves[0], moves[1], moves[2]]
         matches[m.match].status = MatchStatus.Waiting
       }
@@ -199,7 +189,7 @@ export class MatchesService {
     p1Moves.forEach(m => {
       const match = matches[m.match]
       if (match) {
-        const moves = BASE64_STRING(m.move.slice(7)).slice(0, 3)
+        const moves = m.move
         match.creator.moves = [moves[0], moves[1], moves[2]]
         match.status = MatchStatus.Done
         match.result = whoHasWon(match.creator.moves, match.opponent.moves)
