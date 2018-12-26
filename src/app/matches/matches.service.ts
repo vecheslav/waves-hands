@@ -8,22 +8,15 @@ import { CoreService } from '../core/core.service'
 import { HttpClient } from '@angular/common/http'
 import { compiledScript } from './shared/contract'
 import { randomAccount } from './shared/util'
-import { IMatch, MatchStatus, PlayerMoves, HandSign, MatchResult } from './shared/match.interface'
-import { TTx, TRANSACTION_TYPE, IDataTransaction } from 'waves-transactions/transactions'
+import { IMatch, MatchStatus, PlayerMoves, HandSign, MatchResult, IPlayer } from './shared/match.interface'
+import { TRANSACTION_TYPE, IDataTransaction } from 'waves-transactions/transactions'
 import { api, testnetConfig, IWavesApi } from './shared/api'
 import { fromAngular } from './shared/api-angular'
+import './shared/extensions'
+import { BehaviorSubject, Observable } from 'rxjs'
 
 const wave = 100000000
-
-declare global {
-  interface Array<T> {
-    firstOrUndefined(): T
-  }
-}
-
-Array.prototype.firstOrUndefined = function () {
-  return this.length > 0 ? this[0] : undefined
-}
+const uint8Arr = Uint8Array.from([])
 
 const getString = (key: string, dataTx: IDataTransaction): string => {
   const found = dataTx.data.find(x => x.key === key)
@@ -38,6 +31,13 @@ const getBinary = (key: string, dataTx: IDataTransaction): Uint8Array => {
     return BASE64_STRING(found.value.toString().slice(7))
   }
 }
+
+const getBinaryStruct = <T>(struct: T, dataTxs: IDataTransaction[]): T =>
+  Object.keys(struct).map(k => ({ key: k, value: getBinaries(k, dataTxs) })).reduce((a, b) => ({
+    ...a,
+    [b.key]: b.value
+  }), {}) as T
+
 
 const getBinaries = (key: string, dataTxs: IDataTransaction[]): Array<Uint8Array> =>
   dataTxs.map(x => x.data.filter(d => d.key === key))
@@ -60,6 +60,9 @@ const whoHasWon = (p1: number[], p2: number[]) => {
   return score > 0 ? MatchResult.Creator : (score === 0 ? MatchResult.Draw : MatchResult.Opponent)
 }
 
+
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -70,6 +73,15 @@ export class MatchesService {
 
   constructor(private keeper: KeeperService, private core: CoreService, private http: HttpClient) {
     this.api = api(testnetConfig, fromAngular(http))
+  }
+
+  toMoves(uint8Array: Uint8Array): PlayerMoves {
+    console.log(uint8Array)
+    if (!uint8Array || uint8Array.length < 3 && uint8Array.slice(0.3).every(x => x >= 0 && x <= 2)) {
+      throw new Error('Invalid Uint8Array')
+    }
+
+    return [uint8Array[0], uint8Array[1], uint8Array[2]] as PlayerMoves
   }
 
   hideMoves(moves: number[]) {
@@ -84,44 +96,51 @@ export class MatchesService {
 
     const r = await this.api.getTxsByAddress(addr)
 
-    const d = r.filter(x => x.type === TRANSACTION_TYPE.DATA) as IDataTransaction[]
+    const filteredTxs = r.filter(x => x.type === TRANSACTION_TYPE.DATA) as IDataTransaction[]
 
-    const p2MoveHash = getBinaries('p2MoveHash', d).firstOrUndefined()
-    const p2Move = getBinaries('p2Move', d).firstOrUndefined()
-    const p1Move = getBinaries('p1Move', d).firstOrUndefined()
-    const player1Key = getBinaries('player1Key', d).map(x => base58encode(x)).firstOrUndefined()
-    const player2Key = getBinaries('player2Key', d).map(x => base58encode(x)).firstOrUndefined()
-    const matchKey = getBinaries('matchKey', d).map(x => base58encode(x)).firstOrUndefined()
+    const {
+      p2MoveHash,
+      p2Move,
+      p1Move,
+      player1Key,
+      player2Key,
+      matchKey,
+    } = getBinaryStruct({
+      p2MoveHash: uint8Arr,
+      p2Move: uint8Arr,
+      p1Move: uint8Arr,
+      player1Key: uint8Arr,
+      player2Key: uint8Arr,
+      matchKey: uint8Arr,
+    }, filteredTxs)
 
     if (!player1Key || !matchKey) {
       return undefined
     }
 
     let status = MatchStatus.New
-    let opponent
-    let creator
 
-    if (player1Key) {
-      creator = {
-        address: address({ public: player1Key }, environment.chainId),
-        publicKey: player1Key,
-      }
-    }
+    const p1Key = base58encode(player1Key)
 
-    if (p2MoveHash) {
-      opponent = {
-        address: address({ public: player2Key }, environment.chainId),
-        publicKey: player2Key,
-      }
-    }
+    const creator: IPlayer = player1Key ? {
+      address: address({ public: p1Key }, environment.chainId),
+      publicKey: p1Key,
+    } : undefined
 
-    if (p2Move) {
+    const p2Key = base58encode(player2Key)
+
+    const opponent: IPlayer = p2MoveHash ? {
+      address: address({ public: p2Key }, environment.chainId),
+      publicKey: p2Key,
+    } : undefined
+
+    if (p2Move && p2Move.length > 0) {
       status = MatchStatus.Waiting
-      opponent.move = p2Move
+      opponent.moves = this.toMoves(p2Move)
     }
 
-    if (p1Move) {
-      creator.move = p1Move
+    if (p1Move && p1Move.length > 0) {
+      creator.moves = this.toMoves(p1Move)
       status = MatchStatus.Done
     }
 
@@ -130,7 +149,7 @@ export class MatchesService {
       creator,
       opponent,
       status,
-      publicKey: matchKey,
+      publicKey: base58encode(matchKey),
     }
   }
 
@@ -155,8 +174,6 @@ export class MatchesService {
         }
       })
     }, {})
-
-
 
     const _ = (await this.api.getDataTxsByKey('p2MoveHash'))
       .forEach(p => {
@@ -199,7 +216,8 @@ export class MatchesService {
     return Object.values(matches)
   }
 
-  async createMatch(moves: HandSign[]): Promise<{ move: Uint8Array, moveHash: Uint8Array, match: IMatch }> {
+  async createMatch(moves: HandSign[], progress: (zeroToOne: number) => void = () => { }): Promise<{ move: Uint8Array, moveHash: Uint8Array, match: IMatch }> {
+    progress(0)
 
     const { seed, address: addr, publicKey: pk } = randomAccount()
 
@@ -211,36 +229,30 @@ export class MatchesService {
 
     await this.core.broadcastAndWait(p1Transfer)
 
+    progress(0.3)
+
     console.log(`Player 1 transfer completed`)
 
     const p1DataTx = data({
       data: [
-        {
-          key: 'p1MoveHash', value: moveHash
-        },
-        {
-          key: 'matchKey', value: base58decode(pk)
-        },
-        {
-          key: 'player1Key', value: base58decode(player1Key)
-        }
+        { key: 'p1MoveHash', value: moveHash },
+        { key: 'matchKey', value: base58decode(pk) },
+        { key: 'player1Key', value: base58decode(player1Key) }
       ]
     }, seed)
 
     await this.core.broadcastAndWait(p1DataTx)
 
+    progress(0.6)
+
     console.log(`Player 1 move completed`)
 
-    const setScriptTx = prepareSetScriptTx(
-      seed,
-      environment.chainId
-    )
+    await this.core.broadcastAndWait(prepareSetScriptTx(seed, environment.chainId))
 
-    await this.core.broadcastAndWait(setScriptTx)
+    progress(1)
 
     console.log(`Match script set, address: ${addr}`)
     console.log(`Public Key: ${publicKey}`)
-
 
     return {
       move,
@@ -272,12 +284,7 @@ export class MatchesService {
 
     const dataTx = await this.keeper.prepareDataTx(tmp.data, tmp.senderPublicKey, parseInt(tmp.fee.toString(), undefined))
 
-    try {
-      await this.core.broadcastAndWait(dataTx)
-    } catch (error) {
-      console.error(error)
-      // console.log(JSON.stringify(error.response.data))
-    }
+    await this.core.broadcastAndWait(dataTx)
 
     console.log(`Player 2 move completed`)
 
@@ -294,11 +301,7 @@ export class MatchesService {
 
     const revealP2Move = await this.keeper.prepareDataTx(tmp2.data, tmp2.senderPublicKey, parseInt(tmp2.fee.toString(), undefined))
 
-    try {
-      await this.core.broadcastAndWait(revealP2Move)
-    } catch (error) {
-      console.log(JSON.stringify(error.response.data))
-    }
+    await this.core.broadcastAndWait(revealP2Move)
 
     console.log(`Player 2 move revealed`)
   }
