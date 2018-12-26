@@ -13,6 +13,7 @@ import { TRANSACTION_TYPE, IDataTransaction } from 'waves-transactions/transacti
 import { api, testnetConfig, IWavesApi } from './shared/api'
 import { fromAngular } from './shared/api-angular'
 import './shared/extensions'
+import { BehaviorSubject, Observable } from 'rxjs'
 
 const wave = 100000000
 const uint8Arr = Uint8Array.from([])
@@ -58,6 +59,9 @@ const whoHasWon = (p1: number[], p2: number[]) => {
   const score = p2.slice(0, 3).reduce((s, p2move, i) => s + compareMoves(p1[i], p2move), 0)
   return score > 0 ? MatchResult.Creator : (score === 0 ? MatchResult.Draw : MatchResult.Opponent)
 }
+
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -171,8 +175,6 @@ export class MatchesService {
       })
     }, {})
 
-
-
     const _ = (await this.api.getDataTxsByKey('p2MoveHash'))
       .forEach(p => {
         const p2Key = base58encode(getBinary('player2Key', p))
@@ -214,7 +216,8 @@ export class MatchesService {
     return Object.values(matches)
   }
 
-  async createMatch(moves: HandSign[]): Promise<{ move: Uint8Array, moveHash: Uint8Array, match: IMatch }> {
+  async createMatch(moves: HandSign[], progress: (zeroToOne: number) => void = () => { }): Promise<{ move: Uint8Array, moveHash: Uint8Array, match: IMatch }> {
+    progress(0)
 
     const { seed, address: addr, publicKey: pk } = randomAccount()
 
@@ -226,36 +229,30 @@ export class MatchesService {
 
     await this.core.broadcastAndWait(p1Transfer)
 
+    progress(0.3)
+
     console.log(`Player 1 transfer completed`)
 
     const p1DataTx = data({
       data: [
-        {
-          key: 'p1MoveHash', value: moveHash
-        },
-        {
-          key: 'matchKey', value: base58decode(pk)
-        },
-        {
-          key: 'player1Key', value: base58decode(player1Key)
-        }
+        { key: 'p1MoveHash', value: moveHash },
+        { key: 'matchKey', value: base58decode(pk) },
+        { key: 'player1Key', value: base58decode(player1Key) }
       ]
     }, seed)
 
     await this.core.broadcastAndWait(p1DataTx)
 
+    progress(0.6)
+
     console.log(`Player 1 move completed`)
 
-    const setScriptTx = prepareSetScriptTx(
-      seed,
-      environment.chainId
-    )
+    await this.core.broadcastAndWait(prepareSetScriptTx(seed, environment.chainId))
 
-    await this.core.broadcastAndWait(setScriptTx)
+    progress(1)
 
     console.log(`Match script set, address: ${addr}`)
     console.log(`Public Key: ${publicKey}`)
-
 
     return {
       move,
@@ -287,12 +284,7 @@ export class MatchesService {
 
     const dataTx = await this.keeper.prepareDataTx(tmp.data, tmp.senderPublicKey, parseInt(tmp.fee.toString(), undefined))
 
-    try {
-      await this.core.broadcastAndWait(dataTx)
-    } catch (error) {
-      console.error(error)
-      // console.log(JSON.stringify(error.response.data))
-    }
+    await this.core.broadcastAndWait(dataTx)
 
     console.log(`Player 2 move completed`)
 
@@ -309,11 +301,7 @@ export class MatchesService {
 
     const revealP2Move = await this.keeper.prepareDataTx(tmp2.data, tmp2.senderPublicKey, parseInt(tmp2.fee.toString(), undefined))
 
-    try {
-      await this.core.broadcastAndWait(revealP2Move)
-    } catch (error) {
-      console.log(JSON.stringify(error.response.data))
-    }
+    await this.core.broadcastAndWait(revealP2Move)
 
     console.log(`Player 2 move revealed`)
   }
