@@ -97,10 +97,6 @@ export class MatchComponent implements OnInit, OnDestroy {
     this.router.navigate(['../'])
   }
 
-  share() {
-    console.log(this.match.address)
-  }
-
   private _reset() {
     this.stage = MatchStage.SelectHands
     this.keeperIsAvailable = this.keeperService.isAvailable()
