@@ -68,7 +68,7 @@ export class MatchComponent implements OnInit, OnDestroy {
     try {
       const { match } = await this.matchesService.createMatch(this.selectedHandSigns)
       this.match = match
-      this.shareUrl = window.location.href + 'match/' + this.match.address
+      this.shareUrl = window.location.origin + '/match/' + this.match.address
       this.stage = MatchStage.CreatedMatch
       this.isLoading = false
     } catch (err) {

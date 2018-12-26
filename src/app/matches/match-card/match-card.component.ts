@@ -18,7 +18,7 @@ export class MatchCardComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    this.shareUrl = window.location.href + 'match/' + this.match.address
+    this.shareUrl = window.location.origin + '/match/' + this.match.address
   }
 
   @HostListener('mouseenter')
