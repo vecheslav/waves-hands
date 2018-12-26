@@ -12,7 +12,8 @@ export interface IWavesApi {
   getTxById(txId: string): Promise<TTx>
   broadcast(tx: TTx): Promise<TTx>
   waitForTx(txId: string): Promise<TTx>
-  findDataTxsByKey(key: string): Promise<DataTransaction[]>
+  getDataTxsByKey(key: string, limit?: number): Promise<DataTransaction[]>
+  getTxsByAddress(address: string, limit?: number): Promise<TTx[]>
 }
 
 export const delay = (millis: number): Promise<{}> =>
@@ -60,14 +61,18 @@ export const api = (config: IConfig, http: IHttp): IWavesApi => {
   const waitForTx = async (txId: string): Promise<TTx> =>
     retry(() => getTxById(txId), 500, 1000)
 
-  const findDataTxsByKey = async (key: string): Promise<DataTransaction[]> =>
-    getApi<{ data: { data: DataTransaction }[] }>(`transactions/data?key=${key}&sort=desc&limit=100`).then(x => x.data.map(y => y.data))
+  const getDataTxsByKey = async (key: string, limit: number = 100): Promise<DataTransaction[]> =>
+    getApi<{ data: { data: DataTransaction }[] }>(`transactions/data?key=${key}&sort=desc&limit=${limit}`).then(x => x.data.map(y => y.data))
+
+  const getTxsByAddress = async (address: string, limit: number = 100): Promise<TTx[]> =>
+    (await get<TTx[][]>(`transactions/address/${address}/limit/${limit}`))[0]
 
   return {
     getHeight,
     getTxById,
     broadcast,
     waitForTx,
-    findDataTxsByKey,
+    getDataTxsByKey,
+    getTxsByAddress,
   }
 }
