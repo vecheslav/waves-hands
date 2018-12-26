@@ -42,7 +42,7 @@
 
           <div class="match-stages" [ngSwitch]="stage" *ngIf="!isLoading">
             <div class="match-stage match-stage--select-hands" *ngSwitchCase="0">
-              <h2 class="title has-text-grey-dark has-text-centered">Select your hands</h2>
+              <h2 class="title is-size-4 has-text-grey-dark has-text-centered">Select your hands</h2>
               <div class="level select-hands">
                 <div class="level-item has-text-centered" (click)="select(0)">👊️</div>
                 <div class="level-item has-text-centered" (click)="select(1)">✋</div>
@@ -57,7 +57,7 @@
               <h2 class="title has-text-centered">You created a game</h2>
               <p class="subtitle">Share the game link to friends, or wait for players to join.</p>
               <div class="md-1">
-                <button class="button is-primary" (click)="share()">Share link</button>
+                <app-share-match [url]="shareUrl" [options]="{ type: 'buttons' }"></app-share-match>
               </div>
               <a [routerLink]="['/']">Close window</a>
             </div>
@@ -68,6 +68,7 @@
           </div>
           <div class="match-loading" *ngIf="isLoading">
             <app-circle-loader></app-circle-loader>
+            <div class="subtitle is-size-6 has-text-centered">Please, wait... Don't close the window</div>
           </div>
 
           <div class="match-bottom">

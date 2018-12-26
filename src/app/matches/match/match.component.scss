@@ -2,17 +2,38 @@
 
 .match-wrapper {
   background: $white;
-  padding: 2rem;
   border-radius: .5rem;
+}
+
+.match-stages,
+.match-top,
+.match-bottom {
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.match-stages {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+.match-top,
+.match-bottom {
+  padding-top: 1.6rem;
+  padding-bottom: 1.6rem;
+}
+
+.match-top {
+  border-bottom: 1px solid $white-ter;
+}
+
+.match-bottom {
+  border-top: 1px solid $white-ter;
 }
 
 .md {
   &-05 { margin-bottom: .5rem; }
   &-1 { margin-bottom: 1rem; }
-}
-
-.match-stages {
-  margin: 2rem 0;
 }
 
 .match-stage {
@@ -23,7 +44,7 @@
 }
 
 .select-hands {
-  font-size: 3rem;
+  font-size: 4rem;
 
   > div {
     cursor: pointer;
@@ -41,6 +62,10 @@
 
 .match-loading {
   padding: 2rem 1rem;
+
+  .subtitle {
+    margin-top: 1.5rem;
+  }
 }
 
 .selected-hands {
