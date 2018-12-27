@@ -28,6 +28,20 @@ export enum MatchResult {
   Draw,
 }
 
+export enum MatchResolve {
+  Nothing,
+  Accepted,
+  Lost,
+  Draw,
+  Won
+}
+
+export interface IMatchChange {
+  resolve: MatchResolve
+  message?: string
+  match?: IMatch
+}
+
 export interface IMatch {
   address: string
   publicKey: string

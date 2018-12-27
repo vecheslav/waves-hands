@@ -145,7 +145,7 @@ export class MatchesHelper {
     }
   }
 
-  async getMatchList(): Promise<IMatch[]> {
+  async getMatchList(): Promise<Record<string, IMatch>> {
     const r = await this._api.getDataTxsByKey('matchKey')
 
     const matches: Record<string, IMatch> = r.reduce((a, b) => {
@@ -205,7 +205,7 @@ export class MatchesHelper {
       }
     })
 
-    return Object.values(matches)
+    return matches
   }
 
   async createMatch(moves: HandSign[], progress: (zeroToOne: number) => void = () => { }): Promise<{ move: Uint8Array, moveHash: Uint8Array, match: IMatch }> {

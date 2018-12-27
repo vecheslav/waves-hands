@@ -12,14 +12,14 @@ export class UserPanelComponent implements OnInit, OnDestroy {
 
   private _userSubscriber
 
-  constructor(private userServices: UserService) {
-    this._userSubscriber = this.userServices.user$.subscribe((user: IUser) => {
+  constructor(private userService: UserService) {
+    this._userSubscriber = this.userService.user$.subscribe((user: IUser) => {
       this.user = user
     })
   }
 
   async ngOnInit() {
-    this.user = await this.userServices.getCurrentUser()
+    this.user = await this.userService.getCurrentUser()
   }
 
   ngOnDestroy() {
@@ -28,11 +28,11 @@ export class UserPanelComponent implements OnInit, OnDestroy {
 
   async signin() {
     if (!this.user) {
-      this.user = await this.userServices.authUser()
+      this.user = await this.userService.authUser()
     }
   }
 
   async logout() {
-    await this.userServices.logout()
+    await this.userService.logout()
   }
 }
