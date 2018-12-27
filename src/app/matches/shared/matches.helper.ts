@@ -54,7 +54,7 @@ const compareMoves = (m1: number, m2: number) =>
     (m1 === 1 && m2 === 0) ||
     (m1 === 2 && m2 === 1)) ? 1 : (m1 === m2 ? 0 : -1)
 
-const whoHasWon = (p1: number[], p2: number[]) => {
+export const whoHasWon = (p1: number[], p2: number[]) => {
   const score = p2.slice(0, 3).reduce((s, p2move, i) => s + compareMoves(p1[i], p2move), 0)
   return score > 0 ? MatchResult.Creator : (score === 0 ? MatchResult.Draw : MatchResult.Opponent)
 }

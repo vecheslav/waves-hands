@@ -1,6 +1,31 @@
 import { Injectable } from '@angular/core'
-import { MatchesHelper } from './shared/matches.helper'
-import { HandSign, IMatch } from './shared/match.interface'
+import { MatchesHelper, whoHasWon } from './shared/matches.helper'
+import { HandSign, IMatch, MatchStatus, MatchResult } from './shared/match.interface'
+
+const matchDiff = (match: IMatch, newMatch: IMatch) => {
+
+  if (!newMatch) {
+    return undefined
+  }
+
+  if (match.status === MatchStatus.New && newMatch.status === MatchStatus.Waiting) {
+    return `Player ${newMatch.opponent.address} accepted the battle!`
+  }
+  if (match.status !== MatchStatus.Done && newMatch.status === MatchStatus.Done) {
+    if (newMatch.result === MatchResult.Opponent) {
+      return `You've lost the battle!`
+    } else if (newMatch.result === MatchResult.Draw) {
+      return 'The battle is over! Nobody wins! Haha!'
+    }
+    return `You've won the battle!`
+  }
+
+}
+
+const getEvents = (myMatches: IMatch[], matches: Record<string, IMatch>) => {
+  return myMatches.map(x => matchDiff(x, matches[x.address]))
+    .filter(x => x !== undefined)
+}
 
 @Injectable()
 export class MatchesService {
