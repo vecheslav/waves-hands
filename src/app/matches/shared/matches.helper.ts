@@ -280,7 +280,7 @@ export class MatchesHelper {
       senderPublicKey: matchPublicKey, data: [
         { key: 'height', value: h },
         { key: 'p2MoveHash', value: moveHash },
-        { key: 'player2Key', value: pk }
+        { key: 'player2Key', value: base58decode(pk) }
       ], fee: 500000
     }, seed)
 
@@ -308,11 +308,11 @@ export class MatchesHelper {
 
   async finishMatch(player1Address: string, player2Address: string, matchPublicKey: string, matchAddress: string, move: Uint8Array) {
     const revealP1 = data({
+      senderPublicKey: matchPublicKey,
       data: [
         { key: 'p1Move', value: move },
       ],
-      fee: 500000,
-      senderPublicKey: matchPublicKey
+      fee: 500000
     })
 
     try {

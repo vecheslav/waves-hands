@@ -81,8 +81,7 @@ export class MatchComponent implements OnInit, OnDestroy {
   async join() {
     try {
       await this.matchesService.joinMatch(
-        this.match.address,
-        this.match.publicKey,
+        this.match,
         this.user.publicKey,
         this.selectedHandSigns
       )

@@ -53,7 +53,7 @@ export class MatchesService implements OnDestroy {
   matches$ = new BehaviorSubject<Record<string, IMatch>>(null)
   user: IUser
 
-  private _myMatches: string[] = []
+  private _myMatches: IMatch[] = []
   private _userSubscriber
 
   private _polledMatches$: Observable<Record<string, IMatch>>
@@ -113,18 +113,18 @@ export class MatchesService implements OnDestroy {
   async createMatch(moves: HandSign[], progress?: (zeroToOne: number) => void): Promise<IMatch> {
     const { move, moveHash, match } = await this.matchesHelper.createMatch(moves, progress)
 
-    this._addMyMatch(match.address)
+    this._addMyMatch(match)
     this._saveMove(match.address, move)
 
     return match
   }
 
-  async joinMatch(matchPublicKey: string, matchAddress: string, playerPublicKey: string, moves: number[]) {
-    await this.matchesHelper.joinMatch(matchPublicKey, matchAddress, playerPublicKey, moves)
+  async joinMatch(match: IMatch, playerPublicKey: string, moves: number[]) {
+    await this.matchesHelper.joinMatch(match.publicKey, match.address, moves)
 
     const { move } = this.matchesHelper.hideMoves(moves)
-    this._addMyMatch(matchAddress)
-    this._saveMove(matchAddress, move)
+    this._addMyMatch(match)
+    this._saveMove(match.address, move)
   }
 
   async finishMatch(player1Address: string, player2Address: string, matchPublicKey: string, matchAddress: string, move: Uint8Array) {
@@ -182,25 +182,25 @@ export class MatchesService implements OnDestroy {
     }
   }
 
-  private _getChanges(myMatches: string[], matches: Record<string, IMatch>): IMatchChange[]  {
-    return myMatches.map((matchAddress: string) => {
-      const currentMatch = this.matches$.getValue()[matchAddress]
+  private _getChanges(myMatches: IMatch[], matches: Record<string, IMatch>): IMatchChange[]  {
+    return myMatches.map((match: IMatch) => {
+      const newMatch =  matches[match.address]
 
-      if (!currentMatch) {
-        return { resolve: MatchResolve.Nothing }
+      if (!newMatch) {
+        return
       }
 
       return matchDiff(
-        this.matches$.getValue()[matchAddress],
-        matches[matchAddress]
+        match,
+        newMatch
       )
     })
       .filter((change: IMatchChange) => change.resolve !== MatchResolve.Nothing)
   }
 
-  private _addMyMatch(matchAddress: string) {
-    this._myMatches.push(matchAddress)
-    this._addMatchToStorage(this.user.address, matchAddress)
+  private _addMyMatch(match: IMatch) {
+    this._myMatches.push(match)
+    this._addMatchToStorage(this.user.address, match)
   }
 
   private _saveMove(matchAddress: string, move: Uint8Array) {
@@ -209,20 +209,20 @@ export class MatchesService implements OnDestroy {
 
   // TODO: Maybe move this to external storage service
 
-  private _getMatchesFromStorage(userAddress: string): string[] {
+  private _getMatchesFromStorage(userAddress: string): IMatch[] {
     const allMatches = JSON.parse(localStorage.getItem('matches')) || {}
 
     return allMatches[userAddress] || []
   }
 
-  private _addMatchToStorage(userAddress: string, matchAddress: string): string {
+  private _addMatchToStorage(userAddress: string, match: IMatch): IMatch {
     const allMatches = JSON.parse(localStorage.getItem('matches')) || {}
     allMatches[userAddress] = allMatches[userAddress] || []
-    allMatches[userAddress].push(matchAddress)
+    allMatches[userAddress].push(match)
 
     localStorage.setItem('matches', JSON.stringify(allMatches))
 
-    return matchAddress
+    return match
   }
 
   private _getMoveFromStorage(matchAddress: string): Uint8Array {
