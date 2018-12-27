@@ -317,8 +317,8 @@ export class MatchesHelper {
 
     try {
       await this.core.broadcastAndWait(revealP1)
-    } catch (error) {
-      console.log(JSON.stringify(error.response.data))
+    } catch (err) {
+      console.error(err)
     }
 
     const player2Move = await (this.http.get<{ value: string }>(`${environment.api.baseEndpoint}addresses/data/${matchAddress}/p2Move`))

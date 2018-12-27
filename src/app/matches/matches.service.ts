@@ -5,6 +5,7 @@ import { BehaviorSubject, Observable, timer } from 'rxjs'
 import { UserService } from '../user/user.service'
 import { IUser } from '../user/user.interface'
 import { concatMap, map } from 'rxjs/operators'
+import { base58encode } from 'waves-crypto'
 
 const matchDiff = (match: IMatch, newMatch: IMatch): IMatchChange => {
   if (!newMatch) {
@@ -157,13 +158,13 @@ export class MatchesService implements OnDestroy {
               break
             }
 
-            this.finishMatch(
-              this.user.address,
-              change.match.opponent.address,
-              change.match.publicKey,
-              change.match.address,
-              move
-            )
+            // this.finishMatch(
+            //   this.user.address,
+            //   change.match.opponent.address,
+            //   change.match.publicKey,
+            //   change.match.address,
+            //   move
+            // )
             console.log('Accepted')
             break
           case MatchResolve.Lost:
@@ -228,12 +229,12 @@ export class MatchesService implements OnDestroy {
   private _getMoveFromStorage(matchAddress: string): Uint8Array {
     const moves = JSON.parse(localStorage.getItem('moves')) || {}
 
-    return moves[matchAddress]
+    return Uint8Array.from(moves[matchAddress])
   }
 
   private _saveMoveToStorage(matchAddress: string, move: Uint8Array): Uint8Array {
     const moves = JSON.parse(localStorage.getItem('moves')) || {}
-    moves[matchAddress] = move
+    moves[matchAddress] = base58encode(move)
 
     localStorage.setItem('moves', JSON.stringify(moves))
 
