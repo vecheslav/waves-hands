@@ -32,7 +32,7 @@ const getBinary = (key: string, dataTx: IDataTransaction): Uint8Array => {
 }
 
 const getBinaryStruct = <T>(struct: T, dataTxs: IDataTransaction[]): T =>
-  Object.keys(struct).map(k => ({ key: k, value: getBinaries(k, dataTxs) })).reduce((a, b) => ({
+  Object.keys(struct).map(k => ({ key: k, value: getBinaries(k, dataTxs).firstOrUndefined() })).reduce((a, b) => ({
     ...a,
     [b.key]: b.value
   }), {}) as T
@@ -119,12 +119,14 @@ export class MatchesHelper {
       publicKey: p1Key,
     } : undefined
 
-    const p2Key = base58encode(player2Key)
-
-    const opponent: IPlayer = p2MoveHash ? {
-      address: address({ public: p2Key }, environment.chainId),
-      publicKey: p2Key,
-    } : undefined
+    let opponent
+    if (p2MoveHash) {
+      const p2Key = base58encode(player2Key)
+      opponent = {
+        address: address({ public: p2Key }, environment.chainId),
+        publicKey: p2Key,
+      }
+    }
 
     if (p2Move && p2Move.length > 0) {
       status = MatchStatus.Waiting
@@ -217,11 +219,13 @@ export class MatchesHelper {
     const player1Key = p1Transfer.senderPublicKey
     const player1Address = address({ public: player1Key }, environment.chainId)
 
+    progress(0.15)
+
     const { moveHash, move } = this.hideMoves(moves)
 
     await this.core.broadcastAndWait(p1Transfer)
 
-    progress(0.3)
+    progress(0.5)
 
     console.log(`Player 1 transfer completed`)
 
@@ -235,7 +239,7 @@ export class MatchesHelper {
 
     await this.core.broadcastAndWait(p1DataTx)
 
-    progress(0.6)
+    progress(0.8)
 
     console.log(`Player 1 move completed`)
 

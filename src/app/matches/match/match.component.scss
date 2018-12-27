@@ -60,12 +60,22 @@
   }
 }
 
-.match-loading {
-  padding: 2rem 1rem;
+.match-loading,
+.match-progress {
+  padding: 2rem 2rem;
 
   .subtitle {
     margin-top: 1.3rem;
   }
+
+  .progress {
+    width: 16rem;
+    margin: 0 auto;
+  }
+}
+
+.match-progress {
+  padding-top: 3rem;
 }
 
 .selected-hands {

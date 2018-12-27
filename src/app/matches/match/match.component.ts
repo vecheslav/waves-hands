@@ -21,6 +21,7 @@ export class MatchComponent implements OnInit, OnDestroy {
 
   keeperIsAvailable = true
   isLoading = false
+  progress = null
   shareUrl: string
 
   private _userSubscriber
@@ -66,7 +67,7 @@ export class MatchComponent implements OnInit, OnDestroy {
 
   async create() {
     try {
-      const match = await this.matchesService.createMatch(this.selectedHandSigns)
+      const match = await this.matchesService.createMatch(this.selectedHandSigns, this._changeProgress.bind(this))
       this.match = match
       this.shareUrl = window.location.origin + '/match/' + this.match.address
       this.stage = MatchStage.CreatedMatch
@@ -79,12 +80,12 @@ export class MatchComponent implements OnInit, OnDestroy {
 
   async join() {
     try {
-      // await this.matchesService.joinGame(
-      //   this.match.address,
-      //   this.match.publicKey,
-      //   this.user.publicKey,
-      //   this.selectedHandSigns
-      // )
+      await this.matchesService.joinMatch(
+        this.match.address,
+        this.match.publicKey,
+        this.user.publicKey,
+        this.selectedHandSigns
+      )
       this.stage = MatchStage.ResultMatch
       this.isLoading = false
     } catch (err) {
@@ -97,10 +98,15 @@ export class MatchComponent implements OnInit, OnDestroy {
     this.router.navigate(['../'])
   }
 
+  private _changeProgress(value: number) {
+    this.progress = value
+  }
+
   private _reset() {
     this.stage = MatchStage.SelectHands
     this.keeperIsAvailable = this.keeperService.isAvailable()
     this.isLoading = false
     this.selectedHandSigns = []
+    this.progress = null
   }
 }
