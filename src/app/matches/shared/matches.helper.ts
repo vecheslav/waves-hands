@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 import { randomBytes } from 'crypto'
 import { concat, publicKey, sha256, base58decode, BASE64_STRING, address, base58encode } from 'waves-crypto'
 import { environment } from '../../../environments/environment'
-import { data, setScript, massTransfer } from 'waves-transactions'
+import { data, setScript, massTransfer, transfer } from 'waves-transactions'
 import { KeeperService } from '../../auth/keeper.service'
 import { CoreService } from '../../core/core.service'
 import { HttpClient } from '@angular/common/http'
@@ -259,43 +259,47 @@ export class MatchesHelper {
     }
   }
 
-  async joinMatch(matchPublicKey: string, matchAddress: string, playerPublicKey: string, moves: number[]) {
+  async joinMatch(matchPublicKey: string, matchAddress: string, moves: number[]) {
+
+    const { seed, address: addr, publicKey: pk } = randomAccount()
+
+    const initialTransfer = await this.keeper.prepareWavesTransfer(addr, 1 * wave + 100000)
+
+    await this._api.broadcastAndWait(initialTransfer)
 
     const h = await this._api.getHeight()
     console.log(`Height is ${h}`)
 
     const { moveHash, move } = this.hideMoves(moves)
 
-    const tmp = data({
+    const dataTx = data({
       senderPublicKey: matchPublicKey, data: [
         { key: 'height', value: h },
         { key: 'p2MoveHash', value: moveHash },
-        { key: 'player2Key', value: base58decode(playerPublicKey) }
+        { key: 'player2Key', value: pk }
       ], fee: 500000
-    })
-
-    const dataTx = await this.keeper.prepareDataTx(tmp.data, tmp.senderPublicKey, parseInt(tmp.fee.toString(), undefined))
+    }, seed)
 
     await this.core.broadcastAndWait(dataTx)
 
     console.log(`Player 2 move completed`)
 
-    const p2Transfer = await this.keeper.prepareWavesTransfer(matchAddress, 1 * wave)
+    const p2Transfer = transfer({ recipient: matchAddress, amount: 1 * wave }, seed)
 
     const { id } = await this.core.broadcastAndWait(p2Transfer)
 
-    const tmp2 = data({
+    const revealP2Move = data({
       senderPublicKey: matchPublicKey, data: [
         { key: 'p2Move', value: move },
         { key: 'payment', value: base58decode(id) }
       ], fee: 500000
-    })
-
-    const revealP2Move = await this.keeper.prepareDataTx(tmp2.data, tmp2.senderPublicKey, parseInt(tmp2.fee.toString(), undefined))
+    }, seed)
 
     await this.core.broadcastAndWait(revealP2Move)
 
     console.log(`Player 2 move revealed`)
+
+    return { seed, addr }
   }
 
   async finishMatch(player1Address: string, player2Address: string, matchPublicKey: string, matchAddress: string, move: Uint8Array) {

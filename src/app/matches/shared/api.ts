@@ -11,6 +11,7 @@ export interface IWavesApi {
   getHeight(): Promise<number>
   getTxById(txId: string): Promise<TTx>
   broadcast(tx: TTx): Promise<TTx>
+  broadcastAndWait(tx: TTx): Promise<TTx>
   waitForTx(txId: string): Promise<TTx>
   getDataTxsByKey(key: string, limit?: number): Promise<DataTransaction[]>
   getTxsByAddress(address: string, limit?: number): Promise<TTx[]>
@@ -67,6 +68,12 @@ export const api = (config: IConfig, http: IHttp): IWavesApi => {
   const getTxsByAddress = async (address: string, limit: number = 100): Promise<TTx[]> =>
     (await get<TTx[][]>(`transactions/address/${address}/limit/${limit}`))[0]
 
+  const broadcastAndWait = async (tx: TTx): Promise<TTx> => {
+    const r = await broadcast(tx)
+    await waitForTx(r.id)
+    return r
+  }
+
   return {
     getHeight,
     getTxById,
@@ -74,5 +81,6 @@ export const api = (config: IConfig, http: IHttp): IWavesApi => {
     waitForTx,
     getDataTxsByKey,
     getTxsByAddress,
+    broadcastAndWait,
   }
 }
