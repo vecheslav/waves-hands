@@ -217,11 +217,13 @@ export class MatchesHelper {
     const player1Key = p1Transfer.senderPublicKey
     const player1Address = address({ public: player1Key }, environment.chainId)
 
+    progress(0.15)
+
     const { moveHash, move } = this.hideMoves(moves)
 
     await this.core.broadcastAndWait(p1Transfer)
 
-    progress(0.3)
+    progress(0.5)
 
     console.log(`Player 1 transfer completed`)
 
@@ -235,7 +237,7 @@ export class MatchesHelper {
 
     await this.core.broadcastAndWait(p1DataTx)
 
-    progress(0.6)
+    progress(0.8)
 
     console.log(`Player 1 move completed`)
 
