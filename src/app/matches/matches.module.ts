@@ -9,6 +9,7 @@ import { SharedModule } from '../shared/shared.module'
 import { UserModule } from '../user/user.module'
 import { MatchesService } from './matches.service'
 import { MatchesHelper } from './shared/matches.helper'
+import { ActionsModule } from '../actions/actions.module';
 
 @NgModule({
   declarations: [MatchesComponent, MatchCardComponent, MatchComponent],
@@ -18,14 +19,15 @@ import { MatchesHelper } from './shared/matches.helper'
     AuthModule,
     SharedModule,
     UserModule,
+    ActionsModule,
   ],
   providers: [
     MatchesService,
-    MatchesHelper
+    MatchesHelper,
   ],
   exports: [
     MatchesComponent,
-    MatchComponent
+    MatchComponent,
   ]
 })
 export class MatchesModule { }

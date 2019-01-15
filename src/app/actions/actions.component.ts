@@ -9,12 +9,15 @@ import { IAction } from './actions.interface'
 })
 export class ActionsComponent implements OnInit, OnDestroy {
   actions: IAction[] = []
+  isLoading = true
 
   private _actionsSubscriber
 
   constructor(private actionsService: ActionsService) {
     this._actionsSubscriber = this.actionsService.actions$.subscribe((actions: IAction[]) => {
       this.actions = actions
+
+      this.isLoading = false
     })
   }
 

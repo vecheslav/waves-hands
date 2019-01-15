@@ -322,7 +322,7 @@ export class MatchesHelper {
     try {
       await this.core.broadcastAndWait(revealP1)
     } catch (err) {
-      console.error(err)
+      throw err
     }
 
     const player2Move = await (this.http.get<{ value: string }>(`${environment.api.baseEndpoint}addresses/data/${matchAddress}/p2Move`))
@@ -361,8 +361,8 @@ export class MatchesHelper {
 
     try {
       await this.core.broadcastAndWait(payout)
-    } catch (error) {
-      console.log(JSON.stringify(error.response.data))
+    } catch (err) {
+      throw err
     }
 
     console.log('Payout completed')

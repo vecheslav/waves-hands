@@ -1,0 +1,33 @@
+@import '~src/styles/variables';
+
+.game {
+  height: 100%;
+
+  &-grid {
+    height: 100%;
+    position: relative;
+    margin: 0;
+    display: flex;
+
+    &__side {
+
+    }
+  }
+
+  &-preview {
+    position: absolute;
+    overflow: auto;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 40%;
+  }
+
+  &-viewport {
+    flex: 1;
+    height: 100%;
+    overflow: auto;
+    margin-left: 40%;
+    background: #f8f9fb;
+  }
+}

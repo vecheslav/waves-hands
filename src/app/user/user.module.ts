@@ -5,13 +5,15 @@ import { AuthModule } from '../auth/auth.module'
 import { UserService } from './user.service'
 import { SharedModule } from '../shared/shared.module'
 import { AuthGuard } from './auth.guard'
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [UserPanelComponent],
   imports: [
     CommonModule,
     AuthModule,
-    SharedModule
+    SharedModule,
+    RouterModule,
   ],
   providers: [
     UserService,

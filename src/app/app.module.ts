@@ -6,6 +6,10 @@ import { AppComponent } from './app.component'
 import { GameModule } from './game/game.module'
 import { HttpClientModule } from '@angular/common/http'
 import { AuthModule } from './auth/auth.module'
+import { CoreModule } from './core/core.module'
+import { MatchesModule } from './matches/matches.module'
+import { UserModule } from './user/user.module'
+import { ActionsModule } from './actions/actions.module';
 
 @NgModule({
   declarations: [
@@ -17,6 +21,10 @@ import { AuthModule } from './auth/auth.module'
     AppRoutingModule,
     AuthModule.forRoot(),
     GameModule,
+    CoreModule,
+    MatchesModule,
+    UserModule,
+    ActionsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

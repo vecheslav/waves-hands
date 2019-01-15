@@ -3,12 +3,13 @@ import { Routes, RouterModule } from '@angular/router'
 import { MatchResolver } from './game/match.resolver'
 import { AuthGuard } from './user/auth.guard'
 import { MatchComponent } from './matches/match/match.component'
-import { GameComponent } from './game/game.component'
+import { MatchesComponent } from './matches/matches.component'
+import { ActionsComponent } from './actions/actions.component'
 
 const routes: Routes = [
   {
     path: '',
-    component: GameComponent,
+    component: MatchesComponent,
     children: [
       {
         path: 'match',
@@ -16,7 +17,7 @@ const routes: Routes = [
         resolve: {
           match: MatchResolver
         },
-        canActivate: [AuthGuard]
+        canActivate: [AuthGuard],
       },
       {
         path: 'match/:address',
@@ -24,9 +25,13 @@ const routes: Routes = [
         resolve: {
           match: MatchResolver
         },
-        canActivate: [AuthGuard]
+        canActivate: [AuthGuard],
       },
     ]
+  },
+  {
+    path: 'actions',
+    component: ActionsComponent,
   },
 ]
 

@@ -10,6 +10,9 @@ export class ActionsService {
   }
 
   add(action: IAction) {
+    if (!action.timestamp) {
+      action.timestamp = Date.now()
+    }
     this.actions$.next(this.actions$.getValue().concat([action]))
   }
 }
