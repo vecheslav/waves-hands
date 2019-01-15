@@ -5,7 +5,8 @@ import { BehaviorSubject, Observable, timer } from 'rxjs'
 import { UserService } from '../user/user.service'
 import { IUser } from '../user/user.interface'
 import { concatMap, map } from 'rxjs/operators'
-import { base58encode, base58decode } from 'waves-crypto'
+import { base58encode, base58decode, publicKey } from 'waves-crypto'
+import { transfer } from 'waves-transactions'
 
 const matchDiff = (match: IMatch, newMatch: IMatch): IMatchChange => {
   if (!newMatch) {
@@ -121,7 +122,7 @@ export class MatchesService implements OnDestroy {
   }
 
   async joinMatch(match: IMatch, playerPublicKey: string, moves: number[]) {
-    await this.matchesHelper.joinMatch(match.publicKey, match.address, moves)
+    const { seed } = await this.matchesHelper.joinMatch(match.publicKey, match.address, moves)
 
     const { move } = this.matchesHelper.hideMoves(moves)
     this._addMyMatch(match)
@@ -181,6 +182,16 @@ export class MatchesService implements OnDestroy {
     } catch (err) {
       console.error(err)
     }
+  }
+
+  private _preparePayouts(myMatches: Record<string, IMatch>, mySeeds: string[], payoutAddress: string) {
+    const keys = mySeeds.map(s => ({ seed: s, pk: publicKey(s) })).reduce((a, b) => ({ ...a, [b.pk]: b.seed }), {})
+
+    return Object.values(myMatches)
+      .filter(m => m.opponent &&
+        keys[m.opponent.publicKey] !== undefined &&
+        m.result === MatchResult.Opponent)
+      .map(x => transfer({ recipient: payoutAddress, amount: 196300000 - 100000 }, keys[x.opponent.publicKey]))
   }
 
   private _getChanges(myMatches: IMatch[], matches: Record<string, IMatch>): IMatchChange[] {
