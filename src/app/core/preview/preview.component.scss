@@ -1,12 +1,55 @@
 @import '~src/styles/variables';
 
-.header {
-  padding-top: 1.5rem;
-  padding-bottom: 1.5rem;
-}
-
 .preview {
   background: $primary;
   color: #fff;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    background: url('/assets/images/preview-bg.jpg') no-repeat center bottom;
+    background-size: 100% auto;
+  }
+}
+
+.header,
+.footer {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+.introduction {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  z-index: 1;
+  padding-bottom: 8rem;
+
+  &__inner {
+    flex: 1;
+    color: $white;
+  }
+
+  .title,
+  .subtitle {
+    color: $white
+  }
+
+  .title {
+    font-weight: bold;
+    margin-bottom: 3rem;
+  }
+}
+
+.footer {
+  background: none;
+  min-height: 6rem;
 }

@@ -20,14 +20,14 @@
     left: 0;
     top: 0;
     bottom: 0;
-    width: 50%;
+    width: 30%;
   }
 
   &-viewport {
     flex: 1;
     height: 100%;
     overflow: auto;
-    margin-left: 50%;
+    margin-left: 30%;
     background: #f8f9fb;
   }
 }

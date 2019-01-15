@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common'
 import { PreviewComponent } from './preview/preview.component'
 import { HTTP_INTERCEPTORS } from '@angular/common/http'
 import { ApiInterceptor } from './api.interceptor'
+import { RouterModule } from '@angular/router'
 
 @NgModule({
   declarations: [
@@ -10,6 +11,7 @@ import { ApiInterceptor } from './api.interceptor'
   ],
   imports: [
     CommonModule,
+    RouterModule
   ],
   exports: [
     PreviewComponent
