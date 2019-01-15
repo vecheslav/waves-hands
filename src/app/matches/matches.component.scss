@@ -1,6 +1,9 @@
+@import "~bulma/sass/utilities/mixins";
+
 .matches {
   $size-gap: 1.5rem;
-  $num-columns: 3;
+  $num-columns: 2;
+  $num-columns-fullhd: 3;
 
   &-header {
     display: flex;
@@ -20,6 +23,12 @@
     display: grid;
     grid-gap: $size-gap;
     grid-template-columns: repeat($num-columns, 1fr);
+  }
+
+  @include from($fullhd) {
+    &-grid {
+      grid-template-columns: repeat($num-columns-fullhd, 1fr);
+    }
   }
 
   &-loading {
