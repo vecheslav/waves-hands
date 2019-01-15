@@ -5,7 +5,7 @@ import { BehaviorSubject, Observable, timer } from 'rxjs'
 import { UserService } from '../user/user.service'
 import { IUser } from '../user/user.interface'
 import { concatMap, map } from 'rxjs/operators'
-import { base58encode } from 'waves-crypto'
+import { base58encode, base58decode } from 'waves-crypto'
 
 const matchDiff = (match: IMatch, newMatch: IMatch): IMatchChange => {
   if (!newMatch) {
@@ -61,7 +61,7 @@ export class MatchesService implements OnDestroy {
   private _pollingSubscriber
 
   constructor(private matchesHelper: MatchesHelper,
-              private userService: UserService) {
+    private userService: UserService) {
 
     this._userSubscriber = this.userService.user$.subscribe((user: IUser) => {
       this.user = user
@@ -158,13 +158,13 @@ export class MatchesService implements OnDestroy {
               break
             }
 
-            // this.finishMatch(
-            //   this.user.address,
-            //   change.match.opponent.address,
-            //   change.match.publicKey,
-            //   change.match.address,
-            //   move
-            // )
+            this.finishMatch(
+              this.user.address,
+              change.match.opponent.address,
+              change.match.publicKey,
+              change.match.address,
+              move
+            )
             console.log('Accepted')
             break
           case MatchResolve.Lost:
@@ -183,9 +183,9 @@ export class MatchesService implements OnDestroy {
     }
   }
 
-  private _getChanges(myMatches: IMatch[], matches: Record<string, IMatch>): IMatchChange[]  {
+  private _getChanges(myMatches: IMatch[], matches: Record<string, IMatch>): IMatchChange[] {
     return myMatches.map((match: IMatch) => {
-      const newMatch =  matches[match.address]
+      const newMatch = matches[match.address]
 
       if (!newMatch) {
         return
@@ -229,7 +229,7 @@ export class MatchesService implements OnDestroy {
   private _getMoveFromStorage(matchAddress: string): Uint8Array {
     const moves = JSON.parse(localStorage.getItem('moves')) || {}
 
-    return Uint8Array.from(moves[matchAddress])
+    return base58decode(moves[matchAddress])
   }
 
   private _saveMoveToStorage(matchAddress: string, move: Uint8Array): Uint8Array {
