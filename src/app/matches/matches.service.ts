@@ -5,14 +5,9 @@ import { BehaviorSubject, Observable, timer } from 'rxjs'
 import { UserService } from '../user/user.service'
 import { IUser } from '../user/user.interface'
 import { concatMap, map } from 'rxjs/operators'
-<<<<<<< HEAD
 import { base58encode, base58decode } from 'waves-crypto'
 import { ActionsService } from '../actions/actions.service'
 import { ActionType } from '../actions/actions.interface'
-=======
-import { base58encode, base58decode, publicKey } from 'waves-crypto'
-import { ActionsService } from '../actions/actions.service'
->>>>>>> 7f15e8129693e7ea53a24e235c7d19dbebb4b671
 
 const matchDiff = (match: IMatch, newMatch: IMatch): IMatchChange => {
   if (!newMatch) {
