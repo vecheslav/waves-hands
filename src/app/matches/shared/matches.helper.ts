@@ -270,9 +270,10 @@ export class MatchesHelper {
 
   async joinMatch(matchPublicKey: string, matchAddress: string, moves: number[]) {
 
-    const { seed, address: addr, publicKey: pk } = randomAccount()
-
     const { moveHash, move } = this.hideMoves(moves)
+
+    const p2Transfer = await this.keeper.prepareWavesTransfer(matchAddress, 1 * wave, new TextDecoder('utf-8')
+    .decode(move))
 
     const h = await this._api.getHeight()
     console.log(`Height is ${h}`)
@@ -281,19 +282,16 @@ export class MatchesHelper {
       senderPublicKey: matchPublicKey, data: [
         { key: 'height', value: h },
         { key: 'p2MoveHash', value: moveHash },
-        { key: 'player2Key', value: base58decode(pk) }
+        { key: 'player2Key', value: base58decode(p2Transfer.senderPublicKey) }
       ], fee: 500000
-    }, seed)
+    })
 
     await this.core.broadcastAndWait(dataTx)
 
     console.log(`Player 2 move completed`)
-    const p2Transfer = await this.keeper.prepareWavesTransfer(addr, 1 * wave, new TextDecoder('utf-8')
-      .decode(move))
-
+  
     console.log(p2Transfer)
     console.log(p2Transfer.attachment)
-
 
     const { id } = await this._api.broadcastAndWait(p2Transfer)
 
@@ -302,13 +300,12 @@ export class MatchesHelper {
         { key: 'p2Move', value: move },
         { key: 'payment', value: base58decode(id) }
       ], fee: 500000
-    }, seed)
+    })
 
     await this.core.broadcastAndWait(revealP2Move)
 
     console.log(`Player 2 move revealed`)
 
-    return { seed, addr }
   }
 
   async finishMatch(player1Address: string, player2Address: string, matchPublicKey: string, matchAddress: string, move: Uint8Array) {

@@ -125,7 +125,7 @@ export class MatchesService implements OnDestroy {
   }
 
   async joinMatch(match: IMatch, playerPublicKey: string, moves: number[]) {
-    const { seed } = await this.matchesHelper.joinMatch(match.publicKey, match.address, moves)
+    await this.matchesHelper.joinMatch(match.publicKey, match.address, moves)
 
     const { move } = this.matchesHelper.hideMoves(moves)
     this._setMyMatch(match)
@@ -205,7 +205,7 @@ export class MatchesService implements OnDestroy {
           case MatchResolve.Draw:
             this.actionsService.add({ type: ActionType.DrawMatch, args: [change.match.address] })
             break
-          case MatchResolve.Lost:
+          case MatchResolve.Won:
             this.actionsService.add({ type: ActionType.WonMatch, args: [change.match.address] })
             break
         }

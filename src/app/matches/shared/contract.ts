@@ -36,19 +36,25 @@ match (tx) {
         canWriteP2Move && isDataSizeValid && isHeightFieldCorrect
 
         else if isDefined(getBinary(dataTx.data, stage2)) then 
-            !isDefined(getBinary(me, stage2)) &&
-            size(dataTx.data) == 2 &&
-            sha256(extract(getBinary(dataTx.data, stage2))) == extract(getBinary(me, stage1)) &&
-            match (transactionById(extract(getBinary(dataTx.data, "payment")))) {
+            let isSizeOk = size(dataTx.data) == 2
+            let isNotDefined = !isDefined(getBinary(me, stage2))
+            let isHashShaOk = sha256(extract(getBinary(dataTx.data, stage2))) == extract(getBinary(me, stage1))
+            let isPaymentOk = match (transactionById(extract(getBinary(dataTx.data, "payment")))) {
                 case p2payment:TransferTransaction =>
-                    size(p2payment.attachment) == 32 &&
-                    sha256(p2payment.attachment) == extract(getBinary(me, stage1)) &&
+                    let isAttSizeOk = size(p2payment.attachment) == 32 
+                    let isAttHashOk = sha256(p2payment.attachment) == extract(getBinary(me, stage1)) 
+                    isAttSizeOk &&
+                    isAttHashOk &&
                     p2payment.amount == 1*wave &&
                     p2payment.recipient == me &&
                     p2payment.senderPublicKey == extract(getBinary(me, "player2Key")) &&
                     sigVerify(p2payment.bodyBytes, p2payment.proofs[0], p2payment.senderPublicKey)
                 case _ => false
               }
+            isNotDefined &&
+            isSizeOk &&
+            isHashShaOk &&
+            isPaymentOk
 
         else if isDefined(getBinary(dataTx.data, stage3)) then
             let isP1NotYetRevealed = !isDefined(getBinary(me, stage3))
