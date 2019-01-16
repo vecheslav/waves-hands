@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core'
 import { randomBytes } from 'crypto'
 import { concat, publicKey, sha256, base58decode, BASE64_STRING, address, base58encode } from 'waves-crypto'
 import { environment } from '../../../environments/environment'
-import { data, setScript, massTransfer, transfer } from 'waves-transactions'
+import { data, setScript, massTransfer, transfer, broadcast } from 'waves-transactions'
 import { KeeperService } from '../../auth/keeper.service'
 import { CoreService } from '../../core/core.service'
 import { HttpClient } from '@angular/common/http'
 import { compiledScript } from './contract'
 import { randomAccount } from './util'
 import { IMatch, MatchStatus, PlayerMoves, HandSign, MatchResult, IPlayer } from './match.interface'
-import { TRANSACTION_TYPE, IDataTransaction } from 'waves-transactions/transactions'
+import { TRANSACTION_TYPE, IDataTransaction, ITransferTransaction } from 'waves-transactions/transactions'
 import { api, testnetConfig, IWavesApi } from './api'
 import { fromAngular } from './api-angular'
 import './extensions'
@@ -367,6 +367,16 @@ export class MatchesHelper {
 
     console.log('Payout completed')
   }
+
+  // async resolvePayoutTransfers(txs: ITransferTransaction[]) {
+  //   for (const tx of txs) {
+  //     try {
+        
+  //     } catch (err) {
+
+  //     }
+  //   }
+  // }
 }
 
 export const prepareSetScriptTx = (matchSeed: string, chainId: string) => {
