@@ -76,8 +76,13 @@ export class MatchesHelper {
     return [uint8Array[0], uint8Array[1], uint8Array[2]] as PlayerMoves
   }
 
+  randomBytes(count: number) {
+    return new Array(count).fill(0).map(x => Math.round(Math.random() * 125))
+  }
+
   hideMoves(moves: number[]) {
-    const salt = randomBytes(29)
+    const salt = this.randomBytes(29)
+
     const move = concat([moves[0], moves[1], moves[2]], salt)
     const moveHash = sha256(move)
 
@@ -283,14 +288,12 @@ export class MatchesHelper {
     await this.core.broadcastAndWait(dataTx)
 
     console.log(`Player 2 move completed`)
+    const p2Transfer = await this.keeper.prepareWavesTransfer(addr, 1 * wave, new TextDecoder('utf-8')
+      .decode(move))
 
-    function uintToString(uintArray: Uint8Array) {
-      const encodedString = String.fromCharCode.apply(null, uintArray),
-        decodedString = decodeURIComponent(escape(atob(encodedString)))
-      return decodedString
-    }
+    console.log(p2Transfer)
+    console.log(p2Transfer.attachment)
 
-    const p2Transfer = await this.keeper.prepareWavesTransfer(addr, 1 * wave, uintToString(move))
 
     const { id } = await this._api.broadcastAndWait(p2Transfer)
 
