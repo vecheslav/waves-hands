@@ -5,7 +5,7 @@
         <button class="button" (click)="logout()">Log Out</button>
       </div>
       <a [routerLink]="['actions']"
-         class="level-item user-panel__actions">
+         class="level-item user-panel__actions" *ngIf="user">
         <svg class="icon"><use xlink:href="icons.svg#icon-notifications_none"></use></svg>
       </a>
     </div>

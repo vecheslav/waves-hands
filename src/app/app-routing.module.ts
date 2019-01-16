@@ -32,6 +32,7 @@ const routes: Routes = [
   {
     path: 'actions',
     component: ActionsComponent,
+    canActivate: [AuthGuard],
   },
 ]
 

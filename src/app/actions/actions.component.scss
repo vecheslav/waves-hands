@@ -1,5 +1,51 @@
+@import '~src/styles/variables';
+
 .actions {
   &-loading {
     padding: 4rem 1rem;
+  }
+}
+
+.actions-list {
+
+  &__item {
+    margin: 0;
+    padding: 1.4rem 0;
+    border-bottom: 1px solid $white-ter;
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+}
+
+.action-item {
+  flex-flow: row wrap;
+  align-items: center;
+}
+
+.action-content {
+  flex: 1;
+  .date {
+    font-weight: 500;
+    color: $grey-light;
+  }
+}
+
+.action-text {
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+  }
+}
+
+.action-icon {
+  margin-right: 1rem;
+
+  .icon {
+    height: 3rem;
+    width: 3rem;
+    color: $grey-lighter;
   }
 }

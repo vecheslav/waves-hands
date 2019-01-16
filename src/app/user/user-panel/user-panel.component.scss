@@ -6,6 +6,12 @@
   border-bottom: 1px solid $white-ter;
 
   &__actions {
+    color: $text;
+
+    &:hover,
+    &:focus {
+      color: $primary;
+    }
   }
 
   &__user {
