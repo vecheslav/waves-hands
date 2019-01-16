@@ -1,9 +1,13 @@
 <section class="section user-panel">
   <div class="level">
     <div class="level-left">
-      <div class="user-panel__logout" *ngIf="user">
+      <div class="level-item user-panel__logout" *ngIf="user">
         <button class="button" (click)="logout()">Log Out</button>
       </div>
+      <a [routerLink]="['actions']"
+         class="level-item user-panel__actions" *ngIf="user">
+        <svg class="icon"><use xlink:href="icons.svg#icon-notifications_none"></use></svg>
+      </a>
     </div>
     <div class="level-right" *ngIf="!user">
       <button class="button" (click)="signin()">Sign In</button>

@@ -47,8 +47,9 @@ export interface IMatch {
   publicKey: string
   creator: IPlayer
   opponent?: IPlayer
-  status: MatchStatus,
-  result?: MatchResult,
+  status: MatchStatus
+  result?: MatchResult
+  isFinishing?: boolean
 }
 
 export const EmptyMatch: IMatch = {

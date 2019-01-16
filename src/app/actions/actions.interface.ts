@@ -1,5 +1,5 @@
 export interface IAction {
-  timestamp: number
+  timestamp?: number
   args?: any[]
   message: string
 }

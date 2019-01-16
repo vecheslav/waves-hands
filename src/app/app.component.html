@@ -1,3 +1,13 @@
 <div class="app-wrapper">
-  <router-outlet></router-outlet>
+  <div class="game">
+    <div class="game-grid">
+      <div class="game-grid__side game-preview">
+        <app-preview></app-preview>
+      </div>
+      <div class="game-grid__side game-viewport">
+        <app-user-panel></app-user-panel>
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </div>
 </div>
