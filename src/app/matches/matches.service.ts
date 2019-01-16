@@ -8,7 +8,6 @@ import { concatMap, map } from 'rxjs/operators'
 import { base58encode, base58decode, publicKey } from 'waves-crypto'
 import { transfer } from 'waves-transactions'
 import { ActionsService } from '../actions/actions.service'
-import { ITransferTransaction } from 'waves-transactions/transactions';
 
 const matchDiff = (match: IMatch, newMatch: IMatch): IMatchChange => {
   if (!newMatch) {
@@ -96,9 +95,6 @@ export class MatchesService implements OnDestroy {
         this._resolveMatches.call(self, matches)
       }
 
-      // Try collect waves where i won as opponent
-      // this._collectPayoutsFromMyMatches()
-
       this.matches$.next(matches)
     })
   }
@@ -137,7 +133,6 @@ export class MatchesService implements OnDestroy {
     const { move } = this.matchesHelper.hideMoves(moves)
     this._setMyMatch(match)
     this._saveMove(match.address, move)
-    // this._saveSeedToStorage(this.user.address, seed)
 
     this.actionsService.add({
       message: 'You joined a match.',
@@ -246,37 +241,6 @@ export class MatchesService implements OnDestroy {
     }
   }
 
-  // private _collectPayoutsFromMyMatches() {
-  //   const payouts = this._preparePayouts(
-  //     this._myMatches,
-  //     this._getSeedsFromStorage(this.user.address),
-  //     this.user.address
-  //   )
-
-  //   if (!payouts) {
-  //     return
-  //   }
-
-  //   console.log(payouts)
-
-  //   this.matchesHelper.resolvePayoutTransfers(payouts)
-  // }
-
-  // private _preparePayouts(myMatches: Record<string, IMatch>, mySeeds: string[], payoutAddress: string): ITransferTransaction[] {
-  //   if (!mySeeds.length) {
-  //     return
-  //   }
-
-  //   const keys = mySeeds.map(s => ({ seed: s, pk: publicKey(s) })).reduce((a, b) => ({ ...a, [b.pk]: b.seed }), {})
-
-  //   return Object.values(myMatches)
-  //     .filter((m: IMatch) => m.opponent &&
-  //       keys[m.opponent.publicKey] !== undefined &&
-  //       m.result === MatchResult.Opponent
-  //     )
-  //     .map((m: IMatch) => transfer({ recipient: payoutAddress, amount: 196300000 - 100000 }, keys[m.opponent.publicKey]))
-  // }
-
   private _getChanges(myMatches: Record<string, IMatch>, matches: Record<string, IMatch>): IMatchChange[] {
     const matchChanges = []
     for (const matchAddress of Object.keys(myMatches)) {
@@ -334,20 +298,4 @@ export class MatchesService implements OnDestroy {
 
     return move
   }
-
-  // private _getSeedsFromStorage(userAddress: string): string[] {
-  //   const allIntermediateSeeds = JSON.parse(localStorage.getItem('intermediateSeeds')) || {}
-
-  //   return allIntermediateSeeds[userAddress] || []
-  // }
-
-  // private _saveSeedToStorage(userAddress: string, seed: string): string {
-  //   const allIntermediateSeeds = JSON.parse(localStorage.getItem('intermediateSeeds')) || {}
-  //   allIntermediateSeeds[userAddress] = allIntermediateSeeds[userAddress] || []
-  //   allIntermediateSeeds[userAddress].push(seed)
-
-  //   localStorage.setItem('intermediateSeeds', JSON.stringify(allIntermediateSeeds))
-
-  //   return seed
-  // }
 }

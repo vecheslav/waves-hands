@@ -367,16 +367,6 @@ export class MatchesHelper {
 
     console.log('Payout completed')
   }
-
-  // async resolvePayoutTransfers(txs: ITransferTransaction[]) {
-  //   for (const tx of txs) {
-  //     try {
-        
-  //     } catch (err) {
-
-  //     }
-  //   }
-  // }
 }
 
 export const prepareSetScriptTx = (matchSeed: string, chainId: string) => {
