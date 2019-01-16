@@ -27,22 +27,22 @@ match (tx) {
 
         let oldHeight = if(isDefined(getInteger(me, heightKey))) then extract(getInteger(me, heightKey)) else 9223372036854775807
         let canWriteP2Move = (!isDefined(getBinary(me, stage1)) || (oldHeight - height < -3))
-        let isDataSizeValid = size(dataTx.data) == 3
-        let isDataTxSignatureValid = sigVerify(dataTx.bodyBytes, dataTx.proofs[0], extract(getBinary(dataTx.data, "player2Key")))
+        let isDataSizeValid = size(dataTx.data) == 3        
         let isHeightFieldCorrect = 
         (height == extract(getInteger(dataTx.data, heightKey)) ||
         height - 1 == extract(getInteger(dataTx.data, heightKey)) ||
         height + 1 == extract(getInteger(dataTx.data, heightKey)))
 
-        canWriteP2Move && isDataSizeValid && isDataTxSignatureValid && isHeightFieldCorrect
+        canWriteP2Move && isDataSizeValid && isHeightFieldCorrect
 
         else if isDefined(getBinary(dataTx.data, stage2)) then 
             !isDefined(getBinary(me, stage2)) &&
             size(dataTx.data) == 2 &&
-            size(extract(getBinary(dataTx.data, stage2))) == 32 &&
             sha256(extract(getBinary(dataTx.data, stage2))) == extract(getBinary(me, stage1)) &&
             match (transactionById(extract(getBinary(dataTx.data, "payment")))) {
                 case p2payment:TransferTransaction =>
+                    size(p2payment.attachment) == 32 &&
+                    sha256(p2payment.attachment) == extract(getBinary(me, stage1)) &&
                     p2payment.amount == 1*wave &&
                     p2payment.recipient == me &&
                     p2payment.senderPublicKey == extract(getBinary(me, "player2Key")) &&

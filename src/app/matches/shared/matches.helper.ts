@@ -267,14 +267,10 @@ export class MatchesHelper {
 
     const { seed, address: addr, publicKey: pk } = randomAccount()
 
-    const initialTransfer = await this.keeper.prepareWavesTransfer(addr, 1 * wave + 100000)
-
-    await this._api.broadcastAndWait(initialTransfer)
+    const { moveHash, move } = this.hideMoves(moves)
 
     const h = await this._api.getHeight()
     console.log(`Height is ${h}`)
-
-    const { moveHash, move } = this.hideMoves(moves)
 
     const dataTx = data({
       senderPublicKey: matchPublicKey, data: [
@@ -287,6 +283,10 @@ export class MatchesHelper {
     await this.core.broadcastAndWait(dataTx)
 
     console.log(`Player 2 move completed`)
+
+    const initialTransfer = await this.keeper.prepareWavesTransfer(addr, 1 * wave + 100000, base58encode(move))
+
+    await this._api.broadcastAndWait(initialTransfer)
 
     const p2Transfer = transfer({ recipient: matchAddress, amount: 1 * wave }, seed)
 
@@ -307,10 +307,10 @@ export class MatchesHelper {
   }
 
   async finishMatch(player1Address: string, player2Address: string, matchPublicKey: string, matchAddress: string, move: Uint8Array) {
-    
+
     console.log('Revealing p1 move:')
     console.log(move)
-   
+
     const revealP1 = data({
       senderPublicKey: matchPublicKey,
       data: [
