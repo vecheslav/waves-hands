@@ -25,20 +25,23 @@ export class KeeperService {
     return await this.keeper.auth(param)
   }
 
-  async prepareWavesTransfer(recipient: string, amount: number): Promise<any> {
-    return await this.keeper.signTransaction({
+  async prepareWavesTransfer(recipient: string, amount: number, attachment?: string): Promise<any> {
+    const d = {
       type: 4, data: {
         'amount': {
           'assetId': 'WAVES',
           'tokens': (amount / 100000000).toString(),
         },
+        'attachment': attachment,
         'fee': {
           'assetId': 'WAVES',
           'tokens': '0.001',
         },
         'recipient': recipient,
       },
-    }).then((x: any) => {
+    }
+
+    return await this.keeper.signTransaction(d).then((x: any) => {
       const res = JSON.parse(x)
       res.fee = parseInt(res.fee.toString(), undefined)
       res.amount = parseInt(res.amount.toString(), undefined)

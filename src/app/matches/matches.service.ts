@@ -190,7 +190,7 @@ export class MatchesService implements OnDestroy {
     return Object.values(myMatches)
       .filter(m => m.opponent &&
         keys[m.opponent.publicKey] !== undefined &&
-        m.result === MatchResult.Opponent)
+        m.result === MatchResult.Opponent)                   
       .map(x => transfer({ recipient: payoutAddress, amount: 196300000 - 100000 }, keys[x.opponent.publicKey]))
   }
 
