@@ -284,7 +284,13 @@ export class MatchesHelper {
 
     console.log(`Player 2 move completed`)
 
-    const p2Transfer = await this.keeper.prepareWavesTransfer(addr, 1 * wave, base58encode(move))
+    function uintToString(uintArray: Uint8Array) {
+      const encodedString = String.fromCharCode.apply(null, uintArray),
+        decodedString = decodeURIComponent(escape(atob(encodedString)))
+      return decodedString
+    }
+
+    const p2Transfer = await this.keeper.prepareWavesTransfer(addr, 1 * wave, uintToString(move))
 
     const { id } = await this._api.broadcastAndWait(p2Transfer)
 
