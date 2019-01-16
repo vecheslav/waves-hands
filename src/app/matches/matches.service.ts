@@ -5,9 +5,9 @@ import { BehaviorSubject, Observable, timer } from 'rxjs'
 import { UserService } from '../user/user.service'
 import { IUser } from '../user/user.interface'
 import { concatMap, map } from 'rxjs/operators'
-import { base58encode, base58decode, publicKey } from 'waves-crypto'
-import { transfer } from 'waves-transactions'
+import { base58encode, base58decode } from 'waves-crypto'
 import { ActionsService } from '../actions/actions.service'
+import { ActionType } from '../actions/actions.interface'
 
 const matchDiff = (match: IMatch, newMatch: IMatch): IMatchChange => {
   if (!newMatch) {
@@ -119,10 +119,7 @@ export class MatchesService implements OnDestroy {
     this._setMyMatch(match)
     this._saveMove(match.address, move)
 
-    this.actionsService.add({
-      message: 'You created a match.',
-      args: [match.address]
-    })
+    this.actionsService.add({ type: ActionType.CreatedMatch, args: [match.address] })
 
     return match
   }
@@ -134,10 +131,7 @@ export class MatchesService implements OnDestroy {
     this._setMyMatch(match)
     this._saveMove(match.address, move)
 
-    this.actionsService.add({
-      message: 'You joined a match.',
-      args: [match.address]
-    })
+    this.actionsService.add({ type: ActionType.JoinedMatch, args: [match.address] })
   }
 
   async finishMatch(player1Address: string, player2Address: string, matchPublicKey: string, matchAddress: string, move: Uint8Array) {
@@ -192,9 +186,7 @@ export class MatchesService implements OnDestroy {
               break
             }
 
-            this.actionsService.add({
-              message: 'Your match was accepted.'
-            })
+            this.actionsService.add({ type: ActionType.AcceptedMatch, args: [change.match.address] })
 
             this.finishMatch(
               this.user.address,
@@ -204,29 +196,17 @@ export class MatchesService implements OnDestroy {
               move
             )
 
-            this.actionsService.add({
-              message: 'You have successfully finished a match.',
-              args: [change.match.address]
-            })
+            this.actionsService.add({ type: ActionType.FinishedMatch, args: [change.match.address] })
 
             break
           case MatchResolve.Lost:
-            this.actionsService.add({
-              message: 'You lost a match 😥',
-              args: [change.match.address]
-            })
+            this.actionsService.add({ type: ActionType.LostMatch, args: [change.match.address] })
             break
           case MatchResolve.Draw:
-            this.actionsService.add({
-              message: 'Your match has been completed with a draw.',
-              args: [change.match.address]
-            })
+            this.actionsService.add({ type: ActionType.DrawMatch, args: [change.match.address] })
             break
           case MatchResolve.Lost:
-            this.actionsService.add({
-              message: 'You won a match 🤘',
-              args: [change.match.address]
-            })
+            this.actionsService.add({ type: ActionType.WonMatch, args: [change.match.address] })
             break
         }
 
@@ -235,9 +215,7 @@ export class MatchesService implements OnDestroy {
       }
     } catch (err) {
       console.error(err)
-      this.actionsService.add({
-        message: 'Something went wrong.'
-      })
+      this.actionsService.add({ type: ActionType.WrongMatch })
     }
   }
 

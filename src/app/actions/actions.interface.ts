@@ -1,5 +1,16 @@
 export interface IAction {
   timestamp?: number
   args?: any[]
-  message: string
+  type: ActionType
+}
+
+export enum ActionType {
+  CreatedMatch,
+  JoinedMatch,
+  AcceptedMatch,
+  FinishedMatch,
+  LostMatch,
+  DrawMatch,
+  WonMatch,
+  WrongMatch,
 }

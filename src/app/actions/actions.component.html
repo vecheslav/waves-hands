@@ -5,17 +5,7 @@
 
   <div class="actions-list" *ngIf="!isLoading">
     <div class="actions-list__item" *ngFor="let action of actions">
-      <div class="level action-item">
-        <div class="action-icon">
-          <svg class="icon"><use xlink:href="icons.svg#icon-notifications_none"></use></svg>
-        </div>
-        <span class="action-content">
-          <small class="date">{{ action.timestamp | date: 'd MMM, y, h:mm a' }}</small>
-          <div class="action-text">
-            <p>{{ action.message }}</p>
-          </div>
-        </span>
-      </div>          
+      <app-action-item [action]="action"></app-action-item>
     </div>
   </div>
   <div class="actions-loading" *ngIf="isLoading">

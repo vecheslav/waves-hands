@@ -15,7 +15,7 @@ export class ActionsComponent implements OnInit, OnDestroy {
 
   constructor(private actionsService: ActionsService) {
     this._actionsSubscriber = this.actionsService.actions$.subscribe((actions: IAction[]) => {
-      this.actions = actions
+      this.actions = actions.sort((a, b) => (a.timestamp > b.timestamp) ? -1 : 1)
 
       this.isLoading = false
     })

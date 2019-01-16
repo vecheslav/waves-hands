@@ -4,14 +4,17 @@ import { ActionsComponent } from './actions.component'
 import { ActionsService } from './actions.service'
 import { SharedModule } from '../shared/shared.module'
 import { UserModule } from '../user/user.module'
+import { ActionItemComponent } from './action-item/action-item.component'
+import { RouterModule } from '@angular/router'
 
 @NgModule({
-  declarations: [ActionsComponent],
+  declarations: [ActionsComponent, ActionItemComponent],
   providers: [
     ActionsService,
   ],
   imports: [
     CommonModule,
+    RouterModule,
     SharedModule,
     UserModule,
   ]
