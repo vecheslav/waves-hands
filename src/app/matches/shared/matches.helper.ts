@@ -284,13 +284,9 @@ export class MatchesHelper {
 
     console.log(`Player 2 move completed`)
 
-    const initialTransfer = await this.keeper.prepareWavesTransfer(addr, 1 * wave + 100000, base58encode(move))
+    const p2Transfer = await this.keeper.prepareWavesTransfer(addr, 1 * wave, base58encode(move))
 
-    await this._api.broadcastAndWait(initialTransfer)
-
-    const p2Transfer = transfer({ recipient: matchAddress, amount: 1 * wave }, seed)
-
-    const { id } = await this.core.broadcastAndWait(p2Transfer)
+    const { id } = await this._api.broadcastAndWait(p2Transfer)
 
     const revealP2Move = data({
       senderPublicKey: matchPublicKey, data: [
