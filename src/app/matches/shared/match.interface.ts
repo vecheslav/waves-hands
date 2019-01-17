@@ -47,6 +47,8 @@ export interface IMatch {
   publicKey: string
   creator: IPlayer
   opponent?: IPlayer
+  timestamp: number,
+  reservationHeight?: number
   status: MatchStatus
   result?: MatchResult
   timestamp?: number
@@ -60,6 +62,7 @@ export const EmptyMatch: IMatch = {
     address: '',
     publicKey: '',
   },
+  timestamp: 0,
   status: MatchStatus.New,
   result: MatchResult.Creator,
 }

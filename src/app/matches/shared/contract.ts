@@ -15,6 +15,9 @@ let serviceCommission = 200
 let rock = base58'1'
 let paper = base58'2'
 let scissors = base58'3'
+let matchReservationBlocksCount = 3
+let creatorRevealBlocksCount = 15
+let maxlong = 9223372036854775807
 
 let matchKey = extract(getBinary(me, "matchKey"))
 let player1Key = extract(getBinary(me, "player1Key"))
@@ -25,8 +28,8 @@ match (tx) {
         let dataTxDataIsOk =
         if isDefined(getBinary(dataTx.data, stage1)) then
 
-        let oldHeight = if(isDefined(getInteger(me, heightKey))) then extract(getInteger(me, heightKey)) else 9223372036854775807
-        let canWriteP2Move = (!isDefined(getBinary(me, stage1)) || (oldHeight - height < -3))
+        let oldHeight = if(isDefined(getInteger(me, heightKey))) then extract(getInteger(me, heightKey)) else maxlong
+        let canWriteP2Move = (!isDefined(getBinary(me, stage1)) || (oldHeight - height < -matchReservationBlocksCount && !isDefined(getBinary(me, stage2))))
         let isDataSizeValid = size(dataTx.data) == 3        
         let isHeightFieldCorrect = 
         (height == extract(getInteger(dataTx.data, heightKey)) ||
@@ -69,6 +72,7 @@ match (tx) {
         dataTxDataIsOk
 
     case payout:MassTransferTransaction => 
+    let waitingTooLongForMatchCreatorToReveal = extract(getInteger(me, heightKey)) - height < -matchReservationBlocksCount
     let p1moves = take(extract(getBinary(me, stage3)), 3)
     let p2moves = take(extract(getBinary(me, stage2)), 3)
     let p1m1 = take(p1moves, 1)
@@ -91,9 +95,9 @@ match (tx) {
         payout.transfers[0].recipient == serviceAddress &&
         payout.transfers[0].amount == gameBet / serviceCommission
     
-    let protect = (payout.transferCount == 2 && payout.fee <= 600000) || (payout.transferCount == 3 && payout.fee <= 700000)
+    let isFeeIsNotAbused = (payout.transferCount == 2 && payout.fee <= 600000) || (payout.transferCount == 3 && payout.fee <= 700000)
 
-    let isPayoutValid =     
+    let isPayoutValid = (waitingTooLongForMatchCreatorToReveal && payout.transfers[1].recipient == p2) ||   
     if(score == 0) then
         size(payout.transfers) == 3 &&
         payout.transfers[1].amount == payout.transfers[2].amount &&
@@ -104,9 +108,9 @@ match (tx) {
         size(payout.transfers) == 2 &&
         payout.transfers[1].recipient == winner
     
-    protect && isCommissionIncluded && isPayoutValid
+    isFeeIsNotAbused && isCommissionIncluded && isPayoutValid
     case _ => false  
 }
-  
+
 `
 export const compiledScript = Buffer.from(compile(scriptCode).result).toString('base64')
