@@ -149,12 +149,14 @@ export class MatchesHelper {
       status = MatchStatus.Done
     }
 
+    const result = opponent ? whoHasWon(creator.moves, opponent.moves) : undefined
+
     return {
       address: addr,
       creator,
       opponent,
       status,
-      result: whoHasWon(creator.moves, opponent.moves),
+      result,
       publicKey: base58encode(matchKey),
       timestamp: filteredTxs.min(x => x.timestamp).timestamp
     }
