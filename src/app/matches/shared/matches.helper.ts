@@ -156,6 +156,7 @@ export class MatchesHelper {
       opponent,
       status,
       publicKey: base58encode(matchKey),
+      timestamp: filteredTxs.min(x => x.timestamp).timestamp
     }
   }
 
@@ -178,6 +179,7 @@ export class MatchesHelper {
             address: creatorAddress,
             publicKey: p1Key
           },
+          timestamp: b.timestamp,
           status: MatchStatus.New
         }
       })
@@ -260,7 +262,7 @@ export class MatchesHelper {
       ]
     }, seed)
 
-    await this.core.broadcastAndWait(p1DataTx)
+    const r = await this.core.broadcastAndWait(p1DataTx)
 
     progress(0.8)
 
@@ -281,7 +283,8 @@ export class MatchesHelper {
           address: player1Address,
           publicKey: player1Key,
           moves: moves as PlayerMoves
-        }
+        },
+        timestamp: r.timestamp
       }
     }
   }
