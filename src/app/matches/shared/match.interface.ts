@@ -47,6 +47,7 @@ export interface IMatch {
   publicKey: string
   creator: IPlayer
   opponent?: IPlayer
+  reservationHeight?: number
   status: MatchStatus
   result?: MatchResult
   isFinishing?: boolean

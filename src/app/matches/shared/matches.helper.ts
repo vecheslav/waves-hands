@@ -24,6 +24,13 @@ const getString = (key: string, dataTx: IDataTransaction): string => {
   }
 }
 
+const getNumber = (key: string, dataTx: IDataTransaction): number => {
+  const found = dataTx.data.find(x => x.key === key)
+  if (found) {
+    return parseInt(found.value.toString(), undefined)
+  }
+}
+
 const getBinary = (key: string, dataTx: IDataTransaction): Uint8Array => {
   const found = dataTx.data.find(x => x.key === key)
   if (found) {
@@ -155,6 +162,8 @@ export class MatchesHelper {
   async getMatchList(): Promise<Record<string, IMatch>> {
     const r = await this._api.getDataTxsByKey('matchKey')
 
+    const currentHeight = await this._api.getHeight()
+
     const matches: Record<string, IMatch> = r.reduce((a, b) => {
       const p1Key = getDataByKey('player1Key', [b], x => base58encode(BASE64_STRING(x.slice(7))))
       if (!p1Key) {
@@ -177,14 +186,18 @@ export class MatchesHelper {
     const _ = (await this._api.getDataTxsByKey('p2MoveHash'))
       .forEach(p => {
         const p2Key = base58encode(getBinary('player2Key', p))
+        const h = getNumber('height', p)
+
         const addr = address({ public: p2Key }, environment.chainId)
 
         const match = matches[p.sender]
         if (match) {
+          match.reservationHeight = h
           match.opponent = {
             publicKey: p2Key,
             address: addr
           }
+
         }
       })
 
@@ -210,6 +223,11 @@ export class MatchesHelper {
         match.status = MatchStatus.Done
         match.result = whoHasWon(match.creator.moves, match.opponent.moves)
       }
+    })
+
+    Object.values(matches).filter(m => m.reservationHeight - currentHeight < -3 && m.status === MatchStatus.New).forEach(m => {
+      matches[m.address].reservationHeight = undefined
+      matches[m.address].opponent = undefined
     })
 
     return matches
@@ -273,7 +291,7 @@ export class MatchesHelper {
     const { moveHash, move } = this.hideMoves(moves)
 
     const p2Transfer = await this.keeper.prepareWavesTransfer(matchAddress, 1 * wave, new TextDecoder('utf-8')
-    .decode(move))
+      .decode(move))
 
     const h = await this._api.getHeight()
     console.log(`Height is ${h}`)
@@ -289,7 +307,7 @@ export class MatchesHelper {
     await this.core.broadcastAndWait(dataTx)
 
     console.log(`Player 2 move completed`)
-  
+
     console.log(p2Transfer)
     console.log(p2Transfer.attachment)
 
