@@ -91,7 +91,7 @@ match (tx) {
         payout.transfers[0].recipient == serviceAddress &&
         payout.transfers[0].amount == gameBet / serviceCommission
     
-    let protect = payout.fee <= 600000
+    let protect = (payout.transferCount == 2 && payout.fee <= 600000) || (payout.transferCount == 3 && payout.fee <= 700000)
 
     let isPayoutValid =     
     if(score == 0) then
