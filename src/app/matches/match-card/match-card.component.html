@@ -14,14 +14,16 @@
         <div class="level-item">
           <app-match-player [player]="match.creator"></app-match-player>
           <div class="player-status"
-               [class.player-status--winner]="match.result === 0">
+               [class.player-status--winner]="match.result === 0"
+               [class.player-status--draw]="match.result === 2">
           </div>
         </div>
         <div class="level-item">vs</div>
         <div class="level-item">
           <app-match-player [player]="match.opponent"></app-match-player>
           <div class="player-status"
-               [class.player-status--winner]="match.result === 1">
+               [class.player-status--winner]="match.result === 1"
+               [class.player-status--draw]="match.result === 2">
           </div>
         </div>
       </div>
@@ -37,7 +39,7 @@
       <div class="level-right">
         <div class="level-item">
           <div class="match-status">
-            Open
+            {{ match.timestamp }}
           </div>
         </div>
       </div>

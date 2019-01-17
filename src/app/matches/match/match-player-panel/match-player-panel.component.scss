@@ -1,0 +1,73 @@
+@import '~src/styles/variables';
+
+.player-panel {
+  
+  &__user {
+    display: flex;
+    align-items: center;
+  }
+
+  &__avatar {
+    width: 3rem;
+    height: 3rem;
+
+    display: flex;
+    float: left;
+  }
+
+  &__details {
+    margin-left: 1rem;
+    float: right;
+
+    .address {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 180px;
+      display: block;
+      color: $grey-light;
+
+      &:hover {
+        color: $primary;
+      }
+    }
+  }
+}
+
+.user-panel--right {
+  .user-panel__details {
+    margin: 0 1rem 0 0;
+  }
+}
+
+.selected-hands {
+
+  &__item {
+    width: 2.5rem;
+    height: 2.5rem;
+
+    border: 2px solid $white-ter;
+    border-radius: 50%;
+    padding: .3rem;
+    margin-left: .75rem;
+  }
+}
+
+.match-top {
+  .selected-hands__item {
+    margin-right: .75rem;
+    margin-left: 0;
+  }
+
+  .player-panel {
+    flex-direction: row-reverse;
+  }
+
+  .user-panel {
+    flex-direction: row-reverse;
+
+    &__details {
+      margin-right: 1rem;
+      margin-left: 0;
+    }
+  }
+}

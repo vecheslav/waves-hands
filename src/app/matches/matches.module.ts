@@ -9,10 +9,11 @@ import { SharedModule } from '../shared/shared.module'
 import { UserModule } from '../user/user.module'
 import { MatchesService } from './matches.service'
 import { MatchesHelper } from './shared/matches.helper'
-import { ActionsModule } from '../actions/actions.module';
+import { ActionsModule } from '../actions/actions.module'
+import { MatchPlayerPanelComponent } from './match/match-player-panel/match-player-panel.component'
 
 @NgModule({
-  declarations: [MatchesComponent, MatchCardComponent, MatchComponent],
+  declarations: [MatchesComponent, MatchCardComponent, MatchComponent, MatchPlayerPanelComponent],
   imports: [
     CommonModule,
     RouterModule,

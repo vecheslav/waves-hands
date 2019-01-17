@@ -75,6 +75,15 @@ $card-padding: 1.5rem;
           content: 'Winner';
         }
       }
+
+      &--draw {
+        background: $white-ter;
+        color: $grey-light;
+
+        &:before {
+          content: 'Draw';
+        }
+      }
     }
   }
 }

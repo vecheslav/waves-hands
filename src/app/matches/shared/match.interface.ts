@@ -49,6 +49,7 @@ export interface IMatch {
   opponent?: IPlayer
   status: MatchStatus
   result?: MatchResult
+  timestamp?: number
   isFinishing?: boolean
 }
 
@@ -66,6 +67,9 @@ export const EmptyMatch: IMatch = {
 export enum MatchStage {
   SelectHands,
   CreatedMatch,
-  CompareHands,
+  JoinedMatch,
+  ReservedMatch,
   ResultMatch,
+  WonMatch,
+  LostMatch,
 }
