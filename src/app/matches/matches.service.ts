@@ -95,8 +95,10 @@ export class MatchesService implements OnDestroy {
         this._resolveMatches.call(self, r.matches, r.currentHeight)
       }
 
-      for (const match of Object.values(r.matches)) {
-        match.owns = match.creator.address === this.user.address
+      if (this.user) {
+        for (const match of Object.values(r.matches)) {
+          match.owns = match.creator.address === this.user.address
+        }
       }
       this.matches$.next(r.matches)
     })
