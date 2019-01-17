@@ -26,7 +26,7 @@ match (tx) {
         if isDefined(getBinary(dataTx.data, stage1)) then
 
         let oldHeight = if(isDefined(getInteger(me, heightKey))) then extract(getInteger(me, heightKey)) else 9223372036854775807
-        let canWriteP2Move = (!isDefined(getBinary(me, stage1)) || (oldHeight - height < -3))
+        let canWriteP2Move = (!isDefined(getBinary(me, stage1)) || (oldHeight - height < -3 && !isDefined(getBinary(me, stage2))))
         let isDataSizeValid = size(dataTx.data) == 3        
         let isHeightFieldCorrect = 
         (height == extract(getInteger(dataTx.data, heightKey)) ||
@@ -91,7 +91,7 @@ match (tx) {
         payout.transfers[0].recipient == serviceAddress &&
         payout.transfers[0].amount == gameBet / serviceCommission
     
-    let protect = (payout.transferCount == 2 && payout.fee <= 600000) || (payout.transferCount == 3 && payout.fee <= 700000)
+    let protectFee = (payout.transferCount == 2 && payout.fee <= 600000) || (payout.transferCount == 3 && payout.fee <= 700000)
 
     let isPayoutValid =     
     if(score == 0) then
@@ -104,9 +104,9 @@ match (tx) {
         size(payout.transfers) == 2 &&
         payout.transfers[1].recipient == winner
     
-    protect && isCommissionIncluded && isPayoutValid
+    protectFee && isCommissionIncluded && isPayoutValid
     case _ => false  
 }
-  
+
 `
 export const compiledScript = Buffer.from(compile(scriptCode).result).toString('base64')
