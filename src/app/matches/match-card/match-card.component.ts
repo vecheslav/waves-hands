@@ -23,7 +23,7 @@ export class MatchCardComponent implements OnInit {
 
   @HostListener('mouseenter')
   onMouseEnter(): void {
-    if (this.match.status === MatchStatus.New) {
+    if (this.match.status === MatchStatus.New && !this.match.owns) {
       this.startIsShown = true
     }
   }

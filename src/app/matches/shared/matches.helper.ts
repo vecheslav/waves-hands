@@ -148,7 +148,7 @@ export class MatchesHelper {
       status = MatchStatus.Done
     }
 
-    const result = opponent ? whoHasWon(creator.moves, opponent.moves) : undefined
+    const result = (opponent && opponent.moves) ? whoHasWon(creator.moves, opponent.moves) : undefined
 
     return {
       address: addr,

@@ -52,6 +52,7 @@ export interface IMatch {
   result?: MatchResult
   timestamp?: number
   isFinishing?: boolean
+  owns?: boolean
 }
 
 export const EmptyMatch: IMatch = {
