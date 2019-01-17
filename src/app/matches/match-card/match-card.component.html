@@ -38,9 +38,9 @@
       </div>
       <div class="level-right">
         <div class="level-item">
-          <div class="match-status">
-            {{ match.timestamp }}
-          </div>
+          <a [routerLink]="['match', match.address]" class="match-date">
+            {{ match.timestamp | date: 'dd MMM, h:mm a' }}
+          </a>
         </div>
       </div>
     </div>

@@ -88,6 +88,15 @@ $card-padding: 1.5rem;
   }
 }
 
+.match-date {
+  color: $grey-light;
+
+  &:hover,
+  &:focus {
+    color: $primary;
+  }
+}
+
 .start-overlay {
   position: absolute;
   top: 0;
