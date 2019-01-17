@@ -14,34 +14,12 @@
         </div>
 
         <div class="match" *ngIf="keeperIsAvailable && user">
-          <div class="match-top" *ngIf="isJoinedToMatch">
-            <div class="level">
-              <div class="level-left">
-                <div class="level selected-hands">
-                  <div class="level-item has-text-centered selected-hands__item" *ngFor="let hand of match.creator?.moves">
-                    <div [class]="['hand hand--' + hand]"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="level-right user-panel user-panel--right">
-                <div class="level-left">
-                  <div class="user-panel__details">
-                    <a href="https://wavesexplorer.com/address/{{ match.creator?.address }}"
-                       target="_blank"
-                       class="address">{{ match.creator?.address }}</a>
-                  </div>
-                </div>
-                <div class="level-right">
-                  <div class="user-panel__avatar">
-                    <app-match-player [player]="match.creator"></app-match-player>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div class="match-top" *ngIf="!isCreatingMatch">
+            <app-match-player-panel [player]="match.creator" [hands]="match.creator?.moves"></app-match-player-panel>
           </div>
 
           <div class="match-stages" [ngSwitch]="stage" *ngIf="!isLoading">
-            <div class="match-stage match-stage--select-hands" *ngSwitchCase="0">
+            <div class="match-stage match-stage--select-hands" *ngSwitchCase="matchStage.SelectHands">
               <h2 class="title is-size-4 has-text-grey-dark has-text-centered">Select your hands</h2>
               <div class="level select-hands">
                 <div class="level-item has-text-centered" (click)="select(0)">👊️</div>
@@ -50,55 +28,74 @@
               </div>
             </div>
 
-            <div class="match-stage match-stage--created-match has-text-centered" *ngSwitchCase="1">
+            <div class="match-stage match-stage--created-match has-text-centered" *ngSwitchCase="matchStage.CreatedMatch">
               <div>
                 <span class="is-size-1">🤟</span>
               </div>
-              <h2 class="title has-text-centered">You created a game</h2>
-              <p class="subtitle">Share the game link to friends, or wait for players to join.</p>
+              <h2 class="title has-text-centered">You created the match</h2>
+              <p class="subtitle">Share the match link to friends, or wait for players to join.</p>
               <div class="md-1">
                 <app-share-match [url]="shareUrl" [options]="{ type: 'buttons' }"></app-share-match>
               </div>
               <a [routerLink]="['/']">Close window</a>
             </div>
 
-            <div class="match-stage match-stage--result-match" *ngSwitchCase="3">
-              result
+            <div class="match-stage match-stage--joined-match" *ngSwitchCase="matchStage.JoinedMatch">
+              <div>
+                <span class="is-size-1">✊</span>
+              </div>
+              <h2 class="title has-text-centered">You joined the match</h2>
+              <p class="subtitle">Share the match link to friends.</p>
+              <div class="md-1">
+                <app-share-match [url]="shareUrl" [options]="{ type: 'buttons' }"></app-share-match>
+              </div>
+              <a [routerLink]="['/']">Close window</a>
+            </div>
+
+            <div class="match-stage match-stage--reserved-match" *ngSwitchCase="matchStage.ReservedMatch">
+              <div>
+                <span class="is-size-1">⚔️</span>
+              </div>
+              <h2 class="title has-text-centered">The match was reserved</h2>
+              <p class="subtitle">You can try your luck in other matches.</p>
+            </div>
+
+            <div class="match-stage match-stage--won-match" *ngSwitchCase="matchStage.WonMatch">
+              <div>
+                <span class="is-size-1">🥳</span>
+              </div>
+              <h2 class="title has-text-centered">You won the match</h2>
+              <p class="subtitle">You can try your luck in other matches.</p>
+            </div>
+
+            <div class="match-stage match-stage--lost-match" *ngSwitchCase="matchStage.LostMatch">
+              <div>
+                <span class="is-size-1">😞</span>
+              </div>
+              <h2 class="title has-text-centered">You lost the match</h2>
+              <p class="subtitle">You can try your luck in other matches.</p>
+            </div>
+
+            <div class="match-stage match-stage--result-match" *ngSwitchCase="matchStage.ResultMatch">
+              <div>
+                <span class="is-size-1">🚀</span>
+              </div>
+              <h2 class="title has-text-centered">The match was finished</h2>
+              <p class="subtitle">You can try your luck in other matches.</p>
             </div>
           </div>
-          <div class="match-loading" *ngIf="isLoading && isJoinedToMatch">
+          <div class="match-loading" *ngIf="isLoading && !isCreatingMatch">
             <app-circle-loader></app-circle-loader>
             <div class="subtitle is-size-6 has-text-centered">Please, wait... Don't close the window</div>
           </div>
-          <div class="match-progress" *ngIf="isLoading && !isJoinedToMatch">
+          <div class="match-progress" *ngIf="isLoading && isCreatingMatch">
             <progress class="progress is-small" [attr.value]="progress ? (progress * 100) : null" max="100"></progress>
             <div class="subtitle is-size-6 has-text-centered">Please, wait... Don't close the window</div>
           </div>
 
           <div class="match-bottom">
-            <div class="level">
-              <div class="level-left user-panel">
-                <div class="level-left">
-                  <div class="user-panel__avatar">
-                    <app-match-player [player]="user"></app-match-player>
-                  </div>
-                </div>
-                <div class="level-right">
-                  <div class="user-panel__details">
-                    <a href="https://wavesexplorer.com/address/{{ user?.address }}"
-                       target="_blank"
-                       class="address">{{ user?.address }}</a>
-                  </div>
-                </div>
-              </div>
-              <div class="level-right">
-                <div class="level selected-hands">
-                  <div class="level-item has-text-centered selected-hands__item" *ngFor="let hand of selectedHandSigns">
-                    <div [class]="['hand hand--' + hand]"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <app-match-player-panel *ngIf="match.status === 0" [player]="user" [hands]="selectedHandSigns"></app-match-player-panel>
+            <app-match-player-panel *ngIf="match.status > 0" [player]="match.opponent" [hands]="match.opponent?.moves"></app-match-player-panel>
           </div>
         </div>
 

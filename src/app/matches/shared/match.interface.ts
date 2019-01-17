@@ -47,10 +47,10 @@ export interface IMatch {
   publicKey: string
   creator: IPlayer
   opponent?: IPlayer
-  timestamp: number,
   reservationHeight?: number
   status: MatchStatus
   result?: MatchResult
+  timestamp?: number
   isFinishing?: boolean
 }
 
@@ -69,6 +69,9 @@ export const EmptyMatch: IMatch = {
 export enum MatchStage {
   SelectHands,
   CreatedMatch,
-  CompareHands,
+  JoinedMatch,
+  ReservedMatch,
   ResultMatch,
+  WonMatch,
+  LostMatch,
 }

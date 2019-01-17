@@ -41,6 +41,8 @@
   &__action {
     margin-bottom: 1rem;
   }
+
+  text-align: center;
 }
 
 .select-hands {
@@ -76,45 +78,4 @@
 
 .match-progress {
   padding-top: 3rem;
-}
-
-.selected-hands {
-
-  &__item {
-    width: 2.5rem;
-    height: 2.5rem;
-
-    border: 2px solid $white-ter;
-    border-radius: 50%;
-    padding: .3rem;
-  }
-}
-
-.user-panel {
-  &__avatar {
-    width: 3rem;
-    height: 3rem;
-  }
-
-  &__details {
-    margin-left: 1rem;
-
-    .address {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      width: 180px;
-      display: block;
-      color: $grey-light;
-
-      &:hover {
-        color: $primary;
-      }
-    }
-  }
-}
-
-.user-panel--right {
-  .user-panel__details {
-    margin: 0 1rem 0 0;
-  }
 }

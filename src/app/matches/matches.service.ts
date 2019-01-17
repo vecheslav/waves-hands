@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core'
 import { MatchesHelper } from './shared/matches.helper'
-import { HandSign, IMatch, IMatchChange, MatchResolve, MatchResult, MatchStatus } from './shared/match.interface'
+import { HandSign, IMatch, IMatchChange, MatchResolve, MatchResult, MatchStatus, PlayerMoves } from './shared/match.interface'
 import { BehaviorSubject, Observable, timer } from 'rxjs'
 import { UserService } from '../user/user.service'
 import { IUser } from '../user/user.interface'
@@ -160,6 +160,11 @@ export class MatchesService implements OnDestroy {
       myMatch.isFinishing = false
       throw err
     }
+  }
+
+  getMyMoves(matchAddress: string): PlayerMoves {
+    const moves = this._getMoveFromStorage(matchAddress).slice(0, 3)
+    return Array.from(moves) as PlayerMoves
   }
 
   private _resolveMatches(newMatches: Record<string, IMatch>, currentHeight: number) {

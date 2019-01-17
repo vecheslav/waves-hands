@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core'
-import { HandSign, IMatch, MatchStage, Player } from '../shared/match.interface'
+import { HandSign, IMatch, MatchStage, Player, MatchStatus, PlayerMoves } from '../shared/match.interface'
 import { ActivatedRoute, Router } from '@angular/router'
 import { MatchesService } from '../matches.service'
 import { KeeperService } from '../../auth/keeper.service'
@@ -15,8 +15,9 @@ export class MatchComponent implements OnInit, OnDestroy {
   match: IMatch
 
   stage: MatchStage = MatchStage.SelectHands
+  matchStage = MatchStage
   selectedHandSigns: HandSign[] = []
-  isJoinedToMatch = false
+  isCreatingMatch = false
   user: IUser
 
   keeperIsAvailable = true
@@ -39,9 +40,12 @@ export class MatchComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.isJoinedToMatch = !!this.match.address
-
+    this.isCreatingMatch = !this.match.address
     this._reset()
+
+    if (this.stage === MatchStage.CreatedMatch) {
+      this.match.creator.moves = this.matchesService.getMyMoves(this.match.address)
+    }
   }
 
   ngOnDestroy() {
@@ -57,10 +61,10 @@ export class MatchComponent implements OnInit, OnDestroy {
     if (this.selectedHandSigns.length === 3) {
       this.isLoading = true
 
-      if (this.isJoinedToMatch) {
-        await this.join()
-      } else {
+      if (this.isCreatingMatch) {
         await this.create()
+      } else {
+        await this.join()
       }
     }
   }
@@ -85,7 +89,7 @@ export class MatchComponent implements OnInit, OnDestroy {
         this.user.publicKey,
         this.selectedHandSigns
       )
-      this.stage = MatchStage.ResultMatch
+      this.stage = MatchStage.JoinedMatch
       this.isLoading = false
     } catch (err) {
       console.error(err)
@@ -101,11 +105,73 @@ export class MatchComponent implements OnInit, OnDestroy {
     this.progress = value
   }
 
+  private _applyMatchStage() {
+    if (this.isCreatingMatch) {
+      this.stage = MatchStage.SelectHands
+      return
+    }
+
+    switch (this.match.status) {
+      case MatchStatus.New:
+        if (this._isAsCreator()) {
+          this.stage = MatchStage.CreatedMatch
+        }
+        break
+      case MatchStatus.Waiting:
+        if (this._isAsCreator()) {
+          this.stage = MatchStage.ReservedMatch
+        } else if (this._isAsOpponent) {
+          this.stage = MatchStage.JoinedMatch
+        } else {
+          this.stage = MatchStage.ReservedMatch
+        }
+        break
+      case MatchStatus.Done:
+        if (this._isAsCreator()) {
+          this.stage = (this.match.result === 0) ? MatchStage.WonMatch : MatchStage.LostMatch
+        } else if (this._isAsOpponent()) {
+          this.stage = (this.match.result === 1) ? MatchStage.WonMatch : MatchStage.LostMatch
+        } else {
+          this.stage = MatchStage.ResultMatch
+        }
+        if (this.match.result === 2 || typeof this.match.result === 'undefined') {
+          this.stage = MatchStage.ResultMatch
+        }
+        break
+      default:
+        this.stage = MatchStage.SelectHands
+    }
+  }
+
   private _reset() {
-    this.stage = MatchStage.SelectHands
+    this._applyMatchStage()
     this.keeperIsAvailable = this.keeperService.isAvailable()
     this.isLoading = false
     this.selectedHandSigns = []
     this.progress = null
+  }
+
+  private _isAsCreator() {
+    if (!this.match.creator) {
+      return true
+    }
+
+    if (!this.user) {
+      return false
+    }
+
+    return this.match.creator.address === this.user.address
+  }
+
+  private _isAsOpponent() {
+    if (!this.match.opponent) {
+      return false
+    }
+
+    if (!this.user) {
+      return false
+    }
+
+    return this.match.opponent.address === this.user.address
   }
 }

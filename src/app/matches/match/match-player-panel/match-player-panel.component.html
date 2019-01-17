@@ -1,0 +1,19 @@
+<div class="level player-panel">
+  <div class="player-panel__user">
+    <div class="player-panel__avatar">
+      <app-match-player [player]="player"></app-match-player>
+    </div>
+    <div class="player-panel__details">
+      <a href="https://wavesexplorer.com/address/{{ player?.address }}"
+          target="_blank"
+          class="address">{{ player?.address }}</a>
+    </div>
+  </div>
+  <div class="player-panel__hands">
+    <div class="level selected-hands">
+      <div class="level-item has-text-centered selected-hands__item" *ngFor="let hand of hands">
+        <div [class]="['hand hand--' + hand]"></div>
+      </div>
+    </div>
+  </div>
+</div>

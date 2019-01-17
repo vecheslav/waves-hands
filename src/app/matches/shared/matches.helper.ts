@@ -74,7 +74,6 @@ export class MatchesHelper {
   }
 
   toMoves(uint8Array: Uint8Array): PlayerMoves {
-    console.log(uint8Array)
     if (!uint8Array || uint8Array.length < 3 && uint8Array.slice(0.3).every(x => x >= 0 && x <= 2)) {
       throw new Error('Invalid Uint8Array')
     }
@@ -154,6 +153,7 @@ export class MatchesHelper {
       creator,
       opponent,
       status,
+      result: whoHasWon(creator.moves, opponent.moves),
       publicKey: base58encode(matchKey),
       timestamp: filteredTxs.min(x => x.timestamp).timestamp
     }
