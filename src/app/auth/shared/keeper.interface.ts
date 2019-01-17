@@ -10,6 +10,7 @@ export interface KeeperAuth {
 }
 
 export interface IKeeper {
+  on(event: string, cb: (state) => void)
   auth(param?: { data: string }): Promise<KeeperAuth>
   signTransaction(p: { type: number, data: any }): Promise<TTx>
   prepareWavesTransfer(recipient: string, amount: number): Promise<ITransferTransaction>

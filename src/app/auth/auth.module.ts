@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common'
 import { KeeperProvider } from './keeper.provider'
 import { KeeperService } from './keeper.service'
 
-export function ethFactory(provider: KeeperProvider) {
+export function keeperFactory(provider: KeeperProvider) {
   return () => provider.init()
 }
 
@@ -24,7 +24,7 @@ export class AuthModule {
         KeeperProvider,
         {
           provide: APP_INITIALIZER,
-          useFactory: ethFactory,
+          useFactory: keeperFactory,
           deps: [KeeperProvider],
           multi: true
         },

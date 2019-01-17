@@ -21,6 +21,10 @@ export class KeeperService {
     return this.keeperStatus.isExist
   }
 
+  on(event: string, cb: (state) => void) {
+    return this.keeper.on(event, cb)
+  }
+
   async auth(param?: { data: string }): Promise<KeeperAuth> {
     return await this.keeper.auth(param)
   }

@@ -17,7 +17,7 @@ export class KeeperProvider {
   async init() {
     try {
       // TODO: hack wait init waves keeper
-      await new Promise(resolve => setTimeout(resolve, 200))
+      await new Promise(resolve => setTimeout(resolve, 300))
 
       this._keeper = this._getKeeper()
 
