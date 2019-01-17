@@ -59,12 +59,12 @@ export class MatchesService implements OnDestroy {
   private _myMatches: Record<string, IMatch> = {}
   private _userSubscriber
 
-  private _polledMatches$: Observable<Record<string, IMatch>>
+  private _polledMatches$: Observable<{ matches: Record<string, IMatch>, currentHeight: number }>
   private _pollingSubscriber
 
   constructor(private matchesHelper: MatchesHelper,
-              private userService: UserService,
-              private actionsService: ActionsService) {
+    private userService: UserService,
+    private actionsService: ActionsService) {
     this._userSubscriber = this.userService.user$.subscribe((user: IUser) => {
       this.user = user
       if (this.user) {
@@ -90,12 +90,12 @@ export class MatchesService implements OnDestroy {
     console.log('Starting polling matches...')
     const self = this
 
-    this._pollingSubscriber = this._polledMatches$.subscribe(matches => {
+    this._pollingSubscriber = this._polledMatches$.subscribe(r => {
       if (this.matches$.getValue()) {
-        this._resolveMatches.call(self, matches)
+        this._resolveMatches.call(self, r.matches, r.currentHeight)
       }
 
-      this.matches$.next(matches)
+      this.matches$.next(r.matches)
     })
   }
 
@@ -103,7 +103,7 @@ export class MatchesService implements OnDestroy {
     this._pollingSubscriber.unsubscribe()
   }
 
-  getMatchList(): Promise<Record<string, IMatch>> {
+  getMatchList(): Promise<{ matches: Record<string, IMatch>, currentHeight: number }> {
     return this.matchesHelper.getMatchList()
   }
 
@@ -139,15 +139,15 @@ export class MatchesService implements OnDestroy {
     if (!myMatch) {
       return
     }
-    
+
     // Skip matches with started finishing
     if (myMatch.isFinishing) {
       return
     }
-    
+
     // Book finish match
     myMatch.isFinishing = true
-    
+
     try {
       await this.matchesHelper.finishMatch(
         player1Address,
@@ -162,7 +162,7 @@ export class MatchesService implements OnDestroy {
     }
   }
 
-  private _resolveMatches(newMatches: Record<string, IMatch>) {
+  private _resolveMatches(newMatches: Record<string, IMatch>, currentHeight: number) {
     if (!this.user) {
       return
     }
@@ -172,6 +172,7 @@ export class MatchesService implements OnDestroy {
     }
 
     try {
+
       const changes = this._getChanges(this._myMatches, newMatches)
 
       for (const change of changes) {
