@@ -1,15 +1,14 @@
 import { Injectable } from '@angular/core'
-import { randomBytes } from 'crypto'
 import { concat, publicKey, sha256, base58decode, BASE64_STRING, address, base58encode } from 'waves-crypto'
 import { environment } from '../../../environments/environment'
-import { data, setScript, massTransfer, transfer, broadcast } from 'waves-transactions'
+import { data, setScript, massTransfer } from 'waves-transactions'
 import { KeeperService } from '../../auth/keeper.service'
 import { CoreService } from '../../core/core.service'
 import { HttpClient } from '@angular/common/http'
 import { compiledScript } from './contract'
 import { randomAccount } from './util'
 import { IMatch, MatchStatus, PlayerMoves, HandSign, MatchResult, IPlayer } from './match.interface'
-import { TRANSACTION_TYPE, IDataTransaction, ITransferTransaction } from 'waves-transactions/transactions'
+import { TRANSACTION_TYPE, IDataTransaction } from 'waves-transactions/transactions'
 import { api, testnetConfig, IWavesApi } from './api'
 import { fromAngular } from './api-angular'
 import './extensions'
@@ -162,7 +161,7 @@ export class MatchesHelper {
     }
   }
 
-  async getMatchList(): Promise<Record<string, IMatch>> {
+  async getMatchList(): Promise<{ matches: Record<string, IMatch>, currentHeight: number }> {
     const r = await this._api.getDataTxsByKey('matchKey')
 
     const currentHeight = await this._api.getHeight()
@@ -234,7 +233,7 @@ export class MatchesHelper {
       matches[m.address].opponent = undefined
     })
 
-    return matches
+    return { matches, currentHeight }
   }
 
   async createMatch(moves: HandSign[], progress: (zeroToOne: number) => void = () => { }): Promise<{ move: Uint8Array, moveHash: Uint8Array, match: IMatch }> {
@@ -328,6 +327,29 @@ export class MatchesHelper {
     await this.core.broadcastAndWait(revealP2Move)
 
     console.log(`Player 2 move revealed`)
+
+  }
+
+  async forceFinish(match: IMatch) {
+    const fee = 200000 + 400000
+    const winner = match.opponent.address
+    const commission = 1 * wave / 200
+    const left = 197400000
+
+    const payout = massTransfer({
+      transfers: [
+        { amount: commission, recipient: environment.serviceAddress },
+        { amount: (left - fee - commission), recipient: winner },
+      ],
+      senderPublicKey: match.publicKey,
+      fee: fee
+    })
+
+    try {
+      return await this.core.broadcastAndWait(payout)
+    } catch (err) {
+      throw err
+    }
 
   }
 
