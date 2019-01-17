@@ -178,6 +178,19 @@ export class MatchesService implements OnDestroy {
 
     try {
 
+      Object.values(this._myMatches)
+        .filter(m => m.status === MatchStatus.Waiting && m.reservationHeight - currentHeight < -15)
+        .forEach(async m => {
+          m.isFinishing = true
+          m.status = MatchStatus.Done
+          m.result = MatchResult.Opponent
+
+          try {
+            await this.matchesHelper.forceFinish(m)
+          } catch (error) {
+          }
+        })
+
       const changes = this._getChanges(this._myMatches, newMatches)
 
       for (const change of changes) {

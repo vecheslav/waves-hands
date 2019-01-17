@@ -328,6 +328,29 @@ export class MatchesHelper {
 
   }
 
+  async forceFinish(match: IMatch) {
+    const fee = 200000 + 400000
+    const winner = match.opponent.address
+    const commission = 1 * wave / 200
+    const left = 197400000
+
+    const payout = massTransfer({
+      transfers: [
+        { amount: commission, recipient: environment.serviceAddress },
+        { amount: (left - fee - commission), recipient: winner },
+      ],
+      senderPublicKey: match.publicKey,
+      fee: fee
+    })
+
+    try {
+      return await this.core.broadcastAndWait(payout)
+    } catch (err) {
+      throw err
+    }
+
+  }
+
   async finishMatch(player1Address: string, player2Address: string, matchPublicKey: string, matchAddress: string, move: Uint8Array) {
 
     console.log('Revealing p1 move:')
