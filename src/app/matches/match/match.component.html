@@ -48,11 +48,7 @@
                 <span class="is-size-1">✊</span>
               </div>
               <h2 class="title has-text-centered">You joined the match</h2>
-              <p class="subtitle">Share the match link to friends.</p>
-              <div class="md-1">
-                <app-share-match [url]="shareUrl" [options]="{ type: 'buttons' }"></app-share-match>
-              </div>
-              <a [routerLink]="['/']">Close window</a>
+              <p class="subtitle">Now wait your opponent to reveal his move.</p>
             </div>
 
             <div class="match-stage match-stage--reserved-match" *ngSwitchCase="matchStage.ReservedMatch">
