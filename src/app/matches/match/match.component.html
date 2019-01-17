@@ -5,12 +5,15 @@
     <div class="modal-content">
       <div class="match-wrapper">
 
-        <div class="notification match-not-available" *ngIf="!keeperIsAvailable">
-          Keeper is not available
-        </div>
-
-        <div class="notification match-not-available" *ngIf="keeperIsAvailable && !user">
-          You are not logged in
+        <div class="match-notifications" *ngIf="!keeperIsAvailable || !user">
+          <div class="notification match-not-available" *ngIf="!keeperIsAvailable">
+            Keeper is not available. <a href="https://chrome.google.com/webstore/detail/waves-keeper/lpilbniiabackdjcionkobglmddfbcjo"
+            target="_blank">Install the extension</a> to access the game.
+          </div>
+  
+          <div class="notification match-not-available" *ngIf="keeperIsAvailable && !user">
+            You are not logged in.
+          </div>
         </div>
 
         <div class="match" *ngIf="keeperIsAvailable && user">
