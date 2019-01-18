@@ -185,7 +185,6 @@ export class MatchesService implements OnDestroy {
       return
     }
 
-    console.log(myMatch.isFinishing)
     // Skip matches with started finishing
     if (myMatch.isFinishing) {
       return
