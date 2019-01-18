@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy } from '@angular/core'
+import { Injectable, OnDestroy, NgZone } from '@angular/core'
 import { MatchesHelper } from './shared/matches.helper'
 import { HandSign, IMatch, IMatchChange, MatchResolve, MatchResult, MatchStatus, PlayerMoves } from './shared/match.interface'
 import { BehaviorSubject, Observable, timer } from 'rxjs'
@@ -72,7 +72,7 @@ export class MatchesService implements OnDestroy {
 
   constructor(private matchesHelper: MatchesHelper,
     private userService: UserService,
-    private actionsService: ActionsService) {
+    private actionsService: ActionsService, private ngZone: NgZone) {
     this._userSubscriber = this.userService.user$.subscribe((user: IUser) => {
       this.user = user
       if (this.user) {
@@ -98,19 +98,23 @@ export class MatchesService implements OnDestroy {
     console.log('Starting polling matches...')
     const self = this
 
-    this._pollingSubscriber = this._polledMatches$.subscribe(res => {
-      this.currentHeight = res.currentHeight
+    this.ngZone.runOutsideAngular(() => {
+      this._pollingSubscriber = this._polledMatches$.subscribe(res => {
+        this.ngZone.run(() => {
+          this.currentHeight = res.currentHeight
 
-      if (this.matches$.getValue()) {
-        this._resolveMatches.call(self, res.matches)
-      }
+          if (this.matches$.getValue()) {
+            this._resolveMatches.call(self, res.matches)
+          }
 
-      if (this.user) {
-        for (const match of Object.values(res.matches)) {
-          match.owns = match.creator.address === this.user.address
-        }
-      }
-      this.matches$.next(res.matches)
+          if (this.user) {
+            for (const match of Object.values(res.matches)) {
+              match.owns = match.creator.address === this.user.address
+            }
+          }
+          this.matches$.next(res.matches)
+        })
+      })
     })
   }
 
@@ -285,7 +289,7 @@ export class MatchesService implements OnDestroy {
 
   private _setMyMatch(match: IMatch) {
     // Save temp values
-    const { isFinishing } = this._myMatches[match.address]
+    const { isFinishing } = this._myMatches[match.address] || { isFinishing: false }
 
     this._myMatches[match.address] = match
 

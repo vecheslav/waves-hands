@@ -27,7 +27,6 @@ export class MatchesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // this.matches = await this.matchesService.getMatchList()
     this.matchesService.startPollingMatches()
   }
 
