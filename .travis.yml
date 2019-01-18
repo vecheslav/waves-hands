@@ -1,24 +1,28 @@
 dist: trusty
 sudo: false
-
 language: node_js
 node_js:
-  - "8"
-
+- '8'
 addons:
   apt:
     sources:
-      - google-chrome
+    - google-chrome
     packages:
-      - google-chrome-stable
-
+    - google-chrome-stable
 cache:
   directories:
-     - ./node_modules
-
+  - "./node_modules"
 install:
-  - yarn install
-
+- yarn install
 script:
-  - yarn test -- --watch=false --progress=false --browsers=ChromeHeadlessCI
-  - yarn e2e -- --protractor-config=./e2e/protractor-ci.conf.js
+- yarn test -- --watch=false --progress=false --browsers=ChromeHeadlessCI
+- yarn e2e -- --protractor-config=./e2e/protractor-ci.conf.js
+- yarn build
+deploy:
+  provider: heroku
+  skip_cleanup: true
+  local_dir: dist/waves-hands
+  on:
+    branch: master
+  api_key:
+    secure: oAaLCud5limP3OBAimy0hAU3Lf5L82mTt6PUo0B4SOmllF1DkZ8rY2sbiRIlHptzFGs3bkmVT2MSqw+u9AES7X0OBncdLpxL5ZdluXYWgxmJ1b/gX2rFrStW+K6upq1Nigbv+6hiLU+BN9qArLtzsTHxtUw97IARXUyC44o5PEMIAgfUgAr9g31dZejUScXyey4R/9sDL7dXqIUbCNhGCc8EZ9Th49cozHLaDqJiQN9XsvGVhywUJ+EhuGSK4Or6siL0kRsfElaKm/450WkG3EmrLlQcK0+8Dx3KyUcoxgzd7U1eFvgVpjs4yzy1RWbiC4JqjWoZv4xY1qu0YR4QhtEWDpB/WegLkzW6Y5nDXHjAbCSW77AqHc/buQbTDns9xJkehusWXHfPRUWPBDkZ2QVzsAqcDSDcLAvCB+AXkAdJgH/bSYRH7PdOJ2kTjxcyyJJlaQkMxUv3KwxiXTbmSllT2DsI+IznI1tXPQb+NyWXEbMWmGJG40osaFUivzNuErVyqoi2bDMRATfucyyPYN3DLeSHO0rqImL91DpqfGFaRUMXo4cGBxg8K7floAO0WbPNFsGWmAA51LR8WGdAzairVzVdraRgtiPZxBiN6lrPZz3PGkIrimmJASMY2d4CxlUfcwuC1ElA/yq9PDHmzrODnbx66+xDzlould7TAIw=
