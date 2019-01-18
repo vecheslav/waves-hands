@@ -31,6 +31,7 @@ export enum MatchResult {
 export enum MatchResolve {
   Nothing,
   Accepted,
+  CreatorMissed,
   Lost,
   Draw,
   Won
@@ -42,7 +43,12 @@ export interface IMatchChange {
   match?: IMatch
 }
 
-export interface IMatch {
+export interface IMatchTemp {
+  isFinishing?: boolean
+  owns?: boolean
+}
+
+export interface IMatch extends IMatchTemp {
   address: string
   publicKey: string
   creator: IPlayer
@@ -51,8 +57,6 @@ export interface IMatch {
   status: MatchStatus
   result?: MatchResult
   timestamp?: number
-  isFinishing?: boolean
-  owns?: boolean
 }
 
 export const EmptyMatch: IMatch = {

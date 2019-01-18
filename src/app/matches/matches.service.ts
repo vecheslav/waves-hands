@@ -9,7 +9,7 @@ import { base58encode, base58decode } from 'waves-crypto'
 import { ActionsService } from '../actions/actions.service'
 import { ActionType } from '../actions/actions.interface'
 
-const matchDiff = (match: IMatch, newMatch: IMatch): IMatchChange => {
+const matchDiff = (match: IMatch, newMatch: IMatch, currentHeight: number): IMatchChange => {
   if (!newMatch) {
     return {
       resolve: MatchResolve.Nothing,
@@ -21,6 +21,13 @@ const matchDiff = (match: IMatch, newMatch: IMatch): IMatchChange => {
       resolve: MatchResolve.Accepted,
       message: `Player ${newMatch.opponent.address} accepted the battle!`,
       match: newMatch,
+    }
+  }
+
+  if (newMatch.status === MatchStatus.Waiting && newMatch.reservationHeight - currentHeight < -15) {
+    return {
+      resolve: MatchResolve.CreatorMissed,
+      match: newMatch
     }
   }
 
@@ -55,6 +62,7 @@ const matchDiff = (match: IMatch, newMatch: IMatch): IMatchChange => {
 export class MatchesService implements OnDestroy {
   matches$ = new BehaviorSubject<Record<string, IMatch>>(null)
   user: IUser
+  currentHeight: number
 
   private _myMatches: Record<string, IMatch> = {}
   private _userSubscriber
@@ -90,17 +98,19 @@ export class MatchesService implements OnDestroy {
     console.log('Starting polling matches...')
     const self = this
 
-    this._pollingSubscriber = this._polledMatches$.subscribe(r => {
+    this._pollingSubscriber = this._polledMatches$.subscribe(res => {
+      this.currentHeight = res.currentHeight
+
       if (this.matches$.getValue()) {
-        this._resolveMatches.call(self, r.matches, r.currentHeight)
+        this._resolveMatches.call(self, res.matches)
       }
 
       if (this.user) {
-        for (const match of Object.values(r.matches)) {
+        for (const match of Object.values(res.matches)) {
           match.owns = match.creator.address === this.user.address
         }
       }
-      this.matches$.next(r.matches)
+      this.matches$.next(res.matches)
     })
   }
 
@@ -161,10 +171,36 @@ export class MatchesService implements OnDestroy {
         matchAddress,
         move
       )
+
+      this.actionsService.add({ type: ActionType.FinishedMatch, args: [matchAddress] })
     } catch (err) {
       myMatch.isFinishing = false
       throw err
     }
+  }
+
+  async forceFinishMatch(matchAddress: string) {
+    const myMatch = this._myMatches[matchAddress]
+    if (!myMatch) {
+      return
+    }
+
+    console.log(myMatch.isFinishing)
+    // Skip matches with started finishing
+    if (myMatch.isFinishing) {
+      return
+    }
+
+    myMatch.isFinishing = true
+
+    try {
+      await this.matchesHelper.forceFinish(myMatch)
+    } catch (err) {
+      // myMatch.isFinishing = false
+      throw err
+    }
+
+    this.actionsService.add({ type: ActionType.FinishedMatch, args: [matchAddress] })
   }
 
   getMyMoves(matchAddress: string): PlayerMoves {
@@ -172,7 +208,7 @@ export class MatchesService implements OnDestroy {
     return Array.from(moves) as PlayerMoves
   }
 
-  private _resolveMatches(newMatches: Record<string, IMatch>, currentHeight: number) {
+  private _resolveMatches(newMatches: Record<string, IMatch>) {
     if (!this.user) {
       return
     }
@@ -182,20 +218,6 @@ export class MatchesService implements OnDestroy {
     }
 
     try {
-
-      Object.values(this._myMatches)
-        .filter(m => m.status === MatchStatus.Waiting && m.reservationHeight - currentHeight < -15)
-        .forEach(async m => {
-          m.isFinishing = true
-          m.status = MatchStatus.Done
-          m.result = MatchResult.Opponent
-
-          try {
-            await this.matchesHelper.forceFinish(m)
-          } catch (error) {
-          }
-        })
-
       const changes = this._getChanges(this._myMatches, newMatches)
 
       for (const change of changes) {
@@ -219,9 +241,12 @@ export class MatchesService implements OnDestroy {
               change.match.address,
               move
             )
-
-            this.actionsService.add({ type: ActionType.FinishedMatch, args: [change.match.address] })
-
+            break
+          case MatchResolve.CreatorMissed:
+            if (this.user.address === change.match.creator.address) {
+              break
+            }
+            this.forceFinishMatch(change.match.address)
             break
           case MatchResolve.Lost:
             this.actionsService.add({ type: ActionType.LostMatch, args: [change.match.address] })
@@ -253,14 +278,21 @@ export class MatchesService implements OnDestroy {
         continue
       }
 
-      matchChanges.push(matchDiff(match, newMatch))
+      matchChanges.push(matchDiff(match, newMatch, this.currentHeight))
     }
 
     return matchChanges.filter((change: IMatchChange) => change.resolve !== MatchResolve.Nothing)
   }
 
   private _setMyMatch(match: IMatch) {
+    // Save temp values
+    const { isFinishing } = this._myMatches[match.address]
+
     this._myMatches[match.address] = match
+
+    // Restore temp values
+    this._myMatches[match.address] = { ...this._myMatches[match.address], isFinishing }
+
     this._setMatchInStorage(this.user.address, match)
   }
 
