@@ -167,7 +167,10 @@ export class MatchesHelper {
   async getMatchList(): Promise<{ matches: Record<string, IMatch>, currentHeight: number }> {
     const r = await this._api.getDataTxsByKey('matchKey')
 
+    const payouts = await this._api.getMassTransfersByRecipient(environment.serviceAddress)
+
     const currentHeight = await this._api.getHeight()
+
 
     const matches: Record<string, IMatch> = r.reduce((a, b) => {
       const p1Key = getDataByKey('player1Key', [b], x => base58encode(BASE64_STRING(x.slice(7))))
@@ -188,6 +191,23 @@ export class MatchesHelper {
         }
       })
     }, {})
+
+    payouts.forEach(p => {
+      const m = matches[p.sender]
+      if (m) {
+        const winner = p.transfers.find(x => x.amount > 1)
+        if (winner) {
+          if (m.creator.address === winner.recipient) {
+            m.result = MatchResult.Creator
+          } else {
+            m.result = MatchResult.Opponent
+          }
+        } else {
+          m.result = MatchResult.Draw
+        }
+        m.status = MatchStatus.Done
+      }
+    })
 
     const _ = (await this._api.getDataTxsByKey('p2MoveHash'))
       .forEach(p => {
