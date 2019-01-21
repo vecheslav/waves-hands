@@ -249,7 +249,7 @@ export class MatchesHelper {
       if (match) {
         const moves = m.move
         match.creator.moves = [moves[0], moves[1], moves[2]]
-        match.status = MatchStatus.Done
+        // match.status = MatchStatus.Done
         match.result = whoHasWon(match.creator.moves, match.opponent.moves)
       }
     })
@@ -370,7 +370,7 @@ export class MatchesHelper {
     const fee = 200000 + 400000
     const winner = match.opponent.address
     const commission = 1 * wave / 200
-    const left = 197400000
+    const left = 197400000 + 500000
 
     const payout = massTransfer({
       transfers: [

@@ -49,6 +49,7 @@ match (tx) {
                     isAttSizeOk &&
                     isAttHashOk &&
                     p2payment.amount == 1*wave &&
+                    !isDefined(p2payment.assetId) &&
                     p2payment.recipient == me &&
                     p2payment.senderPublicKey == extract(getBinary(me, "player2Key")) &&
                     sigVerify(p2payment.bodyBytes, p2payment.proofs[0], p2payment.senderPublicKey)
