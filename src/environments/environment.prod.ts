@@ -10,5 +10,6 @@ export const environment = {
     txEnpoint: 'https://api.wavesplatform.com/v0/'
   },
   broadcastRetryLimit: 10,
-  retryDelay: 1000
+  retryDelay: 1000,
+  serviceAddress: '3N7oF5J5m9BwBFCmVJZWr3AEH3u4c6CLoB9'
 }
