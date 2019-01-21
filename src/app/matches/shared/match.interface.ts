@@ -32,9 +32,9 @@ export enum MatchResolve {
   Nothing,
   Accepted,
   CreatorMissed,
-  Lost,
+  OpponentWon,
+  CreatorWon,
   Draw,
-  Won
 }
 
 export interface IMatchChange {

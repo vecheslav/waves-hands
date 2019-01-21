@@ -36,7 +36,7 @@ const matchDiff = (match: IMatch, newMatch: IMatch, currentHeight: number): IMat
   if (match.status !== MatchStatus.Done && newMatch.status === MatchStatus.Done) {
     if (newMatch.result === MatchResult.Opponent) {
       return {
-        resolve: MatchResolve.Lost,
+        resolve: MatchResolve.OpponentWon,
         message: 'You\'ve lost the battle!',
         match: newMatch,
       }
@@ -49,7 +49,7 @@ const matchDiff = (match: IMatch, newMatch: IMatch, currentHeight: number): IMat
     }
 
     return {
-      resolve: MatchResolve.Won,
+      resolve: MatchResolve.CreatorWon,
       message: 'You\'ve won the battle!',
       match: newMatch,
     }
@@ -169,6 +169,7 @@ export class MatchesService implements OnDestroy {
     // Book finish match
     myMatch.isFinishing = true
 
+    console.log('Finish match', matchAddress)
     try {
       await this.matchesHelper.finishMatch(
         player1Address,
@@ -198,6 +199,7 @@ export class MatchesService implements OnDestroy {
 
     myMatch.isFinishing = true
 
+    console.log('Force finish match', matchAddress)
     try {
       await this.matchesHelper.forceFinish(myMatch)
     } catch (err) {
@@ -253,14 +255,22 @@ export class MatchesService implements OnDestroy {
             }
             this.forceFinishMatch(change.match.address)
             break
-          case MatchResolve.Lost:
-            this.actionsService.add({ type: ActionType.LostMatch, args: [change.match.address] })
+          case MatchResolve.OpponentWon:
+            if (change.match.opponent.address === this.user.address) {
+              this.actionsService.add({ type: ActionType.WonMatch, args: [change.match.address] })
+            } else {
+              this.actionsService.add({ type: ActionType.LostMatch, args: [change.match.address] })
+            }
             break
           case MatchResolve.Draw:
             this.actionsService.add({ type: ActionType.DrawMatch, args: [change.match.address] })
             break
-          case MatchResolve.Won:
-            this.actionsService.add({ type: ActionType.WonMatch, args: [change.match.address] })
+          case MatchResolve.CreatorWon:
+            if (change.match.creator.address === this.user.address) {
+              this.actionsService.add({ type: ActionType.WonMatch, args: [change.match.address] })
+            } else {
+              this.actionsService.add({ type: ActionType.LostMatch, args: [change.match.address] })
+            }
             break
         }
 
