@@ -4,11 +4,11 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host 0.0.0.0",
-    "build": "ng build --prod --aot --build-optimizer",
+    "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "postinstall": "node scripts/angular-fix.js"
+    "postinstall": "node scripts/angular-fix.js && ng build --prod --aot --build-optimizer"
   },
   "private": true,
   "dependencies": {
