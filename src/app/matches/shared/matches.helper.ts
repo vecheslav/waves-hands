@@ -316,15 +316,21 @@ export class MatchesHelper {
     }
   }
 
-  async joinMatch(matchPublicKey: string, matchAddress: string, moves: number[]) {
-
+  async joinMatch(matchPublicKey: string,
+                  matchAddress: string,
+                  moves: number[],
+                  progress: (zeroToOne: number) => void = () => { }) {
+    progress(0)
     const { moveHash, move } = this.hideMoves(moves)
 
     const p2Transfer = await this.keeper.prepareWavesTransfer(matchAddress, 1 * wave, new TextDecoder('utf-8')
       .decode(move))
 
+    progress(0.15)
     const h = await this._api.getHeight()
     console.log(`Height is ${h}`)
+
+    progress(0.30)
 
     const dataTx = data({
       senderPublicKey: matchPublicKey, data: [
@@ -336,12 +342,15 @@ export class MatchesHelper {
 
     await this.core.broadcastAndWait(dataTx)
 
+    progress(0.5)
+
     console.log(`Player 2 move completed`)
 
     console.log(p2Transfer)
     console.log(p2Transfer.attachment)
 
     const { id } = await this._api.broadcastAndWait(p2Transfer)
+    progress(0.8)
 
     const revealP2Move = data({
       senderPublicKey: matchPublicKey, data: [
@@ -352,8 +361,9 @@ export class MatchesHelper {
 
     await this.core.broadcastAndWait(revealP2Move)
 
-    console.log(`Player 2 move revealed`)
+    progress(1)
 
+    console.log(`Player 2 move revealed`)
   }
 
   async forceFinish(match: IMatch) {

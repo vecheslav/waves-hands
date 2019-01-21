@@ -87,7 +87,8 @@ export class MatchComponent implements OnInit, OnDestroy {
       await this.matchesService.joinMatch(
         this.match,
         this.user.publicKey,
-        this.selectedHandSigns
+        this.selectedHandSigns,
+        this._changeProgress.bind(this)
       )
       this.stage = MatchStage.JoinedMatch
       this.isLoading = false
