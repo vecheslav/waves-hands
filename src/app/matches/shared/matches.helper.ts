@@ -234,10 +234,13 @@ export class MatchesHelper {
       .map(p => ({ match: p.sender, move: getBinary('p1Move', p).slice(0, 3) }))
 
     p2Moves.forEach(m => {
-      if (matches[m.match]) {
+      const match = matches[m.match]
+      if (match) {
         const moves = m.move
-        matches[m.match].opponent.moves = [moves[0], moves[1], moves[2]]
-        matches[m.match].status = MatchStatus.Waiting
+        match.opponent.moves = [moves[0], moves[1], moves[2]]
+        if (match.status === MatchStatus.New) {
+          match.status = MatchStatus.Waiting
+        }
       }
     })
 
