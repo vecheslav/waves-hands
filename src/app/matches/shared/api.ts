@@ -1,4 +1,5 @@
 import { TTx, IDataTransaction, IMassTransferTransaction } from 'waves-transactions/transactions'
+import { environment } from 'src/environments/environment'
 
 export type DataTransaction = IDataTransaction & { sender: string }
 export type MassTransferTransaction = IMassTransferTransaction & { sender: string }
@@ -50,7 +51,7 @@ export const testnetConfig = {
 
 export const api = (config: IConfig, http: IHttp): IWavesApi => {
   const get = <T>(endpoint: string): Promise<T> => retry(() => http.get<T>(config.base + endpoint), 5, 1000)
-  const getApi = <T>(endpoint: string): Promise<T> => retry(() => http.get<T>(config.tx + endpoint), 5, 1000)
+  const getApi = <T>(endpoint: string): Promise<T> => retry(() => http.get<T>(config.tx + endpoint + '&timeStart=' + environment.api.timeStart), 5, 1000)
   const post = <T>(endpoint: string, data: any): Promise<T> => retry(() => http.post<T>(config.base + endpoint, data), 5, 1000)
 
   const getHeight = async () =>

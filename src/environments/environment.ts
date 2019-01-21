@@ -11,7 +11,8 @@ export const environment = {
   defaultTimeout: 1000 * 60,
   api: {
     baseEndpoint: 'https://testnodes.wavesnodes.com/',
-    txEnpoint: 'https://api.testnet.wavesplatform.com/v0/'
+    txEnpoint: 'https://api.testnet.wavesplatform.com/v0/',
+    timeStart: '2019-01-21T00%3A00%3A00.001Z'
   },
   broadcastRetryLimit: 10,
   retryDelay: 1000,
