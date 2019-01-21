@@ -77,7 +77,7 @@ export const api = (config: IConfig, http: IHttp): IWavesApi => {
     return r
   }
 
-  const getMassTransfersByRecipient = (recipient: string, limit: number = 1000): Promise<MassTransferTransaction[]> =>
+  const getMassTransfersByRecipient = (recipient: string, limit: number = 100): Promise<MassTransferTransaction[]> =>
     getApi<{ data: { data: MassTransferTransaction }[] }>(`transactions/mass-transfer?recipient=${recipient}&sort=desc&limit=${limit}`).then(x => x.data.map(y => y.data))
 
   return {
