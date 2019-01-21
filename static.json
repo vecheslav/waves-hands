@@ -1,6 +1,7 @@
 {
   "root": "dist/waves-hands/",
   "https_only": true,
+  "basic_auth": true,
   "routes": {
     "/**": "index.html"
   },
