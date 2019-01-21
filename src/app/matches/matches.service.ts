@@ -8,6 +8,7 @@ import { concatMap, map } from 'rxjs/operators'
 import { base58encode, base58decode } from 'waves-crypto'
 import { ActionsService } from '../actions/actions.service'
 import { ActionType } from '../actions/actions.interface'
+import { environment } from 'src/environments/environment'
 
 const matchDiff = (match: IMatch, newMatch: IMatch, currentHeight: number): IMatchChange => {
   if (!newMatch) {
@@ -24,7 +25,8 @@ const matchDiff = (match: IMatch, newMatch: IMatch, currentHeight: number): IMat
     }
   }
 
-  if (newMatch.status === MatchStatus.Waiting && newMatch.reservationHeight - currentHeight < -15) {
+  if (newMatch.status === MatchStatus.Waiting &&
+      newMatch.reservationHeight - currentHeight < -environment.creatorRevealBlocksCount) {
     return {
       resolve: MatchResolve.CreatorMissed,
       match: newMatch
@@ -199,7 +201,7 @@ export class MatchesService implements OnDestroy {
     try {
       await this.matchesHelper.forceFinish(myMatch)
     } catch (err) {
-      // myMatch.isFinishing = false
+      myMatch.isFinishing = false
       throw err
     }
 

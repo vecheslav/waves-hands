@@ -15,6 +15,7 @@ export const environment = {
   },
   broadcastRetryLimit: 10,
   retryDelay: 1000,
+  creatorRevealBlocksCount: 4,
   serviceAddress: '3N7oF5J5m9BwBFCmVJZWr3AEH3u4c6CLoB9'
 }
 

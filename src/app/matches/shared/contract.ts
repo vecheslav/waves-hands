@@ -16,7 +16,7 @@ let rock = base58'1'
 let paper = base58'2'
 let scissors = base58'3'
 let matchReservationBlocksCount = 3
-let creatorRevealBlocksCount = 15
+let creatorRevealBlocksCount = ${environment.creatorRevealBlocksCount}
 let maxlong = 9223372036854775807
 
 let matchKey = extract(getBinary(me, "matchKey"))
