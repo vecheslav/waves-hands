@@ -83,11 +83,11 @@
               <p class="subtitle">You can try your luck in other matches.</p>
             </div>
           </div>
-          <div class="match-loading" *ngIf="isLoading && !isCreatingMatch">
+          <!-- <div class="match-loading" *ngIf="isLoading">
             <app-circle-loader></app-circle-loader>
             <div class="subtitle is-size-6 has-text-centered">Please, wait... Don't close the window</div>
-          </div>
-          <div class="match-progress" *ngIf="isLoading && isCreatingMatch">
+          </div> -->
+          <div class="match-progress" *ngIf="isLoading">
             <progress class="progress is-small" [attr.value]="progress ? (progress * 100) : null" max="100"></progress>
             <div class="subtitle is-size-6 has-text-centered">Please, wait... Don't close the window</div>
           </div>

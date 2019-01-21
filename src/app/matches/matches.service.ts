@@ -145,8 +145,11 @@ export class MatchesService implements OnDestroy {
     return match
   }
 
-  async joinMatch(match: IMatch, playerPublicKey: string, moves: number[]) {
-    await this.matchesHelper.joinMatch(match.publicKey, match.address, moves)
+  async joinMatch(match: IMatch,
+                  playerPublicKey: string,
+                  moves: number[],
+                  progress?: (zeroToOne: number) => void) {
+    await this.matchesHelper.joinMatch(match.publicKey, match.address, moves, progress)
 
     const { move } = this.matchesHelper.hideMoves(moves)
     this._setMyMatch(match)
