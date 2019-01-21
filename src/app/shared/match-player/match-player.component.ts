@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core'
+import { Component, Input, OnChanges } from '@angular/core'
 import { Player } from '../../matches/shared/match.interface'
 
 const Identity = require('identity-img')
@@ -8,20 +8,22 @@ const Identity = require('identity-img')
   templateUrl: './match-player.component.html',
   styleUrls: ['./match-player.component.scss']
 })
-export class MatchPlayerComponent implements OnInit {
-  @Input() player: Player = {
-    address: 'address'
-  }
+export class MatchPlayerComponent implements OnChanges {
+  @Input() player: Player
 
   avatarUri: string
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnChanges() {
     this._initAvatar()
   }
 
   private _initAvatar() {
+    if (!this.player) {
+      return
+    }
+    
     if (!this.player.address) {
       return
     }

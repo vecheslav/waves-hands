@@ -5,18 +5,18 @@
     <div class="modal-content">
       <div class="match-wrapper">
 
-        <div class="match-notifications" *ngIf="!keeperIsAvailable || !user">
+        <div class="match-notifications" *ngIf="!keeperIsAvailable">
           <div class="notification match-not-available" *ngIf="!keeperIsAvailable">
             Keeper is not available. <a href="https://chrome.google.com/webstore/detail/waves-keeper/lpilbniiabackdjcionkobglmddfbcjo"
             target="_blank">Install the extension</a> to access the game.
           </div>
   
-          <div class="notification match-not-available" *ngIf="keeperIsAvailable && !user">
+          <!-- <div class="notification match-not-available" *ngIf="keeperIsAvailable && !user">
             You are not logged in.
-          </div>
+          </div> -->
         </div>
 
-        <div class="match" *ngIf="keeperIsAvailable && user">
+        <div class="match" *ngIf="keeperIsAvailable">
           <div class="match-top" *ngIf="!isCreatingMatch">
             <app-match-player-panel [player]="match.creator" [hands]="match.creator?.moves"></app-match-player-panel>
           </div>
@@ -94,7 +94,7 @@
 
           <div class="match-bottom">
             <app-match-player-panel *ngIf="match.status === 0" [player]="user" [hands]="selectedHandSigns"></app-match-player-panel>
-            <app-match-player-panel *ngIf="match.status > 0" [player]="match.opponent" [hands]="match.opponent?.moves"></app-match-player-panel>
+            <app-match-player-panel *ngIf="match.status > 0" [player]="match?.opponent" [hands]="match.opponent?.moves"></app-match-player-panel>
           </div>
         </div>
 

@@ -71,6 +71,10 @@ export class MatchComponent implements OnInit, OnDestroy {
 
   async create() {
     try {
+      if (!this.user) {
+        this.user = await this.userServices.authUser()
+      }
+
       const match = await this.matchesService.createMatch(this.selectedHandSigns, this._changeProgress.bind(this))
       this.match = match
       this.shareUrl = window.location.origin + '/match/' + this.match.address
@@ -84,6 +88,10 @@ export class MatchComponent implements OnInit, OnDestroy {
 
   async join() {
     try {
+      if (!this.user) {
+        this.user = await this.userServices.authUser()
+      }
+
       await this.matchesService.joinMatch(
         this.match,
         this.user.publicKey,
