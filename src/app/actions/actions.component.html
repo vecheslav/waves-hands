@@ -1,5 +1,8 @@
 <div class="actions">
   <div class="actions-list" *ngIf="!isLoading">
+    <div class="actions-list__empty" *ngIf="!actions.length">
+      There are no notifications
+    </div>
     <div class="actions-list__item" *ngFor="let action of actions">
       <app-action-item [action]="action"></app-action-item>
     </div>

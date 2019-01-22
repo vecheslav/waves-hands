@@ -8,6 +8,12 @@
 
 .actions-list {
 
+  &__empty {
+    padding: 2rem 0;
+    text-align: center;
+    color: $grey;
+  }
+
   &__item {
     margin: 0;
     padding: 1rem 0;
