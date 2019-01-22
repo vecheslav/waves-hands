@@ -37,10 +37,10 @@ export class KeeperProvider {
   }
 
   private _getKeeper(): IKeeper {
-    if (typeof window.Waves !== 'undefined') {
+    if ((typeof window.WavesKeeper || typeof window.Waves) !== 'undefined') {
       console.log('Using Keeper detected')
       this.status.isExist = true
-      return <IKeeper>(window.Waves)
+      return <IKeeper>(window.WavesKeeper || window.Waves)
     } else {
       this.status.isExist = false
       console.warn('No Keeper detected')
