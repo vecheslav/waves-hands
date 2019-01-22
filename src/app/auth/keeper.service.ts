@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core'
 import { IKeeper, KeeperStatus, KeeperAuth } from './shared/keeper.interface'
 import { DataEntry, IDataTransaction } from 'waves-transactions/transactions'
-import { Player } from '../matches/shared/match.interface'
 import { KeeperProvider } from './keeper.provider'
 
 @Injectable()
