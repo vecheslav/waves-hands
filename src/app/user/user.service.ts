@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core'
 import { KeeperService } from '../auth/keeper.service'
 import { BehaviorSubject } from 'rxjs'
 import { IUser } from './user.interface'
+import { ActionsService } from '../actions/actions.service'
 
 @Injectable()
 export class UserService {
   user$ = new BehaviorSubject<IUser>(null)
 
-  constructor(private keeperService: KeeperService) {
+  constructor(private keeperService: KeeperService, private actionsService: ActionsService) {
   }
 
   getCurrentUser() {
@@ -22,6 +23,10 @@ export class UserService {
       }
     }
 
+    if (user) {
+      this.actionsService.selectUser(user)
+    }
+
     return user
   }
 
@@ -34,6 +39,7 @@ export class UserService {
       const user = { address, publicKey, signature }
       this._setUserInStorage(user)
       this.user$.next(user)
+      this.actionsService.selectUser(user)
 
       return user
     } catch (err) {

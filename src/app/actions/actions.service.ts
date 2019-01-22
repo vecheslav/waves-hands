@@ -1,36 +1,39 @@
-import { Injectable, OnDestroy } from '@angular/core'
+import { Injectable } from '@angular/core'
 import { BehaviorSubject } from 'rxjs'
 import { IAction } from './actions.interface'
-import { UserService } from '../user/user.service'
 import { IUser } from '../user/user.interface'
 
 @Injectable()
-export class ActionsService implements OnDestroy {
+export class ActionsService {
   actions$ = new BehaviorSubject<IAction[]>(<IAction[]>[])
-  user: IUser
 
-  private _userSubscriber
+  private _user: IUser
 
-  constructor(private userService: UserService) {
-    this._userSubscriber = this.userService.user$.subscribe((user: IUser) => {
-      this.user = user
-      if (this.user) {
-        // Init my matches from storage
-        this.actions$.next(this._getActionsFromStorage(this.user.address))
-      }
-    })
-  }
-
-  ngOnDestroy() {
-    this._userSubscriber.unsubscribe()
+  constructor() {
   }
 
   add(action: IAction) {
+    if (!this._user) {
+      return
+    }
+
+    if (!this._user.address) {
+      return
+    }
+
     if (!action.timestamp) {
       action.timestamp = Date.now()
     }
     this.actions$.next(this.actions$.getValue().concat([action]))
-    this._addActionToStorage(this.user.address, action)
+    this._addActionToStorage(this._user.address, action)
+  }
+
+  selectUser(user: IUser) {
+    this._user = user
+
+    if (user && user.address) {
+      this.actions$.next(this._getActionsFromStorage(user.address))
+    }
   }
 
   private _getActionsFromStorage(userAddress: string): IAction[] {
