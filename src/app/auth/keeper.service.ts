@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core'
 import { IKeeper, KeeperStatus, KeeperAuth } from './shared/keeper.interface'
-import { DataEntry, IDataTransaction } from 'waves-transactions/transactions'
+import { DataEntry } from 'waves-transactions/transactions'
 import { KeeperProvider } from './keeper.provider'
+import { ErrorCode } from '../shared/error-code'
 
 @Injectable()
 export class KeeperService {
@@ -44,12 +45,20 @@ export class KeeperService {
       },
     }
 
-    return await this.keeper.signTransaction(d).then((x: any) => {
-      const res = JSON.parse(x)
-      res.fee = parseInt(res.fee.toString(), undefined)
-      res.amount = parseInt(res.amount.toString(), undefined)
-      return res
-    })
+    try {
+      const r = await this.keeper.signTransaction(d).then((x: any) => {
+        const res = JSON.parse(x)
+        res.fee = parseInt(res.fee.toString(), undefined)
+        res.amount = parseInt(res.amount.toString(), undefined)
+        return res
+      })
+
+      return r
+    } catch (error) {
+      if (error.message === 'User denied message') {
+        throw { ... new Error('User denied'), code: ErrorCode.UserRejected }
+      }
+    }
   }
 
   async prepareDataTx(data: DataEntry[], senderPublicKey: string, fee: number): Promise<any> {

@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy, NgZone } from '@angular/core'
-import { MatchesHelper, ErrorCode } from './shared/matches.helper'
+import { MatchesHelper } from './shared/matches.helper'
 import { HandSign, IMatch, IMatchChange, MatchResolve, MatchResult, MatchStatus, PlayerMoves } from './shared/match.interface'
 import { BehaviorSubject, Observable, timer } from 'rxjs'
 import { UserService } from '../user/user.service'
@@ -9,6 +9,7 @@ import { base58encode, base58decode } from 'waves-crypto'
 import { ActionsService } from '../actions/actions.service'
 import { ActionType } from '../actions/actions.interface'
 import { environment } from 'src/environments/environment'
+import { ErrorCode } from '../shared/error-code'
 
 const matchDiff = (match: IMatch, newMatch: IMatch, currentHeight: number): IMatchChange => {
   if (!newMatch) {
@@ -135,43 +136,26 @@ export class MatchesService implements OnDestroy {
   }
 
   async createMatch(moves: HandSign[], progress?: (zeroToOne: number) => void): Promise<IMatch> {
-    try {
-      const { move, moveHash, match } = await this.matchesHelper.createMatch(moves, progress)
-      this._setMyMatch(match)
-      this._saveMove(match.address, move)
+    const { move, moveHash, match } = await this.matchesHelper.createMatch(moves, progress)
+    this._setMyMatch(match)
+    this._saveMove(match.address, move)
 
-      this.actionsService.add({ type: ActionType.CreatedMatch, args: [match.address] })
+    this.actionsService.add({ type: ActionType.CreatedMatch, args: [match.address] })
 
-      return match
-
-    } catch (error) {
-      if (error.code && error.code === ErrorCode.NotEnoughBalance) {
-        // TODO UI
-        alert(error.message)
-      }
-    }
+    return match
   }
 
   async joinMatch(match: IMatch,
-    playerPublicKey: string,
     moves: number[],
     progress?: (zeroToOne: number) => void) {
 
-    try {
-      await this.matchesHelper.joinMatch(match.publicKey, match.address, moves, progress)
+    await this.matchesHelper.joinMatch(match.publicKey, match.address, moves, progress)
 
-      const { move } = this.matchesHelper.hideMoves(moves)
-      this._setMyMatch(match)
-      this._saveMove(match.address, move)
+    const { move } = this.matchesHelper.hideMoves(moves)
+    this._setMyMatch(match)
+    this._saveMove(match.address, move)
 
-      this.actionsService.add({ type: ActionType.JoinedMatch, args: [match.address] })
-    } catch (error) {
-      if (error.code && error.code === ErrorCode.NotEnoughBalance) {
-        // TODO UI
-        alert(error.message)
-      }
-    }
-
+    this.actionsService.add({ type: ActionType.JoinedMatch, args: [match.address] })
   }
 
   async finishMatch(player1Address: string, player2Address: string, matchPublicKey: string, matchAddress: string, move: Uint8Array) {
