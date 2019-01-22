@@ -16,6 +16,10 @@ import './extensions'
 const wave = 100000000
 const uint8Arr = Uint8Array.from([])
 
+export enum ErrorCode {
+  NotEnoughBalance = 1
+}
+
 const getString = (key: string, dataTx: IDataTransaction): string => {
   const found = dataTx.data.find(x => x.key === key)
   if (found) {
@@ -268,6 +272,12 @@ export class MatchesHelper {
     const { seed, address: addr, publicKey: pk } = randomAccount()
 
     const p1Transfer = await this.keeper.prepareWavesTransfer(addr, 1 * wave)
+
+    const { account } = await this.keeper.keeper.publicState()
+    if (!account || account.balance.available < environment.gameBetAmount + environment.defaultFee) {
+      throw { ... new Error('You have not enough balance to play!'), code: ErrorCode.NotEnoughBalance }
+    }
+
     const player1Key = p1Transfer.senderPublicKey
     const player1Address = address({ public: player1Key }, environment.chainId)
 
@@ -317,14 +327,19 @@ export class MatchesHelper {
   }
 
   async joinMatch(matchPublicKey: string,
-                  matchAddress: string,
-                  moves: number[],
-                  progress: (zeroToOne: number) => void = () => { }) {
+    matchAddress: string,
+    moves: number[],
+    progress: (zeroToOne: number) => void = () => { }) {
     progress(0)
     const { moveHash, move } = this.hideMoves(moves)
 
     const p2Transfer = await this.keeper.prepareWavesTransfer(matchAddress, 1 * wave, new TextDecoder('utf-8')
       .decode(move))
+
+    const { account } = await this.keeper.keeper.publicState()
+    if (!account || account.balance.available < environment.gameBetAmount + environment.defaultFee) {
+      throw { ... new Error('You have not enough balance to play!'), code: ErrorCode.NotEnoughBalance }
+    }
 
     progress(0.15)
     const h = await this._api.getHeight()
