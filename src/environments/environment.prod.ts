@@ -3,6 +3,7 @@ import { ChainId } from './chain'
 export const environment = {
   production: true,
   gameBetAmount: 100000000,
+  defaultFee: 100000,
   chainId: ChainId.Testnet,
   defaultTimeout: 1000 * 60,
   api: {

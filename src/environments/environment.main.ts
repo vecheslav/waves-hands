@@ -3,11 +3,13 @@ import { ChainId } from './chain'
 export const environment = {
   production: true,
   gameBetAmount: 100000000,
+  defaultFee: 100000,
   chainId: ChainId.Mainnet,
   defaultTimeout: 1000 * 60,
   api: {
     baseEndpoint: 'https://nodes.wavesnodes.com/',
-    txEnpoint: 'https://api.wavesplatform.com/v0/'
+    txEnpoint: 'https://api.wavesplatform.com/v0/',
+    timeStart: '2019-01-21T00%3A00%3A00.001Z'
   },
   broadcastRetryLimit: 10,
   retryDelay: 1000,
