@@ -147,6 +147,7 @@ export class MatchesService implements OnDestroy {
     } catch (error) {
       if (error.code && error.code === ErrorCode.NotEnoughBalance) {
         // TODO UI
+        alert(error.message)
       }
     }
   }
@@ -167,6 +168,7 @@ export class MatchesService implements OnDestroy {
     } catch (error) {
       if (error.code && error.code === ErrorCode.NotEnoughBalance) {
         // TODO UI
+        alert(error.message)
       }
     }
 
