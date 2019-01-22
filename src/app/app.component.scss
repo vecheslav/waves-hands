@@ -15,7 +15,7 @@
   }
 
   &-preview {
-    position: absolute;
+    position: fixed;
     overflow: auto;
     left: 0;
     top: 0;
@@ -26,7 +26,6 @@
   &-viewport {
     flex: 1;
     height: 100%;
-    overflow: auto;
     margin-left: 40%;
     background: #f8f9fb;
   }

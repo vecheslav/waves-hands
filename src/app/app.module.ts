@@ -9,20 +9,24 @@ import { AuthModule } from './auth/auth.module'
 import { CoreModule } from './core/core.module'
 import { MatchesModule } from './matches/matches.module'
 import { UserModule } from './user/user.module'
-import { ActionsModule } from './actions/actions.module'
 
 import * as Sentry from '@sentry/browser'
+import { environment } from 'src/environments/environment'
 
-Sentry.init({
-  dsn: 'https://d6f8eab0064d4728b57bc20654e111ff@sentry.io/1376566'
-})
+if (environment.production) {
+  Sentry.init({
+    dsn: 'https://d6f8eab0064d4728b57bc20654e111ff@sentry.io/1376566',
+  })
+}
 
 @Injectable()
 export class SentryErrorHandler implements ErrorHandler {
-  constructor() {}
-  handleError(error) {
-    Sentry.captureException(error.originalError || error)
-    throw error
+  constructor() {
+  }
+
+  handleError(err) {
+    Sentry.captureException(err.originalError || err)
+    throw err
   }
 }
 
@@ -39,9 +43,14 @@ export class SentryErrorHandler implements ErrorHandler {
     CoreModule,
     MatchesModule,
     UserModule,
-    ActionsModule,
   ],
-  providers: [{ provide: ErrorHandler, useClass: SentryErrorHandler }],
+  providers: [
+    {
+      provide: ErrorHandler,
+      useClass: environment.production ? SentryErrorHandler : ErrorHandler
+    }
+  ],
   bootstrap: [AppComponent]
 })
+
 export class AppModule { }

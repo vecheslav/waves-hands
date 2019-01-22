@@ -1,8 +1,4 @@
-<section class="section actions">
-  <div class="actions-header">
-    <h2 class="title">Your actions</h2>
-  </div>
-
+<div class="actions">
   <div class="actions-list" *ngIf="!isLoading">
     <div class="actions-list__item" *ngFor="let action of actions">
       <app-action-item [action]="action"></app-action-item>
@@ -11,5 +7,4 @@
   <div class="actions-loading" *ngIf="isLoading">
     <app-circle-loader></app-circle-loader>
   </div>
-</section>
-  
+</div>

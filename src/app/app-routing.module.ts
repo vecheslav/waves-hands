@@ -17,7 +17,7 @@ const routes: Routes = [
         resolve: {
           match: MatchResolver
         },
-        canActivate: [AuthGuard],
+        // canActivate: [AuthGuard],
       },
       {
         path: 'match/:address',
@@ -25,15 +25,15 @@ const routes: Routes = [
         resolve: {
           match: MatchResolver
         },
-        canActivate: [AuthGuard],
+        // canActivate: [AuthGuard],
       },
     ]
   },
-  {
-    path: 'actions',
-    component: ActionsComponent,
-    canActivate: [AuthGuard],
-  },
+  // {
+  //   path: 'actions',
+  //   component: ActionsComponent,
+  //   canActivate: [AuthGuard],
+  // },
 ]
 
 @NgModule({

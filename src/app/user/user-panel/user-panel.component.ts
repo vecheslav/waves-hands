@@ -9,6 +9,7 @@ import { IUser } from '../user.interface'
 })
 export class UserPanelComponent implements OnInit, OnDestroy {
   user: IUser
+  actionsIsShown = false
 
   private _userSubscriber
 
@@ -24,6 +25,14 @@ export class UserPanelComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this._userSubscriber.unsubscribe()
+  }
+
+  toggleActions(): void {
+    this.actionsIsShown = !this.actionsIsShown
+  }
+
+  closeActions(): void {
+    this.actionsIsShown = false
   }
 
   async signin() {

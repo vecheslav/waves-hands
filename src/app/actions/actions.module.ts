@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common'
 import { ActionsComponent } from './actions.component'
 import { ActionsService } from './actions.service'
 import { SharedModule } from '../shared/shared.module'
-import { UserModule } from '../user/user.module'
 import { ActionItemComponent } from './action-item/action-item.component'
 import { RouterModule } from '@angular/router'
 
@@ -16,7 +15,9 @@ import { RouterModule } from '@angular/router'
     CommonModule,
     RouterModule,
     SharedModule,
-    UserModule,
+  ],
+  exports: [
+    ActionsComponent,
   ]
 })
 export class ActionsModule { }
