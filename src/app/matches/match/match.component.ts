@@ -5,6 +5,7 @@ import { MatchesService } from '../matches.service'
 import { KeeperService } from '../../auth/keeper.service'
 import { IUser } from '../../user/user.interface'
 import { UserService } from '../../user/user.service'
+import { ErrorCode } from 'src/app/shared/error-code'
 
 @Component({
   selector: 'app-match',
@@ -28,15 +29,30 @@ export class MatchComponent implements OnInit, OnDestroy {
   private _userSubscriber
 
   constructor(private router: Router,
-              private route: ActivatedRoute,
-              private keeperService: KeeperService,
-              private matchesService: MatchesService,
-              private userServices: UserService) {
+    private route: ActivatedRoute,
+    private keeperService: KeeperService,
+    private matchesService: MatchesService,
+    private userServices: UserService) {
     this.match = this.route.snapshot.data.match
 
     this._userSubscriber = this.userServices.user$.subscribe((user: IUser) => {
       this.user = user
     })
+  }
+
+  private handleErrors(err: any): boolean {
+    if (err.code) {
+      switch (err.code) {
+        case ErrorCode.UserRejected:
+          alert('ErrorCode.UserRejected')
+          return true
+        case ErrorCode.NotEnoughBalance:
+          alert('ErrorCode.NotEnoughBalance')
+          return true
+      }
+    }
+
+    return false
   }
 
   ngOnInit() {
@@ -81,7 +97,9 @@ export class MatchComponent implements OnInit, OnDestroy {
       this.stage = MatchStage.CreatedMatch
       this.isLoading = false
     } catch (err) {
-      console.error(err)
+      if (!this.handleErrors(err)) {
+        console.error(err)
+      }
       this._reset()
     }
   }
@@ -94,14 +112,15 @@ export class MatchComponent implements OnInit, OnDestroy {
 
       await this.matchesService.joinMatch(
         this.match,
-        this.user.publicKey,
         this.selectedHandSigns,
         this._changeProgress.bind(this)
       )
       this.stage = MatchStage.JoinedMatch
       this.isLoading = false
     } catch (err) {
-      console.error(err)
+      if (!this.handleErrors(err)) {
+        console.error(err)
+      }
       this._reset()
     }
   }

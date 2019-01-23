@@ -12,13 +12,10 @@ import { TRANSACTION_TYPE, IDataTransaction } from 'waves-transactions/transacti
 import { api, testnetConfig, IWavesApi } from './api'
 import { fromAngular } from './api-angular'
 import './extensions'
+import { ErrorCode } from 'src/app/shared/error-code'
 
 const wave = 100000000
 const uint8Arr = Uint8Array.from([])
-
-export enum ErrorCode {
-  NotEnoughBalance = 1
-}
 
 const getString = (key: string, dataTx: IDataTransaction): string => {
   const found = dataTx.data.find(x => x.key === key)

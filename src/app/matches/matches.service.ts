@@ -1,5 +1,5 @@
 import { Injectable, NgZone, OnDestroy } from '@angular/core'
-import { ErrorCode, MatchesHelper } from './shared/matches.helper'
+import { MatchesHelper } from './shared/matches.helper'
 import { HandSign, IMatch, IMatchChange, MatchResolve, MatchResult, MatchStatus, PlayerMoves } from './shared/match.interface'
 import { BehaviorSubject, Observable, timer } from 'rxjs'
 import { UserService } from '../user/user.service'
@@ -9,6 +9,7 @@ import { base58decode, base58encode } from 'waves-crypto'
 import { NotificationsService } from '../notifications/notifications.service'
 import { ActionType, NotificationType } from '../notifications/notifications.interface'
 import { environment } from 'src/environments/environment'
+import { ErrorCode } from '../shared/error-code'
 
 const matchDiff = (match: IMatch, newMatch: IMatch, currentHeight: number): IMatchChange => {
   if (!newMatch) {
@@ -135,51 +136,32 @@ export class MatchesService implements OnDestroy {
   }
 
   async createMatch(moves: HandSign[], progress?: (zeroToOne: number) => void): Promise<IMatch> {
-    try {
-      const { move, moveHash, match } = await this.matchesHelper.createMatch(moves, progress)
-      this._setMyMatch(match)
-      this._saveMove(match.address, move)
+    const { move, moveHash, match } = await this.matchesHelper.createMatch(moves, progress)
+    this._setMyMatch(match)
+    this._saveMove(match.address, move)
 
-      this.notificationsService.add({
-        type: NotificationType.Action,
-        params: [ActionType.YouCreated, match.address]
-      })
+    this.notificationsService.add({
+      type: NotificationType.Action,
+      params: [ActionType.YouCreated, match.address]
+    })
 
-      return match
-
-    } catch (err) {
-      // if (err.code && err.code === ErrorCode.NotEnoughBalance) {
-      //   // TODO UI
-      //   alert(err.message)
-      // }
-      throw err
-    }
+    return match
   }
 
   async joinMatch(match: IMatch,
-    playerPublicKey: string,
     moves: number[],
     progress?: (zeroToOne: number) => void) {
 
-    try {
-      await this.matchesHelper.joinMatch(match.publicKey, match.address, moves, progress)
+    await this.matchesHelper.joinMatch(match.publicKey, match.address, moves, progress)
 
-      const { move } = this.matchesHelper.hideMoves(moves)
-      this._setMyMatch(match)
-      this._saveMove(match.address, move)
+    const { move } = this.matchesHelper.hideMoves(moves)
+    this._setMyMatch(match)
+    this._saveMove(match.address, move)
 
-      this.notificationsService.add({
-        type: NotificationType.Action,
-        params: [ActionType.YouJoined, match.address]
-      })
-    } catch (err) {
-      // if (err.code && err.code === ErrorCode.NotEnoughBalance) {
-      //   // TODO UI
-      //   alert(err.message)
-      // }
-      throw err
-    }
-
+    this.notificationsService.add({
+      type: NotificationType.Action,
+      params: [ActionType.YouJoined, match.address]
+    })
   }
 
   async finishMatch(player1Address: string, player2Address: string, matchPublicKey: string, matchAddress: string, move: Uint8Array) {
