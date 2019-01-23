@@ -5,7 +5,7 @@
   padding-bottom: 1.5rem;
   border-bottom: 1px solid $white-ter;
 
-  &__actions {
+  &__notifications {
     position: relative;
   }
 
@@ -30,7 +30,7 @@
   }
 }
 
-.actions-icon {
+.notifications-icon {
   cursor: pointer;
   color: $text;
 
@@ -40,7 +40,7 @@
   }
 }
 
-.actions-tooltip {
+.notifications-tooltip {
   $triangle-size: 1rem;
 
   position: absolute;
@@ -58,7 +58,7 @@
     border-radius: $radius-large;
     overflow: auto;
     max-height: 26rem;
-    box-shadow: 0 0 0.8rem 0 rgba($black,.05);
+    box-shadow: 0 0 1.5rem 0 rgba($black,.07);
   }
 
   &:before {

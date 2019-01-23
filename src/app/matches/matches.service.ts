@@ -1,13 +1,13 @@
-import { Injectable, OnDestroy, NgZone } from '@angular/core'
-import { MatchesHelper, ErrorCode } from './shared/matches.helper'
+import { Injectable, NgZone, OnDestroy } from '@angular/core'
+import { ErrorCode, MatchesHelper } from './shared/matches.helper'
 import { HandSign, IMatch, IMatchChange, MatchResolve, MatchResult, MatchStatus, PlayerMoves } from './shared/match.interface'
 import { BehaviorSubject, Observable, timer } from 'rxjs'
 import { UserService } from '../user/user.service'
 import { IUser } from '../user/user.interface'
 import { concatMap, map } from 'rxjs/operators'
-import { base58encode, base58decode } from 'waves-crypto'
-import { ActionsService } from '../actions/actions.service'
-import { ActionType } from '../actions/actions.interface'
+import { base58decode, base58encode } from 'waves-crypto'
+import { NotificationsService } from '../notifications/notifications.service'
+import { ActionType, NotificationType } from '../notifications/notifications.interface'
 import { environment } from 'src/environments/environment'
 
 const matchDiff = (match: IMatch, newMatch: IMatch, currentHeight: number): IMatchChange => {
@@ -73,8 +73,8 @@ export class MatchesService implements OnDestroy {
   private _pollingSubscriber
 
   constructor(private matchesHelper: MatchesHelper,
-    private userService: UserService,
-    private actionsService: ActionsService, private ngZone: NgZone) {
+              private userService: UserService,
+              private notificationsService: NotificationsService, private ngZone: NgZone) {
     this._userSubscriber = this.userService.user$.subscribe((user: IUser) => {
       this.user = user
       if (this.user) {
@@ -140,15 +140,19 @@ export class MatchesService implements OnDestroy {
       this._setMyMatch(match)
       this._saveMove(match.address, move)
 
-      this.actionsService.add({ type: ActionType.CreatedMatch, args: [match.address] })
+      this.notificationsService.add({
+        type: NotificationType.Action,
+        params: [ActionType.YouCreated, match.address]
+      })
 
       return match
 
-    } catch (error) {
-      if (error.code && error.code === ErrorCode.NotEnoughBalance) {
-        // TODO UI
-        alert(error.message)
-      }
+    } catch (err) {
+      // if (err.code && err.code === ErrorCode.NotEnoughBalance) {
+      //   // TODO UI
+      //   alert(err.message)
+      // }
+      throw err
     }
   }
 
@@ -164,12 +168,16 @@ export class MatchesService implements OnDestroy {
       this._setMyMatch(match)
       this._saveMove(match.address, move)
 
-      this.actionsService.add({ type: ActionType.JoinedMatch, args: [match.address] })
-    } catch (error) {
-      if (error.code && error.code === ErrorCode.NotEnoughBalance) {
-        // TODO UI
-        alert(error.message)
-      }
+      this.notificationsService.add({
+        type: NotificationType.Action,
+        params: [ActionType.YouJoined, match.address]
+      })
+    } catch (err) {
+      // if (err.code && err.code === ErrorCode.NotEnoughBalance) {
+      //   // TODO UI
+      //   alert(err.message)
+      // }
+      throw err
     }
 
   }
@@ -197,8 +205,6 @@ export class MatchesService implements OnDestroy {
         matchAddress,
         move
       )
-
-      this.actionsService.add({ type: ActionType.FinishedMatch, args: [matchAddress] })
     } catch (err) {
       myMatch.isFinishing = false
       throw err
@@ -225,8 +231,6 @@ export class MatchesService implements OnDestroy {
       myMatch.isFinishing = false
       throw err
     }
-
-    this.actionsService.add({ type: ActionType.FinishedMatch, args: [matchAddress] })
   }
 
   getMyMoves(matchAddress: string): PlayerMoves {
@@ -258,7 +262,10 @@ export class MatchesService implements OnDestroy {
               break
             }
 
-            this.actionsService.add({ type: ActionType.AcceptedMatch, args: [change.match.address] })
+            this.notificationsService.add({
+              type: NotificationType.Action,
+              params: [ActionType.OpponentJoined, change.match.address]
+            })
 
             this.finishMatch(
               this.user.address,
@@ -276,19 +283,34 @@ export class MatchesService implements OnDestroy {
             break
           case MatchResolve.OpponentWon:
             if (change.match.opponent.address === this.user.address) {
-              this.actionsService.add({ type: ActionType.WonMatch, args: [change.match.address] })
+              this.notificationsService.add({
+                type: NotificationType.Action,
+                params: [ActionType.Won, change.match.address]
+              })
             } else {
-              this.actionsService.add({ type: ActionType.LostMatch, args: [change.match.address] })
+              this.notificationsService.add({
+                type: NotificationType.Action,
+                params: [ActionType.Lost, change.match.address]
+              })
             }
             break
           case MatchResolve.Draw:
-            this.actionsService.add({ type: ActionType.DrawMatch, args: [change.match.address] })
+            this.notificationsService.add({
+              type: NotificationType.Action,
+              params: [ActionType.Draw, change.match.address]
+            })
             break
           case MatchResolve.CreatorWon:
             if (change.match.creator.address === this.user.address) {
-              this.actionsService.add({ type: ActionType.WonMatch, args: [change.match.address] })
+              this.notificationsService.add({
+                type: NotificationType.Action,
+                params: [ActionType.Won, change.match.address]
+              })
             } else {
-              this.actionsService.add({ type: ActionType.LostMatch, args: [change.match.address] })
+              this.notificationsService.add({
+                type: NotificationType.Action,
+                params: [ActionType.Lost, change.match.address]
+              })
             }
             break
         }
@@ -298,7 +320,7 @@ export class MatchesService implements OnDestroy {
       }
     } catch (err) {
       console.error(err)
-      this.actionsService.add({ type: ActionType.WrongMatch })
+      this.notificationsService.add({ type: NotificationType.Error, message: 'ERROR_WRONG_MATCH'})
     }
   }
 

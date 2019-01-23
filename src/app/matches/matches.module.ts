@@ -9,7 +9,7 @@ import { SharedModule } from '../shared/shared.module'
 import { UserModule } from '../user/user.module'
 import { MatchesService } from './matches.service'
 import { MatchesHelper } from './shared/matches.helper'
-import { ActionsModule } from '../actions/actions.module'
+import { NotificationsModule } from '../notifications/notifications.module'
 import { MatchPlayerPanelComponent } from './match/match-player-panel/match-player-panel.component'
 
 @NgModule({
@@ -20,7 +20,7 @@ import { MatchPlayerPanelComponent } from './match/match-player-panel/match-play
     AuthModule,
     SharedModule,
     UserModule,
-    ActionsModule,
+    NotificationsModule,
   ],
   providers: [
     MatchesService,

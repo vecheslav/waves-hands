@@ -11,7 +11,7 @@ import { filter } from 'rxjs/operators'
 })
 export class UserPanelComponent implements OnInit, OnDestroy {
   user: IUser
-  actionsIsShown = false
+  notificationsIsShown = false
 
   private _userSubscriber
 
@@ -23,7 +23,7 @@ export class UserPanelComponent implements OnInit, OnDestroy {
     this.router.events
       .pipe(filter(event => event instanceof NavigationStart))
       .subscribe(event => {
-        this.closeActions()
+        this.closeNotifications()
       })
   }
 
@@ -35,12 +35,12 @@ export class UserPanelComponent implements OnInit, OnDestroy {
     this._userSubscriber.unsubscribe()
   }
 
-  toggleActions(): void {
-    this.actionsIsShown = !this.actionsIsShown
+  toggleNotifications(): void {
+    this.notificationsIsShown = !this.notificationsIsShown
   }
 
-  closeActions(): void {
-    this.actionsIsShown = false
+  closeNotifications(): void {
+    this.notificationsIsShown = false
   }
 
   async signin() {

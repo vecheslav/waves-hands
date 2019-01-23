@@ -4,15 +4,15 @@
       <div class="level-item user-panel__logout" *ngIf="user">
         <button class="button" (click)="logout()">Log Out</button>
       </div>
-      <div class="level-item user-panel__actions"
+      <div class="level-item user-panel__notifications"
            *ngIf="user"
-           appClickOutside (clickOutside)="actionsIsShown && closeActions()">
-        <div class="actions-icon" (click)="toggleActions()">
+           appClickOutside (clickOutside)="notificationsIsShown && closeNotifications()">
+        <div class="notifications-icon" (click)="toggleNotifications()">
           <svg class="icon"><use xlink:href="icons.svg#icon-notifications_none"></use></svg>
         </div>
-        <div class="actions-tooltip" [hidden]="!actionsIsShown">
-          <div class="actions-tooltip__inner">
-            <app-actions></app-actions>
+        <div class="notifications-tooltip" [hidden]="!notificationsIsShown">
+          <div class="notifications-tooltip__inner">
+            <app-notifications></app-notifications>
           </div>
         </div>
       </div>

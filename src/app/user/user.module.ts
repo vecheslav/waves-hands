@@ -6,7 +6,7 @@ import { UserService } from './user.service'
 import { SharedModule } from '../shared/shared.module'
 import { AuthGuard } from './auth.guard'
 import { RouterModule } from '@angular/router'
-import { ActionsModule } from '../actions/actions.module'
+import { NotificationsModule } from '../notifications/notifications.module'
 
 @NgModule({
   declarations: [UserPanelComponent],
@@ -15,7 +15,7 @@ import { ActionsModule } from '../actions/actions.module'
     AuthModule,
     SharedModule,
     RouterModule,
-    ActionsModule,
+    NotificationsModule,
   ],
   providers: [
     UserService,

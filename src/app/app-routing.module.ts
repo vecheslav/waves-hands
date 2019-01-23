@@ -1,10 +1,8 @@
 import { NgModule } from '@angular/core'
 import { Routes, RouterModule } from '@angular/router'
 import { MatchResolver } from './game/match.resolver'
-import { AuthGuard } from './user/auth.guard'
 import { MatchComponent } from './matches/match/match.component'
 import { MatchesComponent } from './matches/matches.component'
-import { ActionsComponent } from './actions/actions.component'
 
 const routes: Routes = [
   {
@@ -17,7 +15,6 @@ const routes: Routes = [
         resolve: {
           match: MatchResolver
         },
-        // canActivate: [AuthGuard],
       },
       {
         path: 'match/:address',
@@ -25,15 +22,9 @@ const routes: Routes = [
         resolve: {
           match: MatchResolver
         },
-        // canActivate: [AuthGuard],
       },
     ]
   },
-  // {
-  //   path: 'actions',
-  //   component: ActionsComponent,
-  //   canActivate: [AuthGuard],
-  // },
 ]
 
 @NgModule({

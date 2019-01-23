@@ -57,7 +57,7 @@
   <div class="level match-meta">
     <div class="level-left">
       <a href="https://wavesexplorer.com/address/{{ match.address }}" target="_blank" class="match-meta__id">
-        {{ match.address }}
+        #{{ match.address | slice:-5 }}
       </a>
     </div>
     <div class="level-right match-share">

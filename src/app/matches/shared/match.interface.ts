@@ -73,6 +73,7 @@ export const EmptyMatch: IMatch = {
 
 export enum MatchStage {
   SelectHands,
+  CompareHands,
   CreatedMatch,
   JoinedMatch,
   ReservedMatch,
