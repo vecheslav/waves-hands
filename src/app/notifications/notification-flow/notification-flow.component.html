@@ -1,3 +1,6 @@
-<p>
-  notification-flow works!
-</p>
+<div class="notifications-flow">
+  <div *ngFor="let notification of notifications"
+       [ngClass]="['notifications-flow__item', notification.type]" [class.faded]="notification.toFaded">
+    <app-notification-item [notification]="notification"></app-notification-item>
+  </div>
+</div>

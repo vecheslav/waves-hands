@@ -5,6 +5,7 @@ import { IUser } from '../user/user.interface'
 
 @Injectable()
 export class NotificationsService {
+  // TODO: can be merged into one in the future
   notifications$ = new BehaviorSubject<INotification[]>(<INotification[]>[])
   newNotification$ = new BehaviorSubject<INotification>(null)
 
@@ -28,8 +29,6 @@ export class NotificationsService {
 
     // Show notification
     this.newNotification$.next(notification)
-
-    console.log(notification)
 
     if (notification.stored || notification.type === NotificationType.Action) {
       // Save notification

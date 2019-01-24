@@ -1,36 +1,47 @@
-import { Component, Input, OnInit } from '@angular/core'
+import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core'
 import { ActionType, INotification, NotificationType } from '../notifications.interface'
-import { messageText } from '../notifictions'
+import { messageText, messageIcon } from '../notifictions'
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser'
 
 @Component({
   selector: 'app-notification-item',
   templateUrl: './notification-item.component.html',
-  styleUrls: ['./notification-item.component.scss']
+  styleUrls: ['./notification-item.component.scss'],
 })
 export class NotificationItemComponent implements OnInit {
   @Input() notification: INotification
   message: string
   messageSafeHtml: SafeHtml
+  messageClass: string
+  iconKey: string
 
+  notificationType = NotificationType
   actionType = ActionType
 
   constructor(private sanitizer: DomSanitizer) { }
 
   ngOnInit() {
-    this._makeMessage()
-    this._makeMessageBody()
+    this._initMessage()
   }
 
-  private _makeMessage() {
+  private _initMessage() {
+    this.messageClass = this.notification.type
     this.message = this.notification.message
+    this.iconKey = messageIcon[this.notification.type.toUpperCase()]
 
+    // Prepare message from types
     if (this.notification.type === NotificationType.Action && this.notification.params) {
-      this.message = (NotificationType.Action + '_' + this.notification.params[0]).toUpperCase()
+      this.messageClass = NotificationType.Action + '_' + this.notification.params[0]
+      this.message = this.messageClass.toUpperCase()
+      this.iconKey = messageIcon[this.message]
     }
+
+    
+
+    this._initMessageBody()
   }
 
-  private _makeMessageBody() {
+  private _initMessageBody() {
     const params = this.notification.params
     let messageBody = messageText[this.message]
 
@@ -38,9 +49,11 @@ export class NotificationItemComponent implements OnInit {
       return
     }
 
-    // Adding params
-    for (let i = 0; i < params.length; i++) {
-      messageBody = messageBody.replace('{' + i + '}', params[i])
+    if (params) {
+      // Adding params
+      for (let i = 0; i < params.length; i++) {
+        messageBody = messageBody.replace('{' + i + '}', params[i])
+      }
     }
 
     // Adding links

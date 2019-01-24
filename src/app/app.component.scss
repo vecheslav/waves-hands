@@ -30,3 +30,11 @@
     background: #f8f9fb;
   }
 }
+
+.app-notifications {
+  z-index: 999;
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 24rem;
+}

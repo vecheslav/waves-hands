@@ -1,19 +1,20 @@
 @import '~src/styles/variables';
 
-.action-item {
+.notification-item {
   flex-flow: row wrap;
   align-items: center;
 }
 
-.action-content {
+.notification-content {
   flex: 1;
+
   .date {
     font-weight: 500;
     color: $grey-light;
   }
 }
 
-.action-text {
+.notification-text {
 
   p {
     margin: 0;
@@ -21,12 +22,52 @@
   }
 }
 
-.action-icon {
+.notification-icon {
   margin-right: 1rem;
+  background: $white-ter;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
 
   .icon {
-    height: 2rem;
-    width: 2rem;
-    color: $grey-lighter;
+    height: 1.7rem;
+    width: 1.7rem;
+    color: $grey-light;
   }
 }
+
+@mixin item-type-style($color) {
+  .notification-text {
+    color: $color;
+  }
+  .notification-icon {
+    background-color: rgba($color, 0.1)
+  }
+  .icon {
+    color: rgba($color, .8);
+  }
+}
+
+@mixin item-action-style($color) {
+  .notification-icon {
+    background-color: rgba($color, 0.1)
+  }
+  .icon {
+    color: rgba($color, .8);
+  }
+}
+
+.error { @include item-type-style($danger); }
+.warning { @include item-type-style($warning); }
+.info { @include item-type-style($info); }
+
+.action_opponent_joined { @include item-action-style($blue); }
+.action_you_created { @include item-action-style($green); }
+.action_you_joined { @include item-action-style($yellow); }
+.action_receive { @include item-action-style($green); }
+.action_won { @include item-action-style($green); }
+.action_lost { @include item-action-style($red); }
+.action_draw { @include item-action-style($grey); }

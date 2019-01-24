@@ -1,11 +1,13 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core'
-import { HandSign, IMatch, MatchStage, Player, MatchStatus, PlayerMoves } from '../shared/match.interface'
+import { Component, OnDestroy, OnInit } from '@angular/core'
+import { HandSign, IMatch, MatchStage, MatchStatus } from '../shared/match.interface'
 import { ActivatedRoute, Router } from '@angular/router'
 import { MatchesService } from '../matches.service'
 import { KeeperService } from '../../auth/keeper.service'
 import { IUser } from '../../user/user.interface'
 import { UserService } from '../../user/user.service'
 import { ErrorCode } from 'src/app/shared/error-code'
+import { NotificationsService } from '../../notifications/notifications.service'
+import { NotificationType } from '../../notifications/notifications.interface'
 
 @Component({
   selector: 'app-match',
@@ -29,10 +31,11 @@ export class MatchComponent implements OnInit, OnDestroy {
   private _userSubscriber
 
   constructor(private router: Router,
-    private route: ActivatedRoute,
-    private keeperService: KeeperService,
-    private matchesService: MatchesService,
-    private userServices: UserService) {
+              private route: ActivatedRoute,
+              private keeperService: KeeperService,
+              private matchesService: MatchesService,
+              private userServices: UserService,
+              private notificationsService: NotificationsService) {
     this.match = this.route.snapshot.data.match
 
     this._userSubscriber = this.userServices.user$.subscribe((user: IUser) => {
@@ -44,10 +47,16 @@ export class MatchComponent implements OnInit, OnDestroy {
     if (err.code) {
       switch (err.code) {
         case ErrorCode.UserRejected:
-          alert('ErrorCode.UserRejected')
+          this.notificationsService.add({
+            type: NotificationType.Error,
+            message: 'ERROR_USER_REJECTED'
+          })
           return true
         case ErrorCode.NotEnoughBalance:
-          alert('ErrorCode.NotEnoughBalance')
+          this.notificationsService.add({
+            type: NotificationType.Error,
+            message: 'ERROR_BALANCE'
+          })
           return true
       }
     }

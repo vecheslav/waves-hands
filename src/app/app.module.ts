@@ -12,6 +12,7 @@ import { UserModule } from './user/user.module'
 
 import * as Sentry from '@sentry/browser'
 import { environment } from 'src/environments/environment'
+import { NotificationsModule } from './notifications/notifications.module'
 
 if (environment.production) {
   Sentry.init({
@@ -43,6 +44,7 @@ export class SentryErrorHandler implements ErrorHandler {
     CoreModule,
     MatchesModule,
     UserModule,
+    NotificationsModule,
   ],
   providers: [
     {

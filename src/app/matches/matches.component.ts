@@ -15,7 +15,8 @@ export class MatchesComponent implements OnInit, OnDestroy {
 
   private _matchesSubscribe
 
-  constructor(private route: ActivatedRoute, private matchesService: MatchesService) {
+  constructor(private route: ActivatedRoute,
+              private matchesService: MatchesService) {
     this._matchesSubscribe = this.matchesService.matches$.subscribe((matches: Record<string, IMatch>) => {
       if (!matches) {
         return

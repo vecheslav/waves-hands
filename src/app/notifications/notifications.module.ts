@@ -23,6 +23,7 @@ import { NotificationFlowComponent } from './notification-flow/notification-flow
   ],
   exports: [
     NotificationsComponent,
+    NotificationFlowComponent,
   ]
 })
 export class NotificationsModule { }
