@@ -74,7 +74,7 @@
     margin-top: 1.3rem;
   }
 
-  .progress {
+  .new-progress {
     width: 16rem;
     margin: 0 auto;
   }
@@ -82,4 +82,17 @@
 
 .match-progress {
   padding-top: 3rem;
+}
+
+.new-progress {
+  height: 0.75rem;
+  background: $border;
+  border-radius: 290486px;
+  overflow: hidden;
+  
+  &__bar {
+    width: 0;
+    height: 100%;
+    background: $text;
+  }
 }
