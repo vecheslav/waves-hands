@@ -39,25 +39,59 @@
   }
 }
 
+@mixin hand-mock {
+  display: block;
+  width: 2.5rem;
+  height: 2.5rem;
+  position: absolute;
+  z-index: 0;
+  background: $white-ter;
+  border-radius: 50%;
+  top: 0;
+}
+
 .selected-hands {
+  position: relative;
+  min-width: 9rem;
+  min-height: 2.5rem;
 
   &__item {
     width: 2.5rem;
     height: 2.5rem;
-
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    z-index: 1;
     border: 2px solid $white-ter;
+    background: $white;
     border-radius: 50%;
     padding: .3rem;
-    margin-left: .75rem;
+    margin-right: .75rem;
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    &--slots {
+      @include hand-mock();
+      left: 0;
+
+      &:before {
+        content: '';
+        @include hand-mock();
+        left: 3.25rem;
+      }
+
+      &:after {
+        content: '';
+        @include hand-mock();
+        left: 6.5rem;
+      }
+    }
   }
 }
 
 .match-top {
-  .selected-hands__item {
-    margin-right: .75rem;
-    margin-left: 0;
-  }
-
   .player-panel {
     flex-direction: row-reverse;
   }

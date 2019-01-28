@@ -10,8 +10,9 @@
     </div>
   </div>
   <div class="player-panel__hands">
-    <div class="level selected-hands">
-      <div class="level-item has-text-centered selected-hands__item" *ngFor="let hand of hands">
+    <div class="selected-hands">
+      <div class="selected-hands__item--slots"></div>
+      <div class="has-text-centered selected-hands__item" *ngFor="let hand of hands">
         <div [class]="['hand hand--' + hand]"></div>
       </div>
     </div>

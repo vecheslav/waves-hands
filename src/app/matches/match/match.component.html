@@ -97,7 +97,7 @@
             </div>
           </div>
 
-          <div class="match-bottom">
+          <div class="match-bottom" [hidden]="match.status === 0 && stage === matchStage.CreatedMatch">
             <app-match-player-panel *ngIf="match.status === 0" [player]="user" [hands]="selectedHandSigns"></app-match-player-panel>
             <app-match-player-panel *ngIf="match.status > 0" [player]="match?.opponent" [hands]="match.opponent?.moves"></app-match-player-panel>
           </div>

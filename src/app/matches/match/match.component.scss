@@ -20,11 +20,6 @@
   padding-top: 3rem;
   padding-bottom: 3rem;
 
-  min-height: 20rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
   .subtitle {
     font-size: 1rem;
   }
@@ -69,6 +64,7 @@
 }
 
 .select-hands {
+  padding: 0 1rem;
   font-size: 5rem;
 
   > div {
@@ -85,13 +81,18 @@
   }
 }
 
+.match-stages,
 .match-loading,
 .match-progress {
-  padding: 2rem 2rem;
-  min-height: 20rem;
+  min-height: 22rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.match-loading,
+.match-progress {
+  padding: 2rem 2rem;
 
   .subtitle {
     margin-top: 1.5rem;

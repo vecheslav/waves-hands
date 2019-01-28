@@ -28,58 +28,24 @@
     </div>
   </div>
 
-<!--
   <div class="share-match share-match--buttons" *ngSwitchCase="'buttons'">
-    <div class="field has-addons">
-      <div class="control">
-        <a href="https://www.facebook.com/sharer/sharer.php?u={{ url }}"
-           target="_blank"
-           (click)="share($event)"
-           class="button is-primary is-outlined">
-          <svg class="icon"><use xlink:href="icons.svg#icon-facebook"></use></svg>
-          <span>Facebook</span>
-        </a>
-      </div>
-      <div class="control">
-        <a href="https://twitter.com/home?status=I%20created%20a%20game%20on%20Waves%20Hands.%20Fight%20me%3A%20{{ url }}"
-           target="_blank"
-           (click)="share($event)"
-           class="button is-primary is-outlined">
-          <svg class="icon"><use xlink:href="icons.svg#icon-twitter"></use></svg>
-          <span>Twitter</span>
-        </a>
-      </div>
-      <div class="control">
-        <a href="https://t.me/share/url?url={{ url }}&text=I%20created%20a%20game%20on%20Waves%20Hands.%20Fight%20me!"
-           target="_blank"
-           (click)="share($event)"
-           class="button is-primary is-outlined">
-          <svg class="icon"><use xlink:href="icons.svg#icon-telegram"></use></svg>
-          <span>Telegram</span>
-        </a>
-      </div>
-    </div>
+    <a href="https://www.facebook.com/sharer/sharer.php?u={{ url }}"
+      target="_blank"
+      (click)="share($event)"
+      class="">
+      <svg class="icon"><use xlink:href="icons.svg#icon-facebook"></use></svg>
+    </a>
+    <a href="https://twitter.com/home?status=I%20created%20a%20game%20on%20Waves%20Hands.%20Fight%20me%3A%20{{ url }}"
+      target="_blank"
+      (click)="share($event)"
+      class="">
+      <svg class="icon"><use xlink:href="icons.svg#icon-twitter"></use></svg>
+    </a>
+    <a href="https://t.me/share/url?url={{ url }}&text=I%20created%20a%20game%20on%20Waves%20Hands.%20Fight%20me!"
+      target="_blank"
+      (click)="share($event)"
+      class="">
+      <svg class="icon"><use xlink:href="icons.svg#icon-telegram"></use></svg>
+    </a>
   </div>
-</div>
--->
-
-<div class="share-match share-match--buttons" *ngSwitchCase="'buttons'">
-  <a href="https://www.facebook.com/sharer/sharer.php?u={{ url }}"
-     target="_blank"
-     (click)="share($event)"
-     class="">
-    <svg class="icon"><use xlink:href="icons.svg#icon-facebook"></use></svg>
-  </a>
-  <a href="https://twitter.com/home?status=I%20created%20a%20game%20on%20Waves%20Hands.%20Fight%20me%3A%20{{ url }}"
-     target="_blank"
-     (click)="share($event)"
-     class="">
-    <svg class="icon"><use xlink:href="icons.svg#icon-twitter"></use></svg>
-  </a>
-  <a href="https://t.me/share/url?url={{ url }}&text=I%20created%20a%20game%20on%20Waves%20Hands.%20Fight%20me!"
-     target="_blank"
-     (click)="share($event)"
-     class="">
-    <svg class="icon"><use xlink:href="icons.svg#icon-telegram"></use></svg>
-  </a>
 </div>
