@@ -3,7 +3,6 @@
 .match-wrapper {
   background: $white;
   border-radius: .5rem;
-  height: 680px;
 }
 
 .match-notifications {
@@ -17,20 +16,23 @@
   padding-right: 2rem;
 }
 
-.match-bottom {
-  position: absolute;
-  width: 100%;
-  bottom: 0;
-}
-
 .match-stages {
   padding-top: 3rem;
   padding-bottom: 3rem;
-}
 
-.match-stages h2 {
-  color: $basic700;
-  font-size: $h2title;
+  min-height: 20rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  h2 {
+    color: $basic700;
+    font-size: $h2title;
+  }
 }
 
 .match-top,
@@ -57,6 +59,7 @@
 }
 
 .match-stage {
+  flex: 1;
 
   &__action {
     margin-bottom: 1rem;
@@ -66,8 +69,7 @@
 }
 
 .select-hands {
-  font-size: 8rem;
-  margin-top: 20%;
+  font-size: 5rem;
 
   > div {
     cursor: pointer;
@@ -86,19 +88,24 @@
 .match-loading,
 .match-progress {
   padding: 2rem 2rem;
+  min-height: 20rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
   .subtitle {
-    margin-top: 1.3rem;
+    margin-top: 1.5rem;
+    font-size: 1rem;
   }
 
   .new-progress {
-    width: 16rem;
+    width: 26rem;
     margin: 0 auto;
   }
-}
 
-.match-progress {
-  padding-top: 25%;
+  &__inner {
+    flex: 1;
+  }
 }
 
 .modal-content {
@@ -111,7 +118,7 @@
 
 @keyframes progress-active {
   0% {
-    opacity: .1;
+    opacity: 1;
     width: 0
   }
   20% {
@@ -124,95 +131,43 @@
   }
 }
 
-.progress {
-  position: relative;
+.new-progress {
+  height: 0.5rem;
+  background: $white-ter;
+  border-radius: 290486px;
+  overflow: visible;
 
-  &[value] {
-    &::before {
+  &__bar {
+    width: 0;
+    height: 100%;
+    background: $primary;
+    border-radius: 290486px;
+    box-shadow: 2px 2px 5px 0 rgba($primary, .25);
+    transition: width .5s ease;
+    position: relative;
+
+    &:before {
       content: '';
       opacity: 0;
       position: absolute;
       top: 0;
       left: 0;
-      height: 0.5rem;
       width: 100%;
-      right: 0;
       bottom: 0;
-      background: red;
+      background: rgba($white, .9);
       border-radius: 10px;
-      animation: progress-active .4s cubic-bezier(.23, 1, .32, 1) infinite;
+      animation: progress-active 1s ease infinite;
     }
-  }
-
-  &::-webkit-progress-bar {
-    background-color: rgba(237, 240, 244, 0.5);
-    border-radius: 0.25rem;
-  }
-
-  &::-webkit-progress-value {
-    background-color: #0066ff;
-    box-shadow: 2px 2px 5px 0 rgba(31, 90, 246, 0.25);
-    border-radius: 0.25rem;
-    &::before {
-      opacity: 1;
-    }
-  }
-
-  &::-moz-progress-bar {
-    background-color: #0066ff;
-    border-radius: 0.25rem;
-    &::before {
-      opacity: 1;
-    }
-  }
-
-  &::-ms-fill {
-    background-color: #0066ff;
-    box-shadow: 2px 2px 5px 0 rgba(31, 90, 246, 0.25);
-    border-radius: 0.25rem;
-    &::before {
-      opacity: 1;
-    }
-  }
-
-}
-
-.new-progress {
-  height: 0.75rem;
-  background: $border;
-  border-radius: 290486px;
-  overflow: hidden;
-
-  &__bar {
-    width: 0;
-    height: 100%;
-    background: $text;
   }
 }
 
 .hands-h2 {
-  font-size: 34px;
   font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 0.82;
-  letter-spacing: normal;
-  text-align: center;
-  color: #4e5c6e;
-}
-
-.title-description {
-  font-size: 17px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.29;
-  letter-spacing: normal;
-  text-align: center;
-  color: #9ba6b2;
+  color: $basic700;
+  font-size: $h2title;
 }
 
 .hand140 {
-  font-size: 140px;
+  font-size: 4rem;
 }
 

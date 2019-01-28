@@ -15,9 +15,11 @@ $primary: $blue;
 $modal-background-background-color: rgba($black, 0.6);
 $subtitle-color: $grey-light;
 
-// Max
+// New
 $basic700: #4E5C6E;
 $h2title: 34px;
 $weight500: 500;
+$shadow-default: 0 0 1.5rem 0 rgba($black,.07);
+$shadow-small: 0 1px 1rem 0 rgba($black,.05);
 
 @import "~bulma/sass/utilities/derived-variables";

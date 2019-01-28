@@ -23,7 +23,7 @@
 
           <div class="match-stages" [ngSwitch]="stage" *ngIf="!isLoading">
             <div class="match-stage match-stage--select-hands" *ngSwitchCase="matchStage.SelectHands">
-              <h2 class="title has-text-centered">Select your hands</h2>
+              <h2 class="title has-text-centered hands-h2">Select your hands</h2>
               <div class="level select-hands">
                 <div class="level-item has-text-centered" (click)="select(0)">👊️</div>
                 <div class="level-item has-text-centered" (click)="select(1)">✋</div>
@@ -35,8 +35,8 @@
               <div>
                 <span class="hand140">🤟</span>
               </div>
-              <h2 class="hands-h2 has-text-centered">You created the match</h2>
-              <p class="title-description">Share the match link to friends, or wait for players to join.</p>
+              <h2 class="title has-text-centered hands-h2">You created the match</h2>
+              <p class="subtitle">Share the match link to friends, or wait for players to join.</p>
               <div class="md-1">
                 <app-share-match [url]="shareUrl" [options]="{ type: 'buttons' }"></app-share-match>
               </div>
@@ -45,41 +45,41 @@
 
             <div class="match-stage match-stage--joined-match" *ngSwitchCase="matchStage.JoinedMatch">
               <div>
-                <span class="is-size-1">✊</span>
+                <span class="hand140">✊</span>
               </div>
-              <h2 class="title has-text-centered">You joined the match</h2>
+              <h2 class="title has-text-centered hands-h2">You joined the match</h2>
               <p class="subtitle">Now wait your opponent to reveal his move.</p>
             </div>
 
             <div class="match-stage match-stage--reserved-match" *ngSwitchCase="matchStage.ReservedMatch">
               <div>
-                <span class="is-size-1">⚔️</span>
+                <span class="hand140">⚔️</span>
               </div>
-              <h2 class="title has-text-centered">The match was reserved</h2>
+              <h2 class="title has-text-centered hands-h2">The match was reserved</h2>
               <p class="subtitle">You can try your luck in other matches.</p>
             </div>
 
             <div class="match-stage match-stage--won-match" *ngSwitchCase="matchStage.WonMatch">
               <div>
-                <span class="is-size-1">🥳</span>
+                <span class="hand140">🥳</span>
               </div>
-              <h2 class="title has-text-centered">You won the match</h2>
+              <h2 class="title has-text-centered hands-h2">You won the match</h2>
               <p class="subtitle">You can try your luck in other matches.</p>
             </div>
 
             <div class="match-stage match-stage--lost-match" *ngSwitchCase="matchStage.LostMatch">
               <div>
-                <span class="is-size-1">😞</span>
+                <span class="hand140">😞</span>
               </div>
-              <h2 class="title has-text-centered">You lost the match</h2>
+              <h2 class="title has-text-centered hands-h2">You lost the match</h2>
               <p class="subtitle">You can try your luck in other matches.</p>
             </div>
 
             <div class="match-stage match-stage--result-match" *ngSwitchCase="matchStage.ResultMatch">
               <div>
-                <span class="is-size-1">🚀</span>
+                <span class="hand140">🚀</span>
               </div>
-              <h2 class="title has-text-centered">The match was finished</h2>
+              <h2 class="title has-text-centered hands-h2">The match was finished</h2>
               <p class="subtitle">You can try your luck in other matches.</p>
             </div>
           </div>
@@ -88,11 +88,13 @@
             <div class="subtitle is-size-6 has-text-centered">Please, wait... Don't close the window</div>
           </div> -->
           <div class="match-progress" *ngIf="isLoading">
-            <h2 class="title has-text-centered hands-h2">Please, wait...</h2>
-            <div class="new-progress">
-              <div class="new-progress__bar" [ngStyle]="{'width': (progress ? (progress * 100) : 0) + '%'}"></div>
+            <div class="match-progress__inner">
+              <h2 class="title has-text-centered hands-h2">Please, wait...</h2>
+              <div class="new-progress">
+                <div class="new-progress__bar" [ngStyle]="{'width': (progress ? (progress * 100) : 0) + '%'}"></div>
+              </div>
+              <div class="subtitle is-size-6 has-text-centered">Don't close the window</div>
             </div>
-            <div class="title-description is-size-6 has-text-centered">Don't close the window</div>
           </div>
 
           <div class="match-bottom">

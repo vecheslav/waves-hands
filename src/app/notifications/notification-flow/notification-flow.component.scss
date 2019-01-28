@@ -7,7 +7,7 @@
     border-radius: $radius-large;
     padding: 1rem;
     // border: 1px solid $white-ter;
-    box-shadow: 0 0 1.5rem 0 rgba($black,.07);
+    box-shadow: $shadow-default;
     transition: opacity 1s ease;
 
     &.faded {
