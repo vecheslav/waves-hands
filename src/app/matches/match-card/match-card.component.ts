@@ -1,5 +1,9 @@
 import { Component, HostListener, Input, OnInit } from '@angular/core'
 import { IMatch, MatchStatus } from '../shared/match.interface'
+import { environment } from 'src/environments/environment'
+import { MatchesService } from '../matches.service'
+
+const REVEAL_HEIGHT = environment.creatorRevealBlocksCount + 1
 
 @Component({
   selector: 'app-match-card',
@@ -14,11 +18,16 @@ export class MatchCardComponent implements OnInit {
 
   startIsShown = false
   shareUrl: string
+  pendingLeftPercent = 100
 
-  constructor() { }
+  private _pendingLeftHeight = 0
+
+  constructor(private matchesService: MatchesService) { }
 
   ngOnInit() {
     this.shareUrl = window.location.origin + '/match/' + this.match.address
+
+    this._initLeftPercent()
   }
 
   @HostListener('mouseenter')
@@ -31,5 +40,13 @@ export class MatchCardComponent implements OnInit {
   @HostListener('mouseleave')
   onMouseLeave(): void {
     this.startIsShown = false
+  }
+
+  _initLeftPercent() {
+    if (this.match.status === MatchStatus.Waiting && this.match.reservationHeight) {
+      const heightPassed = this.matchesService.currentHeight - this.match.reservationHeight
+      this._pendingLeftHeight = Math.max(REVEAL_HEIGHT - heightPassed, 0)
+      this.pendingLeftPercent = this._pendingLeftHeight * 100 / REVEAL_HEIGHT
+    }
   }
 }

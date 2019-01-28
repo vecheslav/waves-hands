@@ -1,6 +1,6 @@
 
 <div class="match-card">
-  <div class="match-card__inner">
+  <a [routerLink]="['match', match.address]" class="match-card__inner">
     <div class="match-card__overview">
       <div class="level has-text-centered match-players" *ngIf="match.status !== 2">
         <div class="level-item">
@@ -30,6 +30,9 @@
     </div>
 
     <div class="level match-card__details">
+      <div class="match-pending"
+           *ngIf="match.status === 1 && pendingLeftPercent > 0"
+           [ngStyle]="{'width': pendingLeftPercent + '%'}"></div>
       <div class="level-left">
         <div class="level-item">
           Bet:&nbsp;
@@ -38,13 +41,11 @@
       </div>
       <div class="level-right">
         <div class="level-item">
-          <a [routerLink]="['match', match.address]" class="match-date">
-            {{ match.timestamp | date: 'dd MMM, h:mm a' }}
-          </a>
+          <div class="match-status" [ngClass]="['status-' + match.status]"></div>
         </div>
       </div>
     </div>
-  </div>
+  </a>
 
   <a [routerLink]="['match', match.address]"
      class="start-overlay"

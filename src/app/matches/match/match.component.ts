@@ -157,7 +157,7 @@ export class MatchComponent implements OnInit, OnDestroy {
       case MatchStatus.Waiting:
         if (this._isAsCreator()) {
           this.stage = MatchStage.ReservedMatch
-        } else if (this._isAsOpponent) {
+        } else if (this._isAsOpponent()) {
           this.stage = MatchStage.JoinedMatch
         } else {
           this.stage = MatchStage.ReservedMatch

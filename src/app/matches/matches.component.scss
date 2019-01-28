@@ -15,7 +15,10 @@
     }
 
     &__actions {
-      flex: 1;
+      .button {
+        width: 10rem;
+        height: 2.8rem;
+      }
     }
   }
 

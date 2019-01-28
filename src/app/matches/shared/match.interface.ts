@@ -56,7 +56,7 @@ export interface IMatch extends IMatchTemp {
   reservationHeight?: number
   status: MatchStatus
   result?: MatchResult
-  timestamp?: number
+  timestamp?: number | string
 }
 
 export const EmptyMatch: IMatch = {
