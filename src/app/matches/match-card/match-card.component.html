@@ -1,16 +1,32 @@
 
 <div class="match-card">
   <a [routerLink]="['match', match.address]" class="match-card__inner">
-    <div class="match-card__overview">
-      <div class="level has-text-centered match-players" *ngIf="match.status !== 2">
+    <div class="match-card__overview" *ngIf="match.status !== 2 && !match.opponent">
+      <div class="level has-text-centered match-players">
         <div class="level-item">
           <app-match-player [player]="match.creator"></app-match-player>
-          <div class="player-status">
-            Waiting players...
-          </div>
         </div>
       </div>
-      <div class="level has-text-centered match-players match-players--result" *ngIf="match.status === 2">
+      <div class="match-text">
+          Waiting players...
+        </div>
+    </div>
+    <div class="match-card__overview" *ngIf="match.status !== 2 && match.opponent">
+      <div class="level has-text-centered match-players">
+        <div class="level-item">
+          <app-match-player [player]="match.creator"></app-match-player>
+        </div>
+        <div class="level-item">vs</div>
+        <div class="level-item">
+          <app-match-player [player]="match.opponent"></app-match-player>
+        </div>
+      </div>
+      <div class="match-text">
+        Waiting for the first player...
+      </div>
+    </div>
+    <div class="match-card__overview" *ngIf="match.status === 2">
+      <div class="level has-text-centered match-players match-players--result">
         <div class="level-item">
           <app-match-player [player]="match.creator"></app-match-player>
           <div class="player-status"
