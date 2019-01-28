@@ -69,6 +69,7 @@ export class MatchComponent implements OnInit, OnDestroy {
     this._reset()
 
     if (this.stage === MatchStage.CreatedMatch) {
+      this.shareUrl = window.location.origin + '/match/' + this.match.address
       this.match.creator.moves = this.matchesService.getMyMoves(this.match.address)
     }
   }
