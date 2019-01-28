@@ -3,6 +3,7 @@
 .match-wrapper {
   background: $white;
   border-radius: .5rem;
+  height: 680px;
 }
 
 .match-notifications {
@@ -16,9 +17,20 @@
   padding-right: 2rem;
 }
 
+.match-bottom {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+}
+
 .match-stages {
   padding-top: 3rem;
   padding-bottom: 3rem;
+}
+
+.match-stages h2 {
+  color: $basic700;
+  font-size: $h2title;
 }
 
 .match-top,
@@ -36,8 +48,12 @@
 }
 
 .md {
-  &-05 { margin-bottom: .5rem; }
-  &-1 { margin-bottom: 1rem; }
+  &-05 {
+    margin-bottom: .5rem;
+  }
+  &-1 {
+    margin-bottom: 1rem;
+  }
 }
 
 .match-stage {
@@ -50,7 +66,8 @@
 }
 
 .select-hands {
-  font-size: 4rem;
+  font-size: 8rem;
+  margin-top: 20%;
 
   > div {
     cursor: pointer;
@@ -81,7 +98,83 @@
 }
 
 .match-progress {
-  padding-top: 3rem;
+  padding-top: 25%;
+}
+
+.modal-content {
+  width: 800px;
+}
+
+.progress.is-small {
+  height: 0.5rem;
+}
+
+@keyframes progress-active {
+  0% {
+    opacity: .1;
+    width: 0
+  }
+  20% {
+    opacity: .5;
+    width: 0
+  }
+  100% {
+    opacity: 0;
+    width: 100%
+  }
+}
+
+.progress {
+  position: relative;
+
+  &[value] {
+    &::before {
+      content: '';
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 0.5rem;
+      width: 100%;
+      right: 0;
+      bottom: 0;
+      background: red;
+      border-radius: 10px;
+      animation: progress-active .4s cubic-bezier(.23, 1, .32, 1) infinite;
+    }
+  }
+
+  &::-webkit-progress-bar {
+    background-color: rgba(237, 240, 244, 0.5);
+    border-radius: 0.25rem;
+  }
+
+  &::-webkit-progress-value {
+    background-color: #0066ff;
+    box-shadow: 2px 2px 5px 0 rgba(31, 90, 246, 0.25);
+    border-radius: 0.25rem;
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &::-moz-progress-bar {
+    background-color: #0066ff;
+    border-radius: 0.25rem;
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &::-ms-fill {
+    background-color: #0066ff;
+    box-shadow: 2px 2px 5px 0 rgba(31, 90, 246, 0.25);
+    border-radius: 0.25rem;
+    &::before {
+      opacity: 1;
+    }
+  }
+
 }
 
 .new-progress {
@@ -89,10 +182,37 @@
   background: $border;
   border-radius: 290486px;
   overflow: hidden;
-  
+
   &__bar {
     width: 0;
     height: 100%;
     background: $text;
   }
 }
+
+.hands-h2 {
+  font-size: 34px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 0.82;
+  letter-spacing: normal;
+  text-align: center;
+  color: #4e5c6e;
+}
+
+.title-description {
+  font-size: 17px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.29;
+  letter-spacing: normal;
+  text-align: center;
+  color: #9ba6b2;
+}
+
+.hand140 {
+  font-size: 140px;
+}
+

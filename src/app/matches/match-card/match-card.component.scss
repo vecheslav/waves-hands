@@ -7,6 +7,7 @@ $card-padding: 1.5rem;
   padding: $card-padding;
   border-radius: $radius-large;
   border: 1px solid $white-ter;
+  box-shadow: $card-shadow-default;
   color: $text;
   position: relative;
 
@@ -118,3 +119,7 @@ $card-padding: 1.5rem;
 .player-status {
   margin-top: .8rem;
 }
+
+
+
+

@@ -10,7 +10,7 @@
             Keeper is not available. <a href="https://chrome.google.com/webstore/detail/waves-keeper/lpilbniiabackdjcionkobglmddfbcjo"
             target="_blank">Install the extension</a> to access the game.
           </div>
-  
+
           <!-- <div class="notification match-not-available" *ngIf="keeperIsAvailable && !user">
             You are not logged in.
           </div> -->
@@ -23,7 +23,7 @@
 
           <div class="match-stages" [ngSwitch]="stage" *ngIf="!isLoading">
             <div class="match-stage match-stage--select-hands" *ngSwitchCase="matchStage.SelectHands">
-              <h2 class="title is-size-4 has-text-grey-dark has-text-centered">Select your hands</h2>
+              <h2 class="title has-text-centered">Select your hands</h2>
               <div class="level select-hands">
                 <div class="level-item has-text-centered" (click)="select(0)">👊️</div>
                 <div class="level-item has-text-centered" (click)="select(1)">✋</div>
@@ -33,10 +33,10 @@
 
             <div class="match-stage match-stage--created-match has-text-centered" *ngSwitchCase="matchStage.CreatedMatch">
               <div>
-                <span class="is-size-1">🤟</span>
+                <span class="hand140">🤟</span>
               </div>
-              <h2 class="title has-text-centered">You created the match</h2>
-              <p class="subtitle">Share the match link to friends, or wait for players to join.</p>
+              <h2 class="hands-h2 has-text-centered">You created the match</h2>
+              <p class="title-description">Share the match link to friends, or wait for players to join.</p>
               <div class="md-1">
                 <app-share-match [url]="shareUrl" [options]="{ type: 'buttons' }"></app-share-match>
               </div>
@@ -88,10 +88,11 @@
             <div class="subtitle is-size-6 has-text-centered">Please, wait... Don't close the window</div>
           </div> -->
           <div class="match-progress" *ngIf="isLoading">
+            <h2 class="title has-text-centered hands-h2">Please, wait...</h2>
             <div class="new-progress">
               <div class="new-progress__bar" [ngStyle]="{'width': (progress ? (progress * 100) : 0) + '%'}"></div>
             </div>
-            <div class="subtitle is-size-6 has-text-centered">Please, wait... Don't close the window</div>
+            <div class="title-description is-size-6 has-text-centered">Don't close the window</div>
           </div>
 
           <div class="match-bottom">

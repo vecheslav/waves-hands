@@ -6,7 +6,7 @@ $blue: #0072ff;
 $red: #E84855;
 $yellow: #FFC031;
 $section-padding: 2rem 3rem;
-$white-ter: hsl(0, 0%, 94%);
+$white-ter: #edf0f4;
 //$radius: 0;
 
 // Derived variables
@@ -14,5 +14,10 @@ $body-background-color: #f8f9fb;
 $primary: $blue;
 $modal-background-background-color: rgba($black, 0.6);
 $subtitle-color: $grey-light;
+
+// Max
+$basic700: #4E5C6E;
+$h2title: 34px;
+$weight500: 500;
 
 @import "~bulma/sass/utilities/derived-variables";
