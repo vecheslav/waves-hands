@@ -9,6 +9,7 @@ export class UserService {
   user$ = new BehaviorSubject<IUser>(null)
 
   constructor(private keeperService: KeeperService, private notificationsService: NotificationsService) {
+    this._subscribeOnKeeper()
   }
 
   getCurrentUser() {
@@ -37,9 +38,7 @@ export class UserService {
       })
 
       const user = { address, publicKey, signature }
-      this._setUserInStorage(user)
-      this.user$.next(user)
-      this.notificationsService.selectUser(user)
+      this.setUser(user)
 
       return user
     } catch (err) {
@@ -48,9 +47,28 @@ export class UserService {
     }
   }
 
+  async setUser(user: IUser) {
+    this._setUserInStorage(user)
+    this.user$.next(user)
+    this.notificationsService.selectUser(user)
+  }
+
   async logout() {
     this.user$.next(null)
     this._setUserInStorage(null)
+  }
+
+  private _subscribeOnKeeper() {
+    this.keeperService.on('update', state => {
+      if (state && state.account) {
+        const { address, publicKey } = state.account
+        const currentUser = this.user$.getValue()
+
+        if (!currentUser || currentUser.address !== address) {
+          this.setUser({ address, publicKey })
+        }
+      }
+    })
   }
 
   private _getUserFromStorage() {

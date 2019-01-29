@@ -216,7 +216,7 @@ export class MatchesService implements OnDestroy {
   }
 
   getMyMoves(matchAddress: string): PlayerMoves {
-    const moves = this._getMoveFromStorage(matchAddress).slice(0, 3)
+    const moves = this._getMoveFromStorage(this.user.address, matchAddress).slice(0, 3)
     return Array.from(moves) as PlayerMoves
   }
 
@@ -235,7 +235,7 @@ export class MatchesService implements OnDestroy {
       for (const change of changes) {
         switch (change.resolve) {
           case MatchResolve.Accepted:
-            const move = this._getMoveFromStorage(change.match.address)
+            const move = this._getMoveFromStorage(this.user.address, change.match.address)
             if (!move) {
               break
             }
@@ -335,7 +335,7 @@ export class MatchesService implements OnDestroy {
   }
 
   private _saveMove(matchAddress: string, move: Uint8Array) {
-    this._saveMoveToStorage(matchAddress, move)
+    this._saveMoveToStorage(this.user.address, matchAddress, move)
   }
 
   // TODO: Maybe move this to external storage service
@@ -356,17 +356,23 @@ export class MatchesService implements OnDestroy {
     return match
   }
 
-  private _getMoveFromStorage(matchAddress: string): Uint8Array {
-    const moves = JSON.parse(localStorage.getItem('moves')) || {}
+  private _getMoveFromStorage(userAddress: string, matchAddress: string): Uint8Array {
+    const allMoves = JSON.parse(localStorage.getItem('moves')) || {}
+    const moves = allMoves[userAddress] || {}
+
+    if (!moves[matchAddress]) {
+      return Uint8Array.from([])
+    }
 
     return base58decode(moves[matchAddress])
   }
 
-  private _saveMoveToStorage(matchAddress: string, move: Uint8Array): Uint8Array {
-    const moves = JSON.parse(localStorage.getItem('moves')) || {}
-    moves[matchAddress] = base58encode(move)
+  private _saveMoveToStorage(userAddress: string, matchAddress: string, move: Uint8Array): Uint8Array {
+    const allMoves = JSON.parse(localStorage.getItem('moves')) || {}
+    allMoves[userAddress] = allMoves[userAddress] || {}
+    allMoves[userAddress][matchAddress] = base58encode(move)
 
-    localStorage.setItem('moves', JSON.stringify(moves))
+    localStorage.setItem('moves', JSON.stringify(allMoves))
 
     return move
   }

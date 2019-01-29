@@ -422,7 +422,6 @@ export class MatchesHelper {
   }
 
   async finishMatch(player1Address: string, player2Address: string, matchPublicKey: string, matchAddress: string, move: Uint8Array) {
-
     console.log('Revealing p1 move:')
     console.log(move)
 
