@@ -13,7 +13,7 @@ export const environment = {
   api: {
     baseEndpoint: 'https://testnodes.wavesnodes.com/',
     txEnpoint: 'https://api.testnet.wavesplatform.com/v0/',
-    timeStart: '2019-01-27T14:33:52.388Z'
+    timeStart: '2019-01-29T00:00:00.388Z'
   },
   broadcastRetryLimit: 10,
   retryDelay: 1000,
