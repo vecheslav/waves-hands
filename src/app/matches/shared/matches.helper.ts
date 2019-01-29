@@ -8,8 +8,8 @@ import { HttpClient } from '@angular/common/http'
 import { compiledScript } from './contract'
 import { randomAccount } from './util'
 import { IMatch, MatchStatus, PlayerMoves, HandSign, MatchResult, IPlayer } from './match.interface'
-import { TRANSACTION_TYPE, IDataTransaction } from 'waves-transactions/transactions'
-import { api, testnetConfig, IWavesApi } from './api'
+import { TRANSACTION_TYPE, IDataTransaction, IMassTransferTransaction } from 'waves-transactions/transactions'
+import { api, testnetConfig, IWavesApi, MassTransferTransaction } from './api'
 import { fromAngular } from './api-angular'
 import './extensions'
 import { ErrorCode } from 'src/app/shared/error-code'
@@ -102,6 +102,9 @@ export class MatchesHelper {
 
     const r = await this._api.getTxsByAddress(addr)
 
+    const massTransfers = r.filter(x => x.type === TRANSACTION_TYPE.MASS_TRANSFER) as IMassTransferTransaction[]
+
+
     const filteredTxs = r.filter(x => x.type === TRANSACTION_TYPE.DATA) as IDataTransaction[]
 
     const {
@@ -154,7 +157,7 @@ export class MatchesHelper {
 
     const result = (opponent && opponent.moves) ? whoHasWon(creator.moves, opponent.moves) : undefined
 
-    return {
+    const match = {
       address: addr,
       creator,
       opponent,
@@ -163,6 +166,23 @@ export class MatchesHelper {
       publicKey: base58encode(matchKey),
       timestamp: filteredTxs.min(x => x.timestamp).timestamp
     }
+
+    if (massTransfers.length === 1) {
+      const p = massTransfers[0]
+      const winner = p.transfers.find(x => x.amount > 1)
+      if (winner) {
+        if (match.creator.address === winner.recipient) {
+          match.result = MatchResult.Creator
+        } else {
+          match.result = MatchResult.Opponent
+        }
+      } else {
+        match.result = MatchResult.Draw
+      }
+      match.status = MatchStatus.Done
+    }
+
+    return match
   }
 
   async getMatchList(): Promise<{ matches: Record<string, IMatch>, currentHeight: number }> {
