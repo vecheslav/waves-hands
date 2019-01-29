@@ -169,7 +169,7 @@ export class MatchesHelper {
 
     if (massTransfers.length === 1) {
       const p = massTransfers[0]
-      const winner = p.transfers.find(x => x.amount > 1)
+      const winner = p.transfers.find(x => x.amount > 1 * wave)
       if (winner) {
         if (match.creator.address === winner.recipient) {
           match.result = MatchResult.Creator
