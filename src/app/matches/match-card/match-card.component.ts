@@ -42,7 +42,7 @@ export class MatchCardComponent implements OnInit {
     this.startIsShown = false
   }
 
-  _initLeftPercent() {
+  private _initLeftPercent() {
     if (this.match.status === MatchStatus.Waiting && this.match.reservationHeight) {
       const heightPassed = this.matchesService.currentHeight - this.match.reservationHeight
       this._pendingLeftHeight = Math.max(REVEAL_HEIGHT - heightPassed, 0)

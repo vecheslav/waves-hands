@@ -55,12 +55,39 @@
 
 .match-stage {
   flex: 1;
+  text-align: center;
+
+  &__icon {
+    margin: -1rem 0;
+  }
 
   &__action {
     margin-bottom: 1rem;
   }
+}
 
-  text-align: center;
+.match-pending {
+  .new-progress {
+    width: 16rem;
+    height: .4rem;
+    margin: 0 auto;
+
+    &__bar {
+      background: $yellow;
+      box-shadow: 2px 2px 5px 0 rgba($yellow, .25);
+
+      &:before {
+        width: 0;
+        opacity: 1;
+
+        animation-direction: reverse;
+      }
+    }
+  }
+
+  .subtitle {
+    margin-top: 1.5rem;
+  }
 }
 
 .select-hands {

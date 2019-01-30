@@ -42,7 +42,7 @@
               </div>
 
               <div class="match-stage match-stage--created-match has-text-centered" *ngSwitchCase="matchStage.CreatedMatch">
-                <div>
+                <div class="match-stage__icon">
                   <span class="emoji emoji--rock-roll is-medium"></span>
                 </div>
                 <h2 class="title has-text-centered hands-h2">You created the match</h2>
@@ -54,23 +54,33 @@
               </div>
 
               <div class="match-stage match-stage--joined-match" *ngSwitchCase="matchStage.JoinedMatch">
-                <div>
+                <div class="match-stage__icon">
                   <span class="emoji emoji--join is-medium"></span>
                 </div>
                 <h2 class="title has-text-centered hands-h2">You joined the match</h2>
-                <p class="subtitle">Now wait your opponent to reveal his move.</p>
+                <div class="match-pending">
+                  <div class="new-progress">
+                    <div class="new-progress__bar" [ngStyle]="{'width': pendingLeftPercent + '%'}"></div>
+                  </div>
+                  <p class="subtitle">Now wait your opponent to reveal his move.</p>
+                </div>
               </div>
 
               <div class="match-stage match-stage--reserved-match" *ngSwitchCase="matchStage.ReservedMatch">
-                <div>
+                <div class="match-stage__icon">
                   <span class="emoji emoji--swords is-medium"></span>
                 </div>
                 <h2 class="title has-text-centered hands-h2">The match was reserved</h2>
-                <p class="subtitle">You can try your luck in other matches.</p>
+                <div class="match-pending">
+                  <div class="new-progress">
+                    <div class="new-progress__bar" [ngStyle]="{'width': pendingLeftPercent + '%'}"></div>
+                  </div>
+                  <p class="subtitle">Now wait creator to reveal his move.</p>
+                </div>
               </div>
 
               <div class="match-stage match-stage--won-match" *ngSwitchCase="matchStage.WonMatch">
-                <div>
+                <div class="match-stage__icon">
                   <span class="emoji emoji--win is-medium"></span>
                 </div>
                 <h2 class="title has-text-centered hands-h2">You won the match</h2>
@@ -79,7 +89,7 @@
               </div>
 
               <div class="match-stage match-stage--lost-match" *ngSwitchCase="matchStage.LostMatch">
-                <div>
+                <div class="match-stage__icon">
                   <span class="emoji emoji--lost is-medium"></span>
                 </div>
                 <h2 class="title has-text-centered hands-h2">You lost the match</h2>
@@ -88,7 +98,7 @@
               </div>
 
               <div class="match-stage match-stage--lost-match" *ngSwitchCase="matchStage.DrawMatch">
-                <div>
+                <div class="match-stage__icon">
                   <span class="emoji emoji--rock-roll is-medium"></span>
                 </div>
                 <h2 class="title has-text-centered hands-h2">Your match with a draw</h2>
@@ -97,7 +107,7 @@
               </div>
 
               <div class="match-stage match-stage--result-match" *ngSwitchCase="matchStage.ResultMatch">
-                <div>
+                <div class="match-stage__icon">
                   <span class="emoji emoji--rocket is-medium"></span>
                 </div>
                 <h2 class="title has-text-centered hands-h2">The match was finished</h2>

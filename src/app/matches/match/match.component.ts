@@ -9,6 +9,9 @@ import { ErrorCode } from 'src/app/shared/error-code'
 import { NotificationsService } from '../../notifications/notifications.service'
 import { NotificationType } from '../../notifications/notifications.interface'
 import { from } from 'rxjs'
+import { environment } from '../../../environments/environment'
+
+const REVEAL_HEIGHT = environment.creatorRevealBlocksCount + 1
 
 @Component({
   selector: 'app-match',
@@ -33,8 +36,12 @@ export class MatchComponent implements OnInit, OnDestroy {
   progress = null
   shareUrl: string
 
+  pendingLeftPercent = 100
+
   private _userSubscriber
   private _matchSubscriber
+
+  private _pendingLeftHeight = 0
 
   constructor(private router: Router,
               private route: ActivatedRoute,
@@ -133,8 +140,13 @@ export class MatchComponent implements OnInit, OnDestroy {
         this.selectedHandSigns,
         this._changeProgress.bind(this)
       )
+
       this.stage = MatchStage.JoinedMatch
       this.isProccesing = false
+
+      this.match.status = MatchStatus.Waiting
+      this.match.reservationHeight = this.matchesService.currentHeight
+      this._initLeftPercent()
     } catch (err) {
       if (!this._handleErrors(err)) {
         console.error(err)
@@ -158,6 +170,8 @@ export class MatchComponent implements OnInit, OnDestroy {
     }
 
     this.isLoading = false
+
+    this._initLeftPercent()
   }
 
   private _handleErrors(err: any): boolean {
@@ -267,5 +281,13 @@ export class MatchComponent implements OnInit, OnDestroy {
     }
 
     return this.match.opponent.address === this.user.address
+  }
+
+  private _initLeftPercent() {
+    if (this.match.status === MatchStatus.Waiting && this.match.reservationHeight) {
+      const heightPassed = this.matchesService.currentHeight - this.match.reservationHeight
+      this._pendingLeftHeight = Math.max(REVEAL_HEIGHT - heightPassed, 0)
+      this.pendingLeftPercent = this._pendingLeftHeight * 100 / REVEAL_HEIGHT
+    }
   }
 }
