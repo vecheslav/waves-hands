@@ -208,7 +208,9 @@ export class MatchComponent implements OnInit, OnDestroy {
         } else {
           this.stage = MatchStage.ResultMatch
         }
-        if (this.match.result === 2 || typeof this.match.result === 'undefined') {
+        if (this.match.result === 2) {
+          this.stage = MatchStage.DrawMatch
+        } else if (typeof this.match.result === 'undefined') {
           this.stage = MatchStage.ResultMatch
         }
         break

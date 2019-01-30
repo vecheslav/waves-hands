@@ -75,6 +75,7 @@
                 </div>
                 <h2 class="title has-text-centered hands-h2">You won the match</h2>
                 <p class="subtitle">You can try your luck in other matches.</p>
+                <a class="button is-primary" [routerLink]="['/match']">Play again</a>
               </div>
 
               <div class="match-stage match-stage--lost-match" *ngSwitchCase="matchStage.LostMatch">
@@ -83,6 +84,16 @@
                 </div>
                 <h2 class="title has-text-centered hands-h2">You lost the match</h2>
                 <p class="subtitle">You can try your luck in other matches.</p>
+                <a class="button is-primary" [routerLink]="['/match']">Play again</a>
+              </div>
+
+              <div class="match-stage match-stage--lost-match" *ngSwitchCase="matchStage.DrawMatch">
+                <div>
+                  <span class="emoji emoji--rock-roll is-medium"></span>
+                </div>
+                <h2 class="title has-text-centered hands-h2">Your match with a draw</h2>
+                <p class="subtitle">You can try your luck in other matches.</p>
+                <a class="button is-primary" [routerLink]="['/match']">Play again</a>
               </div>
 
               <div class="match-stage match-stage--result-match" *ngSwitchCase="matchStage.ResultMatch">

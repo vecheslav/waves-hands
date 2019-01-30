@@ -80,4 +80,5 @@ export enum MatchStage {
   ResultMatch,
   WonMatch,
   LostMatch,
+  DrawMatch,
 }
