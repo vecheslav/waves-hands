@@ -1,0 +1,32 @@
+.emoji {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  background: url('/assets/images/emoji/1.png') no-repeat center center;
+  background-size: 100% 100%;
+
+  &.is-small {
+    width: .5rem;
+    height: .5rem;
+  }
+
+  &.is-medium {
+    width: 6rem;
+    height: 6rem;
+  }
+
+  &.is-large {
+    width: 7rem;
+    height: 7rem;
+  }
+
+  &--scissors { background-image: url('/assets/images/emoji/1.png'); }
+  &--paper { background-image: url('/assets/images/emoji/2.png'); }
+  &--rock { background-image: url('/assets/images/emoji/3.png'); }
+  &--rock-roll { background-image: url('/assets/images/emoji/4.png'); }
+  &--win { background-image: url('/assets/images/emoji/5.png'); }
+  &--lost { background-image: url('/assets/images/emoji/6.png'); }
+  &--rocket { background-image: url('/assets/images/emoji/7.png'); }
+  &--swords { background-image: url('/assets/images/emoji/8.png'); }
+  &--join { background-image: url('/assets/images/emoji/9.png'); }
+}
