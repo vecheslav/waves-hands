@@ -9,7 +9,7 @@ import { compiledScript } from './contract'
 import { randomAccount } from './util'
 import { IMatch, MatchStatus, PlayerMoves, HandSign, MatchResult, IPlayer } from './match.interface'
 import { TRANSACTION_TYPE, IDataTransaction, IMassTransferTransaction } from 'waves-transactions/transactions'
-import { api, testnetConfig, IWavesApi, MassTransferTransaction } from './api'
+import { api, apiConfig, IWavesApi, MassTransferTransaction } from './api'
 import { fromAngular } from './api-angular'
 import './extensions'
 import { ErrorCode } from 'src/app/shared/error-code'
@@ -74,7 +74,7 @@ export class MatchesHelper {
   private _api: IWavesApi
 
   constructor(private keeper: KeeperService, private core: CoreService, private http: HttpClient) {
-    this._api = api(testnetConfig, fromAngular(http))
+    this._api = api(apiConfig, fromAngular(http))
   }
 
   toMoves(uint8Array: Uint8Array): PlayerMoves {

@@ -44,9 +44,9 @@ export interface IConfig {
   tx: string,
 }
 
-export const testnetConfig = {
-  base: 'https://testnodes.wavesnodes.com/',
-  tx: 'https://api.testnet.wavesplatform.com/v0/'
+export const apiConfig = {
+  base: environment.api.baseEndpoint,
+  tx: environment.api.txEnpoint
 }
 
 export const api = (config: IConfig, http: IHttp): IWavesApi => {
