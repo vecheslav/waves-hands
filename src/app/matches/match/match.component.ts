@@ -29,6 +29,7 @@ export class MatchComponent implements OnInit, OnDestroy {
   shareUrl: string
 
   private _userSubscriber
+  private _matchSubscriber
 
   constructor(private router: Router,
               private route: ActivatedRoute,
@@ -40,6 +41,19 @@ export class MatchComponent implements OnInit, OnDestroy {
 
     this._userSubscriber = this.userServices.user$.subscribe((user: IUser) => {
       this.user = user
+    })
+
+    this._matchSubscriber = this.matchesService.currentMatch$.subscribe((match: IMatch) => {
+      if (!match) {
+        return
+      }
+
+      if (this.stage !== MatchStage.SelectHands && match.status > MatchStatus.New) {
+        console.log('Update match', match.address)
+        this.isCreatingMatch = false
+        this.match = match
+        this._reset()
+      }
     })
   }
 
@@ -76,6 +90,7 @@ export class MatchComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this._userSubscriber.unsubscribe()
+    this._matchSubscriber.unsubscribe()
   }
 
   async select(handSign: HandSign) {
@@ -102,10 +117,12 @@ export class MatchComponent implements OnInit, OnDestroy {
       }
 
       const match = await this.matchesService.createMatch(this.selectedHandSigns, this._changeProgress.bind(this))
-      this.match = match
-      this.shareUrl = window.location.origin + '/match/' + this.match.address
-      this.stage = MatchStage.CreatedMatch
-      this.isLoading = false
+      this.router.navigate(['match', match.address])
+      
+      // this.match = match
+      // this.shareUrl = window.location.origin + '/match/' + this.match.address
+      // this.stage = MatchStage.CreatedMatch
+      // this.isLoading = false
     } catch (err) {
       if (!this.handleErrors(err)) {
         console.error(err)

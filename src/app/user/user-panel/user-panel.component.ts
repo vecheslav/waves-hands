@@ -3,7 +3,7 @@ import { UserService } from '../user.service'
 import { IUser } from '../user.interface'
 import { Router, NavigationStart } from '@angular/router'
 import { filter } from 'rxjs/operators'
-import { KeeperService } from 'src/app/auth/keeper.service';
+import { KeeperService } from 'src/app/auth/keeper.service'
 
 @Component({
   selector: 'app-user-panel',
