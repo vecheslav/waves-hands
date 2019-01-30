@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core'
-import { HandSign, IMatch, MatchStage, MatchStatus } from '../shared/match.interface'
+import { EmptyMatch, HandSign, IMatch, MatchStage, MatchStatus } from '../shared/match.interface'
 import { ActivatedRoute, Router } from '@angular/router'
 import { MatchesService } from '../matches.service'
 import { KeeperService } from '../../auth/keeper.service'
@@ -8,6 +8,7 @@ import { UserService } from '../../user/user.service'
 import { ErrorCode } from 'src/app/shared/error-code'
 import { NotificationsService } from '../../notifications/notifications.service'
 import { NotificationType } from '../../notifications/notifications.interface'
+import { from } from 'rxjs'
 
 @Component({
   selector: 'app-match',
@@ -15,7 +16,7 @@ import { NotificationType } from '../../notifications/notifications.interface'
   styleUrls: ['./match.component.scss']
 })
 export class MatchComponent implements OnInit, OnDestroy {
-  match: IMatch
+  match: IMatch = EmptyMatch
 
   stage: MatchStage = MatchStage.SelectHands
   matchStage = MatchStage
@@ -23,8 +24,9 @@ export class MatchComponent implements OnInit, OnDestroy {
   isCreatingMatch = false
   user: IUser
 
+  isLoading = true
   keeperIsAvailable = true
-  isLoading = false
+  isProccesing = false
   progress = null
   shareUrl: string
 
@@ -37,7 +39,18 @@ export class MatchComponent implements OnInit, OnDestroy {
               private matchesService: MatchesService,
               private userServices: UserService,
               private notificationsService: NotificationsService) {
-    this.match = this.route.snapshot.data.match
+    const matchAddress = this.route.snapshot.paramMap.get('address')
+
+    if (matchAddress) {
+      from(this.matchesService.getMatch(matchAddress))
+        .subscribe((match: IMatch) => {
+          this.match = match
+
+          this._init()
+        })
+    } else {
+      this._init()
+    }
 
     this._userSubscriber = this.userServices.user$.subscribe((user: IUser) => {
       this.user = user
@@ -57,35 +70,8 @@ export class MatchComponent implements OnInit, OnDestroy {
     })
   }
 
-  private handleErrors(err: any): boolean {
-    if (err.code) {
-      switch (err.code) {
-        case ErrorCode.UserRejected:
-          this.notificationsService.add({
-            type: NotificationType.Error,
-            message: 'ERROR_USER_REJECTED'
-          })
-          return true
-        case ErrorCode.NotEnoughBalance:
-          this.notificationsService.add({
-            type: NotificationType.Error,
-            message: 'ERROR_BALANCE'
-          })
-          return true
-      }
-    }
-
-    return false
-  }
-
   ngOnInit() {
-    this.isCreatingMatch = !this.match.address
-    this._reset()
 
-    if (this.stage === MatchStage.CreatedMatch) {
-      this.shareUrl = window.location.origin + '/match/' + this.match.address
-      this.match.creator.moves = this.matchesService.getMyMoves(this.match.address)
-    }
   }
 
   ngOnDestroy() {
@@ -100,7 +86,7 @@ export class MatchComponent implements OnInit, OnDestroy {
     this.selectedHandSigns.push(handSign)
 
     if (this.selectedHandSigns.length === 3) {
-      this.isLoading = true
+      this.isProccesing = true
 
       if (this.isCreatingMatch) {
         await this.create()
@@ -122,9 +108,9 @@ export class MatchComponent implements OnInit, OnDestroy {
       // this.match = match
       // this.shareUrl = window.location.origin + '/match/' + this.match.address
       // this.stage = MatchStage.CreatedMatch
-      // this.isLoading = false
+      // this.isProccesing = false
     } catch (err) {
-      if (!this.handleErrors(err)) {
+      if (!this._handleErrors(err)) {
         console.error(err)
       }
       this._reset()
@@ -143,9 +129,9 @@ export class MatchComponent implements OnInit, OnDestroy {
         this._changeProgress.bind(this)
       )
       this.stage = MatchStage.JoinedMatch
-      this.isLoading = false
+      this.isProccesing = false
     } catch (err) {
-      if (!this.handleErrors(err)) {
+      if (!this._handleErrors(err)) {
         console.error(err)
       }
       this._reset()
@@ -154,6 +140,39 @@ export class MatchComponent implements OnInit, OnDestroy {
 
   close() {
     this.router.navigate(['../'])
+  }
+
+  private _init() {
+    this.isCreatingMatch = !this.match.address
+    this._reset()
+
+    if (this.stage === MatchStage.CreatedMatch) {
+      this.shareUrl = window.location.origin + '/match/' + this.match.address
+      this.match.creator.moves = this.matchesService.getMyMoves(this.match.address)
+    }
+
+    this.isLoading = false
+  }
+
+  private _handleErrors(err: any): boolean {
+    if (err.code) {
+      switch (err.code) {
+        case ErrorCode.UserRejected:
+          this.notificationsService.add({
+            type: NotificationType.Error,
+            message: 'ERROR_USER_REJECTED'
+          })
+          return true
+        case ErrorCode.NotEnoughBalance:
+          this.notificationsService.add({
+            type: NotificationType.Error,
+            message: 'ERROR_BALANCE'
+          })
+          return true
+      }
+    }
+
+    return false
   }
 
   private _changeProgress(value: number) {
@@ -201,7 +220,7 @@ export class MatchComponent implements OnInit, OnDestroy {
   private _reset() {
     this._applyMatchStage()
     this.keeperIsAvailable = this.keeperService.isAvailable()
-    this.isLoading = false
+    this.isProccesing = false
     this.selectedHandSigns = []
     this.progress = null
   }

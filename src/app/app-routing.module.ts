@@ -12,16 +12,16 @@ const routes: Routes = [
       {
         path: 'match',
         component: MatchComponent,
-        resolve: {
-          match: MatchResolver
-        },
+        // resolve: {
+        //   match: MatchResolver
+        // },
       },
       {
         path: 'match/:address',
         component: MatchComponent,
-        resolve: {
-          match: MatchResolver
-        },
+        // resolve: {
+        //   match: MatchResolver
+        // },
       },
     ]
   },

@@ -91,7 +91,6 @@
 }
 
 .match-stages,
-.match-loading,
 .match-progress {
   min-height: 22rem;
   display: flex;
@@ -99,7 +98,6 @@
   justify-content: space-between;
 }
 
-.match-loading,
 .match-progress {
   padding: 2rem 2rem;
 
@@ -116,6 +114,10 @@
   &__inner {
     flex: 1;
   }
+}
+
+.match-loading {
+  justify-content: center;
 }
 
 .modal-content {
