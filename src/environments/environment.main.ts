@@ -9,10 +9,11 @@ export const environment = {
   api: {
     baseEndpoint: 'https://nodes.wavesnodes.com/',
     txEnpoint: 'https://api.wavesplatform.com/v0/',
-    timeStart: '2019-01-27T14:33:52.388Z'
+    timeStart: '2019-01-29T00:00:00.000Z'
   },
   broadcastRetryLimit: 10,
   retryDelay: 1000,
   creatorRevealBlocksCount: 15,
-  serviceAddress: '3N7oF5J5m9BwBFCmVJZWr3AEH3u4c6CLoB9'
+  serviceAddress: '3PFdhb7QmEGHLh8YGHKspAKeeVCEhqxdUfM'
 }
+
