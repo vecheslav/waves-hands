@@ -22,6 +22,9 @@ export class KeeperService {
   }
 
   on(event: string, cb: (state) => void) {
+    if (!this.keeper) {
+      return
+    }
     return this.keeper.on(event, cb)
   }
 
