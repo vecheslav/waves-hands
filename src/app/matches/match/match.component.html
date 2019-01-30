@@ -22,7 +22,7 @@
         <div class="match" *ngIf="keeperIsAvailable">
           <div class="match-content">
             <div class="match-top" *ngIf="!isCreatingMatch">
-              <app-match-player-panel [player]="match.creator" [hands]="match.creator?.moves"></app-match-player-panel>
+              <app-match-player-panel [player]="creator" [hands]="creator?.moves"></app-match-player-panel>
             </div>
 
             <div class="match-stages" [ngSwitch]="stage" *ngIf="!isProccesing">
@@ -115,8 +115,9 @@
             </div>
 
             <div class="match-bottom" [hidden]="match.status === 0 && stage === matchStage.CreatedMatch">
-              <app-match-player-panel *ngIf="match.status === 0" [player]="user" [hands]="selectedHandSigns"></app-match-player-panel>
-              <app-match-player-panel *ngIf="match.status > 0" [player]="match?.opponent" [hands]="match.opponent?.moves"></app-match-player-panel>
+              <app-match-player-panel [player]="opponent"
+                                      [hands]="match.status === 0 ? selectedHandSigns : opponent?.moves">
+              </app-match-player-panel>
             </div>
           </div>
         </div>

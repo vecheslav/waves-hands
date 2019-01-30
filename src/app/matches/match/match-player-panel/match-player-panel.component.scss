@@ -31,6 +31,43 @@
       }
     }
   }
+
+  &__status {
+    margin-left: .6rem;
+  }
+}
+
+.player-status {
+  height: 1.5rem;
+  line-height: 1.5rem;
+  text-transform: uppercase;
+  font-size: .8rem;
+  padding: 0 .4rem;
+  border-radius: .3rem;
+  background: $white-ter;
+  color: $grey-light;
+
+  &:before {
+    content: '-';
+  }
+
+  &--winner {
+    background: rgba($blue, 0.1);
+    color: $blue;
+
+    &:before {
+      content: 'Winner';
+    }
+  }
+
+  &--looser {
+    background: rgba($red, 0.1);
+    color: $red;
+
+    &:before {
+      content: 'Looser';
+    }
+  }
 }
 
 .user-panel--right {
@@ -94,13 +131,18 @@
 .match-top {
   .player-panel {
     flex-direction: row-reverse;
-  }
 
-  .user-panel {
-    flex-direction: row-reverse;
+    &__user {
+      flex-direction: row-reverse;
+    }
 
     &__details {
       margin-right: 1rem;
+      margin-left: 0;
+    }
+
+    &__status {
+      margin-right: .6rem;
       margin-left: 0;
     }
   }

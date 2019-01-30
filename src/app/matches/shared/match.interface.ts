@@ -6,6 +6,12 @@ export enum HandSign {
   Scissors = 2,
 }
 
+export enum PlayerStatus {
+  Nothing,
+  Looser,
+  Winner,
+}
+
 export interface Player {
   address: string
 }
@@ -14,6 +20,7 @@ export type PlayerMoves = [HandSign, HandSign, HandSign]
 
 export interface IPlayer extends IUser {
   moves?: PlayerMoves
+  status?: PlayerStatus
 }
 
 export enum MatchStatus {

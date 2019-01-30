@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core'
-import { EmptyMatch, HandSign, IMatch, MatchStage, MatchStatus } from '../shared/match.interface'
+import { EmptyMatch, HandSign, IMatch, IPlayer, MatchResult, MatchStage, MatchStatus, PlayerStatus } from '../shared/match.interface'
 import { ActivatedRoute, Router } from '@angular/router'
 import { MatchesService } from '../matches.service'
 import { KeeperService } from '../../auth/keeper.service'
@@ -23,6 +23,9 @@ export class MatchComponent implements OnInit, OnDestroy {
   selectedHandSigns: HandSign[] = []
   isCreatingMatch = false
   user: IUser
+
+  creator: IPlayer
+  opponent: IPlayer
 
   isLoading = true
   keeperIsAvailable = true
@@ -54,6 +57,7 @@ export class MatchComponent implements OnInit, OnDestroy {
 
     this._userSubscriber = this.userServices.user$.subscribe((user: IUser) => {
       this.user = user
+      this._updateParticipants()
     })
 
     this._matchSubscriber = this.matchesService.currentMatch$.subscribe((match: IMatch) => {
@@ -63,15 +67,16 @@ export class MatchComponent implements OnInit, OnDestroy {
 
       if (this.stage !== MatchStage.SelectHands && match.status > MatchStatus.New) {
         console.log('Update match', match.address)
+        // Update match
         this.isCreatingMatch = false
         this.match = match
         this._reset()
+        this._updateParticipants()
       }
     })
   }
 
   ngOnInit() {
-
   }
 
   ngOnDestroy() {
@@ -145,6 +150,7 @@ export class MatchComponent implements OnInit, OnDestroy {
   private _init() {
     this.isCreatingMatch = !this.match.address
     this._reset()
+    this._updateParticipants()
 
     if (this.stage === MatchStage.CreatedMatch) {
       this.shareUrl = window.location.origin + '/match/' + this.match.address
@@ -225,6 +231,18 @@ export class MatchComponent implements OnInit, OnDestroy {
     this.isProccesing = false
     this.selectedHandSigns = []
     this.progress = null
+  }
+
+  private _updateParticipants() {
+    this.creator = this.match.creator
+    this.opponent = (this.match.status === 0) ? this.user : this.match.opponent
+
+    if (this.match.status === MatchStatus.Done) {
+      if (this.match.result < MatchResult.Draw) {
+        this.creator.status = this.match.result === MatchResult.Creator ? PlayerStatus.Winner : PlayerStatus.Looser
+        this.opponent.status = this.match.result === MatchResult.Opponent ? PlayerStatus.Winner : PlayerStatus.Looser
+      }
+    }
   }
 
   private _isAsCreator() {
