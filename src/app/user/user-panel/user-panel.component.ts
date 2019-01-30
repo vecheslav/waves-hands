@@ -3,6 +3,7 @@ import { UserService } from '../user.service'
 import { IUser } from '../user.interface'
 import { Router, NavigationStart } from '@angular/router'
 import { filter } from 'rxjs/operators'
+import { KeeperService } from 'src/app/auth/keeper.service';
 
 @Component({
   selector: 'app-user-panel',
@@ -12,12 +13,18 @@ import { filter } from 'rxjs/operators'
 export class UserPanelComponent implements OnInit, OnDestroy {
   user: IUser
   notificationsIsShown = false
+  keeperIsAvailable = true
+  isLogged = false
 
   private _userSubscriber
 
-  constructor(private userService: UserService, private router: Router) {
+  constructor(private userService: UserService,
+              private router: Router,
+              private keeperService: KeeperService) {
     this._userSubscriber = this.userService.user$.subscribe((user: IUser) => {
       this.user = user
+
+      this.isLogged = this.user && this.keeperIsAvailable
     })
 
     this.router.events
@@ -29,6 +36,8 @@ export class UserPanelComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     this.user = await this.userService.getCurrentUser()
+    this.keeperIsAvailable = this.keeperService.isAvailable()
+    this.isLogged = this.user && this.keeperIsAvailable
   }
 
   ngOnDestroy() {
