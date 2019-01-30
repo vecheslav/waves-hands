@@ -65,10 +65,19 @@
 
 .select-hands {
   padding: 0 1rem;
-  font-size: 5rem;
 
-  > div {
+  .emoji {
+    transition: transform .1s ease;
+  }
+
+  > .level-item {
     cursor: pointer;
+
+    &:active {
+      .emoji {
+        transform: scale(.9, .9);
+      }
+    }
   }
 }
 
@@ -167,8 +176,3 @@
   color: $basic700;
   font-size: $h2title;
 }
-
-.hand140 {
-  font-size: 4rem;
-}
-

@@ -11,59 +11,11 @@ import { ActionType, NotificationType } from '../notifications/notifications.int
 import { environment } from 'src/environments/environment'
 import { ErrorCode } from '../shared/error-code'
 
-const matchDiff = (match: IMatch, newMatch: IMatch, currentHeight: number): IMatchChange => {
-  if (!newMatch) {
-    return {
-      resolve: MatchResolve.Nothing,
-    }
-  }
-
-  if (match.status === MatchStatus.New && newMatch.status === MatchStatus.Waiting) {
-    return {
-      resolve: MatchResolve.Accepted,
-      message: `Player ${newMatch.opponent.address} accepted the battle!`,
-      match: newMatch,
-    }
-  }
-
-  if (newMatch.status === MatchStatus.Waiting &&
-    newMatch.reservationHeight - currentHeight < -environment.creatorRevealBlocksCount) {
-    return {
-      resolve: MatchResolve.CreatorMissed,
-      match: newMatch
-    }
-  }
-
-  if (match.status !== MatchStatus.Done && newMatch.status === MatchStatus.Done) {
-    if (newMatch.result === MatchResult.Opponent) {
-      return {
-        resolve: MatchResolve.OpponentWon,
-        message: 'You\'ve lost the battle!',
-        match: newMatch,
-      }
-    } else if (newMatch.result === MatchResult.Draw) {
-      return {
-        resolve: MatchResolve.Draw,
-        message: 'The battle is over! Nobody wins! Haha!',
-        match: newMatch,
-      }
-    }
-
-    return {
-      resolve: MatchResolve.CreatorWon,
-      message: 'You\'ve won the battle!',
-      match: newMatch,
-    }
-  }
-
-  return {
-    resolve: MatchResolve.Nothing,
-  }
-}
-
 @Injectable()
 export class MatchesService implements OnDestroy {
   matches$ = new BehaviorSubject<Record<string, IMatch>>(null)
+  currentMatch$ = new BehaviorSubject<IMatch>(null)
+
   user: IUser
   currentHeight: number
 
@@ -131,6 +83,7 @@ export class MatchesService implements OnDestroy {
 
   async getMatch(address: string): Promise<IMatch> {
     const match = await this.matchesHelper.getMatch(address)
+    this.currentMatch$.next(match)
 
     return match
   }
@@ -297,8 +250,15 @@ export class MatchesService implements OnDestroy {
             break
         }
 
-        // Apply my match
-        this._setMyMatch(change.match)
+        if (change.match) {
+          // Apply my match
+          this._setMyMatch(change.match)
+
+          const currentMatch = this.currentMatch$.getValue()
+          if (currentMatch.address === change.match.address) {
+            this.currentMatch$.next(change.match)
+          }
+        }
       }
     } catch (err) {
       console.error(err)
@@ -375,5 +335,55 @@ export class MatchesService implements OnDestroy {
     localStorage.setItem('moves', JSON.stringify(allMoves))
 
     return move
+  }
+}
+
+const matchDiff = (match: IMatch, newMatch: IMatch, currentHeight: number): IMatchChange => {
+  if (!newMatch) {
+    return {
+      resolve: MatchResolve.Nothing,
+    }
+  }
+
+  if (match.status === MatchStatus.New && newMatch.status === MatchStatus.Waiting) {
+    return {
+      resolve: MatchResolve.Accepted,
+      message: `Player ${newMatch.opponent.address} accepted the battle!`,
+      match: newMatch,
+    }
+  }
+
+  if (newMatch.status === MatchStatus.Waiting &&
+    newMatch.reservationHeight - currentHeight < -environment.creatorRevealBlocksCount) {
+    return {
+      resolve: MatchResolve.CreatorMissed,
+      match: newMatch
+    }
+  }
+
+  if (match.status !== MatchStatus.Done && newMatch.status === MatchStatus.Done) {
+    if (newMatch.result === MatchResult.Opponent) {
+      return {
+        resolve: MatchResolve.OpponentWon,
+        message: 'You\'ve lost the battle!',
+        match: newMatch,
+      }
+    } else if (newMatch.result === MatchResult.Draw) {
+      return {
+        resolve: MatchResolve.Draw,
+        message: 'The battle is over! Nobody wins! Haha!',
+        match: newMatch,
+      }
+    }
+
+    return {
+      resolve: MatchResolve.CreatorWon,
+      message: 'You\'ve won the battle!',
+      match: newMatch,
+    }
+  }
+
+  return {
+    resolve: MatchResolve.Nothing,
   }
 }

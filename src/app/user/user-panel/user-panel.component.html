@@ -1,11 +1,11 @@
 <section class="section user-panel">
   <div class="level">
     <div class="level-left">
-      <div class="level-item user-panel__logout" *ngIf="user">
+      <div class="level-item user-panel__logout" *ngIf="isLogged">
         <button class="button" (click)="logout()">Log Out</button>
       </div>
       <div class="level-item user-panel__notifications"
-           *ngIf="user"
+           *ngIf="isLogged"
            appClickOutside (clickOutside)="notificationsIsShown && closeNotifications()">
         <div class="notifications-icon" (click)="toggleNotifications()">
           <svg class="icon"><use xlink:href="icons.svg#icon-notifications_none"></use></svg>
@@ -17,10 +17,15 @@
         </div>
       </div>
     </div>
-    <div class="level-right" *ngIf="!user">
+    <div class="level-right" *ngIf="!user && keeperIsAvailable">
       <button class="button" (click)="signin()">Sign In</button>
     </div>
-    <div class="level-right user-panel__user" *ngIf="user">
+    <div class="level-right" *ngIf="!keeperIsAvailable">
+      <a href="https://chrome.google.com/webstore/detail/waves-keeper/lpilbniiabackdjcionkobglmddfbcjo"
+         target="_blank"
+         class="button">Install Keeper</a>
+    </div>
+    <div class="level-right user-panel__user" *ngIf="isLogged">
       <div class="level-left">
         <div class="user-panel__avatar">
           <app-match-player [player]="user"></app-match-player>
