@@ -2211,6 +2211,11 @@ domain-browser@^1.1.1:
   resolved "https://registry.yarnpkg.com/domain-browser/-/domain-browser-1.2.0.tgz#3d31f50191a6749dd1375a7f522e823d42e54eda"
   integrity sha512-jnjyiM6eRyZl2H+W8Q/zLMA481hzi0eszAaBUzIVnmYVDBbnLxVNnfu1HgEBvCbL+71FrxMl3E6lpKH7Ge3OXA==
 
+driver.js@^0.8.1:
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/driver.js/-/driver.js-0.8.1.tgz#e356e314dcfb56c5c369f34121075ac9f063cc2b"
+  integrity sha512-CQ5cG6QMPooZq5P6jNQtWVu1oselYSgbY3vQsDJtmC2STKvX4pbrd0aOxRFOpXptMReUIJOJhyBnP4Udt4c+4Q==
+
 duplexify@^3.4.2, duplexify@^3.6.0:
   version "3.6.1"
   resolved "https://registry.yarnpkg.com/duplexify/-/duplexify-3.6.1.tgz#b1a7a29c4abfd639585efaecce80d666b1e34125"

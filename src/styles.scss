@@ -3,6 +3,7 @@
 @import 'styles/variables';
 @import 'styles/icon';
 @import 'styles/emoji';
+@import 'styles/driver';
 
 html, body {
   height: 100%;
@@ -55,6 +56,13 @@ html, body {
 
 .progress::-webkit-progress-value {
   transition: width .5s ease;
+}
+
+.button.is-main {
+  font-size: 1.1rem;
+  border-radius: $radius;
+  font-weight: $weight-medium;
+  height: 3.2rem;
 }
 
 @import '~bulma';

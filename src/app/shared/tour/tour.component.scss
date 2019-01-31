@@ -1,0 +1,26 @@
+@import '~src/styles/variables';
+
+.game-tour {
+  h2 {
+    font-weight: normal;
+    color: $basic700;
+    font-size: $h2title;
+  }
+
+  .subtitle {
+    margin-top: 1rem;
+  }
+
+  &__start {
+    margin-top: .5rem;
+    width: 14rem;
+    height: 3.4rem;
+  }
+}
+
+.tour-wrapper {
+  background: $white;
+  border-radius: .5rem;
+  padding: 4rem 3rem;
+  text-align: center;
+}

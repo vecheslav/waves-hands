@@ -9,7 +9,7 @@ import { base58decode, base58encode } from 'waves-crypto'
 import { NotificationsService } from '../notifications/notifications.service'
 import { ActionType, NotificationType } from '../notifications/notifications.interface'
 import { environment } from 'src/environments/environment'
-import { ErrorCode } from '../shared/error-code'
+import { TourService } from '../shared/tour/tour.service'
 
 @Injectable()
 export class MatchesService implements OnDestroy {
@@ -18,6 +18,7 @@ export class MatchesService implements OnDestroy {
 
   user: IUser
   currentHeight: number
+  updateIsPaused = false
 
   private _myMatches: Record<string, IMatch> = {}
   private _userSubscriber
@@ -25,9 +26,13 @@ export class MatchesService implements OnDestroy {
   private _polledMatches$: Observable<{ matches: Record<string, IMatch>, currentHeight: number }>
   private _pollingSubscriber
 
+  private _tourSubscriber
+
   constructor(private matchesHelper: MatchesHelper,
               private userService: UserService,
-              private notificationsService: NotificationsService, private ngZone: NgZone) {
+              private notificationsService: NotificationsService,
+              private ngZone: NgZone,
+              private tourService: TourService) {
     this._userSubscriber = this.userService.user$.subscribe((user: IUser) => {
       this.user = user
       if (this.user) {
@@ -43,10 +48,15 @@ export class MatchesService implements OnDestroy {
         return res
       })
     )
+
+    this._tourSubscriber = this.tourService.activated$.subscribe(activated => {
+      this.updateIsPaused = activated
+    })
   }
 
   ngOnDestroy() {
     this._userSubscriber.unsubscribe()
+    this._tourSubscriber.unsubscribe()
   }
 
   async startPollingMatches() {
@@ -56,6 +66,10 @@ export class MatchesService implements OnDestroy {
     this.ngZone.runOutsideAngular(() => {
       this._pollingSubscriber = this._polledMatches$.subscribe(res => {
         this.ngZone.run(() => {
+          if (this.updateIsPaused) {
+            return
+          }
+
           this.currentHeight = res.currentHeight
 
           if (this.matches$.getValue()) {

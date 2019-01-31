@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core'
+import { TourService } from '../../shared/tour/tour.service'
 
 @Component({
   selector: 'app-preview',
@@ -7,9 +8,12 @@ import { Component, OnInit } from '@angular/core'
 })
 export class PreviewComponent implements OnInit {
 
-  constructor() { }
+  constructor(private tourService: TourService) { }
 
   ngOnInit() {
   }
 
+  startTour() {
+    this.tourService.startTour()
+  }
 }
