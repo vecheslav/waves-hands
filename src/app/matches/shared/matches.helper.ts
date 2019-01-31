@@ -44,12 +44,15 @@ const getBinaryStruct = <T>(struct: T, dataTxs: IDataTransaction[]): T =>
     [b.key]: b.value
   }), {}) as T
 
-
 const getBinaries = (key: string, dataTxs: IDataTransaction[]): Array<Uint8Array> =>
   dataTxs.map(x => x.data.filter(d => d.key === key))
     .filter(x => x.length > 0)
     .reduce((a, b) => [...a, ...b], [])
     .map(x => BASE64_STRING(x.value.toString().slice(7)))
+
+const getNumbers = (key: string, dataTxs: IDataTransaction[]): Array<number> =>
+  dataTxs.map(x => getNumber(key, x))
+    .filter(x => x !== undefined)
 
 const getDataByKey = <T>(key: string, resp: IDataTransaction[], map?: (data: string) => T) => {
   const found = resp.map(x => x.data.filter(y => y.key === key)).filter(x => x.length > 0)
@@ -104,8 +107,9 @@ export class MatchesHelper {
 
     const massTransfers = r.filter(x => x.type === TRANSACTION_TYPE.MASS_TRANSFER) as IMassTransferTransaction[]
 
-
     const filteredTxs = r.filter(x => x.type === TRANSACTION_TYPE.DATA) as IDataTransaction[]
+
+    const h = getNumbers('height', filteredTxs).firstOrUndefined()
 
     const {
       p2MoveHash,
@@ -164,7 +168,8 @@ export class MatchesHelper {
       status,
       result,
       publicKey: base58encode(matchKey),
-      timestamp: filteredTxs.min(x => x.timestamp).timestamp
+      timestamp: filteredTxs.min(x => x.timestamp).timestamp,
+      reservationHeight: h
     }
 
     if (massTransfers.length === 1) {

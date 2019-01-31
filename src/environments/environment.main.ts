@@ -16,4 +16,3 @@ export const environment = {
   creatorRevealBlocksCount: 15,
   serviceAddress: '3PFdhb7QmEGHLh8YGHKspAKeeVCEhqxdUfM'
 }
-
