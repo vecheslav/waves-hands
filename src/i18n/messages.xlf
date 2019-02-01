@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="ad7dfb10a446b40b4a21d0e4985f5bd673133a9d" datatype="html">
+        <source>The first blockchain hands game!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/core/preview/preview.component.html</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="c778899c6cea5f517cb4910f971a627506e08f64" datatype="html">
+        <source>
+        Dispute resolution fairly. Earn Waves easily! Powered by smartcontract based on Waves.
+      </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/core/preview/preview.component.html</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="52d2759df7d923e6e6c883824ccfbd6558b56655" datatype="html">
+        <source>
+        How to play?
+      </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/core/preview/preview.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="df27ec691b9a95ee6b828030ea43ef3517e61591" datatype="html">
+        <source>Recent Matches</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/matches.component.html</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="37939fa361d820d0469c58e2101ef8ac545bd546" datatype="html">
+        <source>Start Game</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/matches.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="aa9f9f88b0047462522c56e60a5d824de5c926cd" datatype="html">
+        <source>
+            Keeper is not available. <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>Install the extension<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> to access the game.
+          </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match/match.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="9f84441f81bf3bee421ac8ed58cbd445d8dca7a5" datatype="html">
+        <source>Select your hands</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match/match.component.html</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="e4d54dee61db2158738e4293dced4e6822acadad" datatype="html">
+        <source>You created the match</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match/match.component.html</context>
+          <context context-type="linenumber">48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8d0cbd56d151dc35433c59bfb4b5070de64fcefe" datatype="html">
+        <source>Share the match link to friends, or wait for players to join.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match/match.component.html</context>
+          <context context-type="linenumber">49</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="acbab52eee9a6b76c1ff514fe5d48b1a67c6edfa" datatype="html">
+        <source>Close window</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match/match.component.html</context>
+          <context context-type="linenumber">53</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="493d8a964f3178cf9a4d55ac457dc3dcde17b32c" datatype="html">
+        <source>You joined the match</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match/match.component.html</context>
+          <context context-type="linenumber">60</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="85580ba496a3cd800616c82761d488e61168b6de" datatype="html">
+        <source>Now wait your opponent to reveal his move.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match/match.component.html</context>
+          <context context-type="linenumber">65</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="37569e42d7bba223a26dcc03ed7532670d823588" datatype="html">
+        <source>The match was reserved</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match/match.component.html</context>
+          <context context-type="linenumber">73</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="0596bf21584b6235c498d0a43c1df4b0f6113145" datatype="html">
+        <source>Now wait creator to reveal his move.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match/match.component.html</context>
+          <context context-type="linenumber">78</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="e19dbdc3ca68365846fe5e71a517cb60bec04163" datatype="html">
+        <source>You won the match</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match/match.component.html</context>
+          <context context-type="linenumber">86</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="037dc660af57b894f234b53af1d97ea2d67c8f40" datatype="html">
+        <source>You can try your luck in other matches.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match/match.component.html</context>
+          <context context-type="linenumber">87</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match/match.component.html</context>
+          <context context-type="linenumber">96</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match/match.component.html</context>
+          <context context-type="linenumber">105</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match/match.component.html</context>
+          <context context-type="linenumber">114</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="0588c8ec9601b8839e11a2880fb2f76a5ab7e54f" datatype="html">
+        <source>Play again</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match/match.component.html</context>
+          <context context-type="linenumber">88</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match/match.component.html</context>
+          <context context-type="linenumber">97</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match/match.component.html</context>
+          <context context-type="linenumber">106</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="e7d166034242717115dc34ea593860b2c97d68e8" datatype="html">
+        <source>You lost the match</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match/match.component.html</context>
+          <context context-type="linenumber">95</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="b650b3ed7b0d9e215093955315665061ec86cf8d" datatype="html">
+        <source>Your match with a draw</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match/match.component.html</context>
+          <context context-type="linenumber">104</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7c854030b7f17ad8e77fbb04cc1a7d962c9ead33" datatype="html">
+        <source>The match was finished</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match/match.component.html</context>
+          <context context-type="linenumber">113</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="573f71c11cba67a9b0135da1ef5ba2a61f53dbab" datatype="html">
+        <source>Please, wait...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match/match.component.html</context>
+          <context context-type="linenumber">119</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="0254996414c09cae5a148a25e6f091ca7aa5d82e" datatype="html">
+        <source>Don&apos;t close the window</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match/match.component.html</context>
+          <context context-type="linenumber">123</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="d0227a069d21cc5c6951d829cbf135be5b5bc767" datatype="html">
+        <source>Log Out</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/user/user-panel/user-panel.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ba4f24bf9bf3dc4db3d6bc1b8b63339295f0b806" datatype="html">
+        <source>Sign In</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/user/user-panel/user-panel.component.html</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="45a69b26e7273621833a30e833609ef283ca55fe" datatype="html">
+        <source>Install Keeper</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/user/user-panel/user-panel.component.html</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3d17a429ba58cb6765fba1a911cbbcddae67ebb7" datatype="html">
+        <source>
+      There are no notifications
+    </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/notifications/notifications.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="df2487f667326793b228d69a7de1950fb550c986" datatype="html">
+        <source>Welcome to WavesHands</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/shared/tour/tour.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="aa833632f214cac6445e2e7fcd70dc1d1e704caa" datatype="html">
+        <source>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/shared/tour/tour.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="e995598340127c5e47dd4fb833b0638e06beff32" datatype="html">
+        <source>How to play?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/shared/tour/tour.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="50e7fb85904c83aa6dcd5b2a8a41b3a5005f99ea" datatype="html">
+        <source>
+          Waiting players...
+        </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match-card/match-card.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="c3e87c28eb8ae2a728724fa20c93e58ab9c30048" datatype="html">
+        <source>
+        Waiting for the first player...
+      </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match-card/match-card.component.html</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="b260b51368bdd86b56a7d8c2a70700fb73854340" datatype="html">
+        <source>vs</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match-card/match-card.component.html</context>
+          <context context-type="linenumber">37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5d82b4462175bcd06eeec5379d2041d5ae4bdebb" datatype="html">
+        <source>1 Waves</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match-card/match-card.component.html</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="27b5ad1155903e29d85a3a0a7c86356a2dbdafdc" datatype="html">
+        <source>Start Match</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/matches/match-card/match-card.component.html</context>
+          <context context-type="linenumber">70</context>
+        </context-group>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

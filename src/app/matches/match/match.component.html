@@ -9,7 +9,7 @@
       <div class="match-wrapper" *ngIf="!isLoading">
 
         <div class="match-notifications" *ngIf="!keeperIsAvailable">
-          <div class="notification match-not-available" *ngIf="!keeperIsAvailable">
+          <div class="notification match-not-available" *ngIf="!keeperIsAvailable" i18n>
             Keeper is not available. <a href="https://chrome.google.com/webstore/detail/waves-keeper/lpilbniiabackdjcionkobglmddfbcjo"
             target="_blank">Install the extension</a> to access the game.
           </div>
@@ -27,7 +27,7 @@
 
             <div class="match-stages" [ngSwitch]="stage" *ngIf="!isProccesing">
               <div class="match-stage match-stage--select-hands" *ngSwitchCase="matchStage.SelectHands">
-                <h2 class="title has-text-centered hands-h2">Select your hands</h2>
+                <h2 class="title has-text-centered hands-h2" i18n>Select your hands</h2>
                 <div class="level select-hands">
                   <div class="level-item has-text-centered" (click)="select(0)">
                     <span class="emoji emoji--rock is-large"></span>
@@ -45,24 +45,24 @@
                 <div class="match-stage__icon">
                   <span class="emoji emoji--rock-roll is-medium"></span>
                 </div>
-                <h2 class="title has-text-centered hands-h2">You created the match</h2>
-                <p class="subtitle">Share the match link to friends, or wait for players to join.</p>
+                <h2 class="title has-text-centered hands-h2" i18n>You created the match</h2>
+                <p class="subtitle" i18n>Share the match link to friends, or wait for players to join.</p>
                 <div class="md-1">
                   <app-share-match [url]="shareUrl" [options]="{ type: 'buttons' }"></app-share-match>
                 </div>
-                <a [routerLink]="['/']">Close window</a>
+                <a [routerLink]="['/']" i18n>Close window</a>
               </div>
 
               <div class="match-stage match-stage--joined-match" *ngSwitchCase="matchStage.JoinedMatch">
                 <div class="match-stage__icon">
                   <span class="emoji emoji--join is-medium"></span>
                 </div>
-                <h2 class="title has-text-centered hands-h2">You joined the match</h2>
+                <h2 class="title has-text-centered hands-h2" i18n>You joined the match</h2>
                 <div class="match-pending">
                   <div class="new-progress">
                     <div class="new-progress__bar" [ngStyle]="{'width': pendingLeftPercent + '%'}"></div>
                   </div>
-                  <p class="subtitle">Now wait your opponent to reveal his move.</p>
+                  <p class="subtitle" i18n>Now wait your opponent to reveal his move.</p>
                 </div>
               </div>
 
@@ -70,12 +70,12 @@
                 <div class="match-stage__icon">
                   <span class="emoji emoji--swords is-medium"></span>
                 </div>
-                <h2 class="title has-text-centered hands-h2">The match was reserved</h2>
+                <h2 class="title has-text-centered hands-h2" i18n>The match was reserved</h2>
                 <div class="match-pending">
                   <div class="new-progress">
                     <div class="new-progress__bar" [ngStyle]="{'width': pendingLeftPercent + '%'}"></div>
                   </div>
-                  <p class="subtitle">Now wait creator to reveal his move.</p>
+                  <p class="subtitle" i18n>Now wait creator to reveal his move.</p>
                 </div>
               </div>
 
@@ -83,44 +83,44 @@
                 <div class="match-stage__icon">
                   <span class="emoji emoji--win is-medium"></span>
                 </div>
-                <h2 class="title has-text-centered hands-h2">You won the match</h2>
-                <p class="subtitle">You can try your luck in other matches.</p>
-                <a class="button is-primary" [routerLink]="['/match']">Play again</a>
+                <h2 class="title has-text-centered hands-h2" i18n>You won the match</h2>
+                <p class="subtitle" i18n>You can try your luck in other matches.</p>
+                <a class="button is-primary" [routerLink]="['/match']" i18n>Play again</a>
               </div>
 
               <div class="match-stage match-stage--lost-match" *ngSwitchCase="matchStage.LostMatch">
                 <div class="match-stage__icon">
                   <span class="emoji emoji--lost is-medium"></span>
                 </div>
-                <h2 class="title has-text-centered hands-h2">You lost the match</h2>
-                <p class="subtitle">You can try your luck in other matches.</p>
-                <a class="button is-primary" [routerLink]="['/match']">Play again</a>
+                <h2 class="title has-text-centered hands-h2" i18n>You lost the match</h2>
+                <p class="subtitle" i18n>You can try your luck in other matches.</p>
+                <a class="button is-primary" [routerLink]="['/match']" i18n>Play again</a>
               </div>
 
               <div class="match-stage match-stage--lost-match" *ngSwitchCase="matchStage.DrawMatch">
                 <div class="match-stage__icon">
                   <span class="emoji emoji--rock-roll is-medium"></span>
                 </div>
-                <h2 class="title has-text-centered hands-h2">Your match with a draw</h2>
-                <p class="subtitle">You can try your luck in other matches.</p>
-                <a class="button is-primary" [routerLink]="['/match']">Play again</a>
+                <h2 class="title has-text-centered hands-h2" i18n>Your match with a draw</h2>
+                <p class="subtitle" i18n>You can try your luck in other matches.</p>
+                <a class="button is-primary" [routerLink]="['/match']" i18n>Play again</a>
               </div>
 
               <div class="match-stage match-stage--result-match" *ngSwitchCase="matchStage.ResultMatch">
                 <div class="match-stage__icon">
                   <span class="emoji emoji--rocket is-medium"></span>
                 </div>
-                <h2 class="title has-text-centered hands-h2">The match was finished</h2>
-                <p class="subtitle">You can try your luck in other matches.</p>
+                <h2 class="title has-text-centered hands-h2" i18n>The match was finished</h2>
+                <p class="subtitle" i18n>You can try your luck in other matches.</p>
               </div>
             </div>
             <div class="match-progress" *ngIf="isProccesing">
               <div class="match-progress__inner">
-                <h2 class="title has-text-centered hands-h2">Please, wait...</h2>
+                <h2 class="title has-text-centered hands-h2" i18n>Please, wait...</h2>
                 <div class="new-progress">
                   <div class="new-progress__bar" [ngStyle]="{'width': (progress ? (progress * 100) : 0) + '%'}"></div>
                 </div>
-                <div class="subtitle is-size-6 has-text-centered">Don't close the window</div>
+                <div class="subtitle is-size-6 has-text-centered" i18n>Don't close the window</div>
               </div>
             </div>
 

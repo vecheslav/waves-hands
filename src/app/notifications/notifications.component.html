@@ -1,6 +1,6 @@
 <div class="notifications">
   <div class="notifications-list" *ngIf="!isLoading">
-    <div class="notifications-list__empty" *ngIf="!notifications.length">
+    <div class="notifications-list__empty" *ngIf="!notifications.length" i18n>
       There are no notifications
     </div>
     <div class="notifications-list__item" *ngFor="let notification of notifications">

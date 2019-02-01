@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser'
-import { NgModule, Injectable, ErrorHandler } from '@angular/core'
+import { NgModule, LOCALE_ID, Injectable, ErrorHandler } from '@angular/core'
 
 import { AppRoutingModule } from './app-routing.module'
 import { AppComponent } from './app.component'
@@ -50,7 +50,8 @@ export class SentryErrorHandler implements ErrorHandler {
     {
       provide: ErrorHandler,
       useClass: environment.production ? SentryErrorHandler : ErrorHandler
-    }
+    },
+    { provide: LOCALE_ID, useValue: 'ru' },
   ],
   bootstrap: [AppComponent]
 })

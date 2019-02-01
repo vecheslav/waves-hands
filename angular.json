@@ -56,6 +56,13 @@
                   "maximumError": "5mb"
                 }
               ]
+            },
+            "ru": {
+              "aot": true,
+              "outputPath": "dist/waves-hands-ru",
+              "i18nFile": "src/i18n/messages.ru.xlf",
+              "i18nFormat": "xlf",
+              "i18nLocale": "ru"
             }
           }
         },
@@ -67,6 +74,9 @@
           "configurations": {
             "production": {
               "browserTarget": "waves-hands:build:production"
+            },
+            "ru": {
+              "browserTarget": "waves-hands:build:ru"
             }
           }
         },
@@ -74,6 +84,14 @@
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
             "browserTarget": "waves-hands:build"
+          },
+          "configurations": {
+            "ru": {
+              "outputPath": "locale/",
+              "outFile": "messages.ru.xlf",
+              "i18nFormat": "xlf",
+              "i18nLocale": "ru"
+            }
           }
         },
         "test": {
@@ -104,6 +122,21 @@
             "exclude": [
               "**/node_modules/**"
             ]
+          }
+        },
+        "xliffmerge": {
+          "builder": "@ngx-i18nsupport/tooling:xliffmerge",
+          "options": {
+            "xliffmergeOptions": {
+              "i18nFormat": "xlf",
+              "srcDir": "src/i18n",
+              "genDir": "src/i18n",
+              "defaultLanguage": "en",
+              "languages": [
+                "en",
+                "ru"
+              ]
+            }
           }
         }
       }

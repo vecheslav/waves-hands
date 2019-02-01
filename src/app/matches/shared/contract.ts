@@ -73,7 +73,7 @@ match (tx) {
         dataTxDataIsOk
 
     case payout:MassTransferTransaction => 
-    let waitingTooLongForMatchCreatorToReveal = extract(getInteger(me, heightKey)) - height < -matchReservationBlocksCount
+    let waitingTooLongForMatchCreatorToReveal = extract(getInteger(me, heightKey)) - height < -creatorRevealBlocksCount
     let p1moves = take(extract(getBinary(me, stage3)), 3)
     let p2moves = take(extract(getBinary(me, stage2)), 3)
     let p1m1 = take(p1moves, 1)

@@ -7,7 +7,7 @@
           <app-match-player [player]="match.creator"></app-match-player>
         </div>
       </div>
-      <div class="match-text">
+      <div class="match-text" i18n>
           Waiting players...
         </div>
     </div>
@@ -21,7 +21,7 @@
           <app-match-player [player]="match.opponent"></app-match-player>
         </div>
       </div>
-      <div class="match-text">
+      <div class="match-text" i18n>
         Waiting for the first player...
       </div>
     </div>
@@ -34,7 +34,7 @@
                [class.player-status--draw]="match.result === 2">
           </div>
         </div>
-        <div class="level-item">vs</div>
+        <div class="level-item" i18n>vs</div>
         <div class="level-item">
           <app-match-player [player]="match.opponent"></app-match-player>
           <div class="player-status"
@@ -52,7 +52,7 @@
       <div class="level-left">
         <div class="level-item">
           Bet:&nbsp;
-          <span class="has-text-primary">1 Waves</span>
+          <span class="has-text-primary" i18n>1 Waves</span>
         </div>
       </div>
       <div class="level-right match-card__status">
@@ -67,7 +67,7 @@
      class="start-overlay"
      [hidden]="!startIsShown">
     <div class="start-overlay__inner">
-      <button class="button is-primary">Start Match</button>
+      <button class="button is-primary" i18n>Start Match</button>
     </div>
   </a>
 

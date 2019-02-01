@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core'
-import { INotification, NotificationType, ActionType } from '../notifications.interface'
+import { INotification } from '../notifications.interface'
 import { NotificationsService } from '../notifications.service'
 import { delay, first, tap } from 'rxjs/operators'
 import { of } from 'rxjs'
