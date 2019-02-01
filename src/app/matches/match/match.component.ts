@@ -8,10 +8,11 @@ import { UserService } from '../../user/user.service'
 import { ErrorCode } from 'src/app/shared/error-code'
 import { NotificationsService } from '../../notifications/notifications.service'
 import { NotificationType } from '../../notifications/notifications.interface'
-import { from } from 'rxjs'
+import { from, timer } from 'rxjs'
 import { environment } from '../../../environments/environment'
 
 const REVEAL_HEIGHT = environment.creatorRevealBlocksCount + 1
+const BLOCK_AS_MS = 60 * 1000
 
 @Component({
   selector: 'app-match',
@@ -37,11 +38,13 @@ export class MatchComponent implements OnInit, OnDestroy {
   shareUrl: string
 
   pendingLeftPercent = 100
+  private _pendingSubscriber
 
   private _userSubscriber
   private _matchSubscriber
+  private _heightSubscriber
 
-  private _pendingLeftHeight = 0
+  private _currentHeight
 
   constructor(private router: Router,
               private route: ActivatedRoute,
@@ -52,6 +55,7 @@ export class MatchComponent implements OnInit, OnDestroy {
     const matchAddress = this.route.snapshot.paramMap.get('address')
 
     if (matchAddress) {
+      // Exist match
       from(this.matchesService.getMatch(matchAddress))
         .subscribe((match: IMatch) => {
           this.match = match
@@ -59,27 +63,13 @@ export class MatchComponent implements OnInit, OnDestroy {
           this._init()
         })
     } else {
+      // Creating match
       this._init()
     }
 
     this._userSubscriber = this.userServices.user$.subscribe((user: IUser) => {
       this.user = user
       this._updateParticipants()
-    })
-
-    this._matchSubscriber = this.matchesService.currentMatch$.subscribe((match: IMatch) => {
-      if (!match) {
-        return
-      }
-
-      if (this.stage !== MatchStage.SelectHands && match.status > MatchStatus.New) {
-        console.log('Update match', match.address)
-        // Update match
-        this.isCreatingMatch = false
-        this.match = match
-        this._reset()
-        this._updateParticipants()
-      }
     })
   }
 
@@ -89,6 +79,14 @@ export class MatchComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this._userSubscriber.unsubscribe()
     this._matchSubscriber.unsubscribe()
+
+    if (this._pendingSubscriber) {
+      this._pendingSubscriber.unsubscribe()
+    }
+
+    if (this._heightSubscriber) {
+      this._heightSubscriber.unsubscribe()
+    }
   }
 
   async select(handSign: HandSign) {
@@ -116,11 +114,6 @@ export class MatchComponent implements OnInit, OnDestroy {
 
       const match = await this.matchesService.createMatch(this.selectedHandSigns, this._changeProgress.bind(this))
       this.router.navigate(['match', match.address])
-      
-      // this.match = match
-      // this.shareUrl = window.location.origin + '/match/' + this.match.address
-      // this.stage = MatchStage.CreatedMatch
-      // this.isProccesing = false
     } catch (err) {
       if (!this._handleErrors(err)) {
         console.error(err)
@@ -145,7 +138,7 @@ export class MatchComponent implements OnInit, OnDestroy {
       this.isProccesing = false
 
       this.match.status = MatchStatus.Waiting
-      this.match.reservationHeight = this.matchesService.currentHeight
+      this.match.reservationHeight = this.matchesService.currentHeight$.getValue()
       this._initLeftPercent()
     } catch (err) {
       if (!this._handleErrors(err)) {
@@ -171,7 +164,27 @@ export class MatchComponent implements OnInit, OnDestroy {
 
     this.isLoading = false
 
-    this._initLeftPercent()
+    this._heightSubscriber = this.matchesService.currentHeight$.subscribe(height => {
+      if (height && height !== this._currentHeight) {
+        this._currentHeight = height
+        this._initLeftPercent()
+      }
+    })
+
+    this._matchSubscriber = this.matchesService.currentMatch$.subscribe((match: IMatch) => {
+      if (!match) {
+        return
+      }
+
+      if (this.stage !== MatchStage.SelectHands && match.status > MatchStatus.New) {
+        console.log('Update match', match.address)
+        // Update match
+        this.isCreatingMatch = false
+        this.match = match
+        this._reset()
+        this._updateParticipants()
+      }
+    })
   }
 
   private _handleErrors(err: any): boolean {
@@ -285,9 +298,22 @@ export class MatchComponent implements OnInit, OnDestroy {
 
   private _initLeftPercent() {
     if (this.match.status === MatchStatus.Waiting && this.match.reservationHeight) {
-      const heightPassed = this.matchesService.currentHeight - this.match.reservationHeight
-      this._pendingLeftHeight = Math.max(REVEAL_HEIGHT - heightPassed, 0)
-      this.pendingLeftPercent = this._pendingLeftHeight * 100 / REVEAL_HEIGHT
+      const heightPassed = this._currentHeight - this.match.reservationHeight
+      const leftHeight = Math.max(REVEAL_HEIGHT - heightPassed, 0)
+      this.pendingLeftPercent = leftHeight * 100 / REVEAL_HEIGHT
+
+      if (this._pendingSubscriber) {
+        this._pendingSubscriber.unsubscribe()
+      }
+
+      // TODO: hack infinite descent
+      const end = (leftHeight - 1) * BLOCK_AS_MS
+      // Start timer
+      this._pendingSubscriber = timer(0, 1000).subscribe(val => {
+        const step = BLOCK_AS_MS / (1 + (val / 20))
+        const left = Math.max(end + step, 0)
+        this.pendingLeftPercent = left * 100 / (REVEAL_HEIGHT * BLOCK_AS_MS)
+      })
     }
   }
 }

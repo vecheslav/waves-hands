@@ -15,9 +15,9 @@ import { TourService } from '../shared/tour/tour.service'
 export class MatchesService implements OnDestroy {
   matches$ = new BehaviorSubject<Record<string, IMatch>>(null)
   currentMatch$ = new BehaviorSubject<IMatch>(null)
+  currentHeight$ = new BehaviorSubject<number>(null)
 
   user: IUser
-  currentHeight: number
   updateIsPaused = false
 
   private _myMatches: Record<string, IMatch> = {}
@@ -70,7 +70,7 @@ export class MatchesService implements OnDestroy {
             return
           }
 
-          this.currentHeight = res.currentHeight
+          this.currentHeight$.next(res.currentHeight)
 
           if (this.matches$.getValue()) {
             this._resolveMatches.call(self, res.matches)
@@ -269,7 +269,7 @@ export class MatchesService implements OnDestroy {
           this._setMyMatch(change.match)
 
           const currentMatch = this.currentMatch$.getValue()
-          if (currentMatch.address === change.match.address) {
+          if (currentMatch && currentMatch.address === change.match.address) {
             this.currentMatch$.next(change.match)
           }
         }
@@ -290,7 +290,7 @@ export class MatchesService implements OnDestroy {
         continue
       }
 
-      matchChanges.push(matchDiff(match, newMatch, this.currentHeight))
+      matchChanges.push(matchDiff(match, newMatch, this.currentHeight$.getValue()))
     }
 
     return matchChanges.filter((change: IMatchChange) => change.resolve !== MatchResolve.Nothing)
