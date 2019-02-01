@@ -61,6 +61,7 @@ export class TourService {
           title: 'Step title 2',
           description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.',
           position: 'bottom-center',
+          offset: 7,
         },
       },
       {
@@ -69,6 +70,7 @@ export class TourService {
           title: 'Step title 3',
           description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.',
           position: 'bottom-center',
+          offset: 7,
         },
       }
     ])
