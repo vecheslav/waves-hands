@@ -32,10 +32,12 @@ export class MatchComponent implements OnInit, OnDestroy {
   opponent: IPlayer
 
   isLoading = true
+  isOpen = false
   keeperIsAvailable = true
   isProccesing = false
   progress = null
   shareUrl: string
+  matchAddress: string
 
   pendingLeftPercent = 100
   private _pendingSubscriber
@@ -47,16 +49,18 @@ export class MatchComponent implements OnInit, OnDestroy {
   private _currentHeight
 
   constructor(private router: Router,
-              private route: ActivatedRoute,
-              private keeperService: KeeperService,
-              private matchesService: MatchesService,
-              private userServices: UserService,
-              private notificationsService: NotificationsService) {
-    const matchAddress = this.route.snapshot.paramMap.get('address')
+    private route: ActivatedRoute,
+    private keeperService: KeeperService,
+    private matchesService: MatchesService,
+    private userServices: UserService,
+    private notificationsService: NotificationsService) {
+    this.matchAddress = this.route.snapshot.paramMap.get('address')
 
-    if (matchAddress) {
-      // Exist match
-      from(this.matchesService.getMatch(matchAddress))
+
+
+    if (this.matchAddress) {
+      // Existing match
+      from(this.matchesService.getMatch(this.matchAddress))
         .subscribe((match: IMatch) => {
           this.match = match
 
@@ -73,7 +77,23 @@ export class MatchComponent implements OnInit, OnDestroy {
     })
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    if (!this.matchAddress) {
+      if (this.keeperIsAvailable) {
+        const state = await this.keeperService.keeper.publicState()
+
+        if (state.account && state.account.balance.available < environment.gameBetAmount) {
+          this.notificationsService.add({
+            type: NotificationType.Error,
+            message: 'ERROR_BALANCE'
+          })
+
+          this.router.navigate(['../'])
+          return
+        }
+      }
+    }
+    this.isOpen = true
   }
 
   ngOnDestroy() {
@@ -157,12 +177,12 @@ export class MatchComponent implements OnInit, OnDestroy {
     this._reset()
     this._updateParticipants()
 
+
+
     if (this.stage === MatchStage.CreatedMatch) {
       this.shareUrl = window.location.origin + '/match/' + this.match.address
       this.match.creator.moves = this.matchesService.getMyMoves(this.match.address)
     }
-
-    this.isLoading = false
 
     this._heightSubscriber = this.matchesService.currentHeight$.subscribe(height => {
       if (height && height !== this._currentHeight) {
@@ -185,6 +205,8 @@ export class MatchComponent implements OnInit, OnDestroy {
         this._updateParticipants()
       }
     })
+
+    this.isLoading = false
   }
 
   private _handleErrors(err: any): boolean {
