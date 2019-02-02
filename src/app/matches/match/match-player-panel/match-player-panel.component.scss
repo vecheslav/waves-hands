@@ -60,6 +60,15 @@
     }
   }
 
+  &--draw {
+    background: $white-ter;
+    color: $grey-light;
+
+    &:before {
+      content: 'Draw';
+    }
+  }
+
   &--looser {
     background: rgba($red, 0.1);
     color: $red;
