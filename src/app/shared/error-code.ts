@@ -1,5 +1,6 @@
 
 export enum ErrorCode {
   NotEnoughBalance = 1,
-  UserRejected = 2
+  UserRejected = 2,
+  ApiRejected = 3,
 }

@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core'
 import { Routes, RouterModule } from '@angular/router'
 import { MatchComponent } from './matches/match/match.component'
 import { MatchesComponent } from './matches/matches.component'
+import { MatchGuard } from './matches/match/match.guard'
 
 const routes: Routes = [
   {
@@ -11,10 +12,12 @@ const routes: Routes = [
       {
         path: 'match',
         component: MatchComponent,
+        canActivate: [MatchGuard],
       },
       {
         path: 'match/:address',
         component: MatchComponent,
+        canActivate: [MatchGuard],
       },
     ]
   },

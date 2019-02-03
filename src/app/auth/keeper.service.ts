@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { IKeeper, KeeperStatus, KeeperAuth } from './shared/keeper.interface'
+import { IKeeper, KeeperStatus, KeeperAuth, KeeperPublicState } from './shared/keeper.interface'
 import { DataEntry } from 'waves-transactions/transactions'
 import { KeeperProvider } from './keeper.provider'
 import { ErrorCode } from '../shared/error-code'
@@ -26,6 +26,17 @@ export class KeeperService {
       return
     }
     return this.keeper.on(event, cb)
+  }
+
+  async publicState(): Promise<KeeperPublicState> {
+    try {
+      return await this.keeper.publicState()
+    } catch (err) {
+      if (err.message === 'Api rejected by user') {
+        throw { ... new Error('Api rejected by user'), code: ErrorCode.ApiRejected }
+      }
+      throw err
+    }
   }
 
   async auth(param?: { data: string }): Promise<KeeperAuth> {

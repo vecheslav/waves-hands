@@ -15,6 +15,13 @@ export class NotificationsService {
   }
 
   add(notification: INotification) {
+    if (!notification.timestamp) {
+      notification.timestamp = Date.now()
+    }
+
+    // Show notification
+    this.newNotification$.next(notification)
+
     if (!this._user) {
       return
     }
@@ -22,13 +29,6 @@ export class NotificationsService {
     if (!this._user.address) {
       return
     }
-
-    if (!notification.timestamp) {
-      notification.timestamp = Date.now()
-    }
-
-    // Show notification
-    this.newNotification$.next(notification)
 
     if (notification.stored || notification.type === NotificationType.Action) {
       // Save notification

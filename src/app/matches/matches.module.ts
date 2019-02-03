@@ -11,6 +11,7 @@ import { MatchesService } from './matches.service'
 import { MatchesHelper } from './shared/matches.helper'
 import { NotificationsModule } from '../notifications/notifications.module'
 import { MatchPlayerPanelComponent } from './match/match-player-panel/match-player-panel.component'
+import { MatchGuard } from './match/match.guard'
 
 @NgModule({
   declarations: [MatchesComponent, MatchCardComponent, MatchComponent, MatchPlayerPanelComponent],
@@ -25,6 +26,7 @@ import { MatchPlayerPanelComponent } from './match/match-player-panel/match-play
   providers: [
     MatchesService,
     MatchesHelper,
+    MatchGuard,
   ],
   exports: [
     MatchesComponent,

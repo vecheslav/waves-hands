@@ -32,7 +32,6 @@ export class MatchComponent implements OnInit, OnDestroy {
   opponent: IPlayer
 
   isLoading = true
-  isOpen = false
   keeperIsAvailable = true
   isProccesing = false
   progress = null
@@ -78,22 +77,6 @@ export class MatchComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    if (!this.matchAddress) {
-      if (this.keeperIsAvailable) {
-        const state = await this.keeperService.keeper.publicState()
-
-        if (state.account && state.account.balance.available < environment.gameBetAmount) {
-          this.notificationsService.add({
-            type: NotificationType.Error,
-            message: 'ERROR_BALANCE'
-          })
-
-          this.router.navigate(['../'])
-          return
-        }
-      }
-    }
-    this.isOpen = true
   }
 
   ngOnDestroy() {
@@ -222,6 +205,12 @@ export class MatchComponent implements OnInit, OnDestroy {
           this.notificationsService.add({
             type: NotificationType.Error,
             message: 'ERROR_BALANCE'
+          })
+          return true
+        case ErrorCode.ApiRejected:
+          this.notificationsService.add({
+            type: NotificationType.Error,
+            message: 'ERROR_API_REJECTED'
           })
           return true
       }
