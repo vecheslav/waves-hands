@@ -8,10 +8,10 @@
           target="_blank"
           class="address">{{ player?.address }}</a>
     </div>
-    <div class="player-panel__status" *ngIf="player.status">
+    <div class="player-panel__status" *ngIf="player?.status">
       <div class="player-status"
-           [class.player-status--looser]="player.status === 1"
-           [class.player-status--winner]="player.status === 2">
+           [class.player-status--looser]="player?.status === 1"
+           [class.player-status--winner]="player?.status === 2">
       </div>
     </div>
   </div>
