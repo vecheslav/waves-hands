@@ -132,6 +132,11 @@ export class MatchesService implements OnDestroy {
   }
 
   async finishMatch(player1Address: string, player2Address: string, matchPublicKey: string, matchAddress: string, move: Uint8Array) {
+    const notificationId = this.notificationsService.add({
+      type: NotificationType.Process,
+      message: 'PROCESS_FINISH_MATCH'
+    })
+
     const myMatch = this._myMatches[matchAddress]
     if (!myMatch) {
       return
@@ -154,13 +159,21 @@ export class MatchesService implements OnDestroy {
         matchAddress,
         move
       )
+
+      this.notificationsService.remove(notificationId)
     } catch (err) {
       myMatch.isFinishing = false
+      this.notificationsService.remove(notificationId)
       throw err
     }
   }
 
   async forceFinishMatch(matchAddress: string) {
+    const notificationId = this.notificationsService.add({
+      type: NotificationType.Process,
+      message: 'PROCESS_FINISH_MATCH'
+    })
+
     const myMatch = this._myMatches[matchAddress]
     if (!myMatch) {
       return
@@ -176,8 +189,10 @@ export class MatchesService implements OnDestroy {
     console.log('Force finish match', matchAddress)
     try {
       await this.matchesHelper.forceFinish(myMatch)
+      this.notificationsService.remove(notificationId)
     } catch (err) {
       myMatch.isFinishing = false
+      this.notificationsService.remove(notificationId)
       throw err
     }
   }

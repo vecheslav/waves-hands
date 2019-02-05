@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { BehaviorSubject } from 'rxjs'
+import { BehaviorSubject, Subject } from 'rxjs'
 import { INotification, NotificationType } from './notifications.interface'
 import { IUser } from '../user/user.interface'
 
@@ -8,26 +8,32 @@ export class NotificationsService {
   // TODO: can be merged into one in the future
   notifications$ = new BehaviorSubject<INotification[]>(<INotification[]>[])
   newNotification$ = new BehaviorSubject<INotification>(null)
+  removeNotification$ = new Subject<number>()
 
   private _user: IUser
+  private _total = 0
 
   constructor() {
   }
 
   add(notification: INotification) {
+    this._total++
+
     if (!notification.timestamp) {
       notification.timestamp = Date.now()
     }
+
+    const id = notification.id = this._total
 
     // Show notification
     this.newNotification$.next(notification)
 
     if (!this._user) {
-      return
+      return id
     }
 
     if (!this._user.address) {
-      return
+      return id
     }
 
     if (notification.stored || notification.type === NotificationType.Action) {
@@ -35,6 +41,12 @@ export class NotificationsService {
       this.notifications$.next(this.notifications$.getValue().concat([notification]))
       this._addNotificationToStorage(this._user.address, notification)
     }
+
+    return id
+  }
+
+  remove(notificationId: number) {
+    this.removeNotification$.next(notificationId)
   }
 
   selectUser(user: IUser) {

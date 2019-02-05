@@ -60,9 +60,29 @@
   }
 }
 
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 .error { @include item-type-style($danger); }
 .warning { @include item-type-style($warning); }
 .info { @include item-type-style($info); }
+.process {
+  .notification-icon {
+    background-color: transparent;
+  }
+
+  .icon {
+    height: 2rem;
+    width: 2rem;
+    animation-name: spin;
+    animation-duration: 1000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    color: rgba($primary, .5);
+  }
+}
 
 .action_opponent_joined { @include item-action-style($blue); }
 .action_you_created { @include item-action-style($green); }

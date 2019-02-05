@@ -3,7 +3,8 @@ export interface INotification {
   params?: any[]
   type: NotificationType,
   message?: string,
-  stored?: boolean
+  stored?: boolean,
+  id?: number,
 }
 
 export enum NotificationType {
@@ -11,6 +12,7 @@ export enum NotificationType {
   Warning = 'warning',
   Action = 'action',
   Info = 'info',
+  Process = 'process',
 }
 
 export enum ActionType {
