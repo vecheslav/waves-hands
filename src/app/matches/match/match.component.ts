@@ -194,11 +194,12 @@ export class MatchComponent implements OnInit, OnDestroy {
       }
     })
 
-    if (this.isCreatingMatch && this.tourService.activated$.getValue()) {
-      this.tourService.startMatchTour()
-    }
-
     this.isLoading = false
+
+    if (this.tourService.activated$.getValue()) {
+      this.tourService.stopTour()
+      // this.tourService.startMatchTour()
+    }
   }
 
   private _handleErrors(err: any): boolean {

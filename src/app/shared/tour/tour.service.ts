@@ -42,8 +42,8 @@ export class TourService {
     })
   }
 
-  startMatchTour() {
-    console.log('startMatchTour')
+  stopTour() {
+    this._driver.reset()
   }
 
   isActiveWelcomePopup(): boolean {
@@ -103,6 +103,7 @@ export class TourService {
           title: this.translate.instant('TOUR.STEP4_TITLE'),
           description: this.translate.instant('TOUR.STEP4_TEXT'),
           position: 'bottom-right',
+          doneBtnText: this.translate.instant('TOUR.DONE_BUTTON'),
         },
       },
     ])
