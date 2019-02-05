@@ -1,0 +1,37 @@
+@import '~src/styles/variables';
+
+.modal-close {
+  $large-size: 40px;
+
+  position: absolute;
+  background: $white;
+
+  &:before,
+  &:after {
+    background-color: $grey;
+  }
+
+  &:hover,
+  &:active,
+  &:focus {
+    background-color: $primary;
+
+    &:before,
+    &:after {
+      background-color: $white;
+    }
+  }
+
+  &.is-large {
+    height: $large-size;
+    max-height: $large-size;
+    max-width: $large-size;
+    min-height: $large-size;
+    min-width: $large-size;
+    width: $large-size;
+  }
+}
+
+.modal-window {
+  position: relative;
+}

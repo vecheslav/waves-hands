@@ -46,7 +46,8 @@
     "DRAW": "Your match with a draw",
     "MATCH_FINISHED": "The match was finished",
     "PLEASE_WAIT": "Please, wait...",
-    "DONT_CLOSE": "Don't close the window"
+    "DONT_CLOSE": "Don't close the window",
+    "CLOSE_CONFIRM": "The match in progress. You may lose your funds. Are you sure you want to close?"
   },
   "TOUR": {
     "WELCOME_TITLE": "Welcome to WavesHands",
