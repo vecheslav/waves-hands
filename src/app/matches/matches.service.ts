@@ -132,8 +132,8 @@ export class MatchesService implements OnDestroy {
     })
   }
 
-  async finishMatch(player1Address: string, player2Address: string, matchPublicKey: string, matchAddress: string, move: Uint8Array) {
-    const myMatch = this._myMatches[matchAddress]
+  async finishMatch(match: IMatch, move: Uint8Array) {
+    const myMatch = this._myMatches[match.address]
     if (!myMatch) {
       return
     }
@@ -151,13 +151,10 @@ export class MatchesService implements OnDestroy {
     // Book finish match
     myMatch.isFinishing = true
 
-    console.log('Finish match', matchAddress)
+    console.log('Finish match', match.address)
     try {
       await this.matchesHelper.finishMatch(
-        player1Address,
-        player2Address,
-        matchPublicKey,
-        matchAddress,
+        match,
         move
       )
 
@@ -232,11 +229,9 @@ export class MatchesService implements OnDestroy {
               params: [ActionType.OpponentJoined, change.match.address]
             })
 
+
             this.finishMatch(
-              this.user.address,
-              change.match.opponent.address,
-              change.match.publicKey,
-              change.match.address,
+              change.match,
               move
             )
             break

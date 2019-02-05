@@ -197,7 +197,6 @@ export class MatchesHelper {
 
     const currentHeight = await this._api.getHeight()
 
-
     const matches: Record<string, IMatch> = r.reduce((a, b) => {
       const p1Key = getDataByKey('player1Key', [b], x => base58encode(BASE64_STRING(x.slice(7))))
       if (!p1Key) {
@@ -404,6 +403,50 @@ export class MatchesHelper {
     console.log(`Player 2 move revealed`)
   }
 
+  async payout(match: IMatch, move?: Uint8Array) {
+
+    // const player2Move = await (this.http.get<{ value: string }>(`${environment.api.baseEndpoint}addresses/data/${match.address}/p2Move`))
+    //   .toPromise().then(x => BASE64_STRING(x.value.slice(7)))
+
+    const result = whoHasWon(Array.from(move || match.creator.moves), Array.from(match.opponent.moves))
+
+    const left = 197400000
+    const commission = 1 * wave / 200
+    let payout
+    if (result === MatchResult.Draw) {
+      const fee = 300000 + 400000
+      payout = massTransfer({
+        transfers: [
+          { amount: commission, recipient: environment.serviceAddress },
+          { amount: (left - fee - commission) / 2, recipient: match.creator.address },
+          { amount: (left - fee - commission) / 2, recipient: match.opponent.address },
+        ],
+        senderPublicKey: match.publicKey,
+        fee: fee
+      })
+    } else {
+      const fee = 200000 + 400000
+      const winner = result === MatchResult.Creator ? match.creator.address : match.opponent.address
+      payout = massTransfer({
+        transfers: [
+          { amount: commission, recipient: environment.serviceAddress },
+          { amount: (left - fee - commission), recipient: winner },
+        ],
+        senderPublicKey: match.publicKey,
+        fee: fee
+      })
+
+      console.log('Winner: ' + winner)
+    }
+
+    try {
+      await this.core.broadcastAndWait(payout)
+    } catch (err) {
+      throw err
+    }
+
+  }
+
   async forceFinish(match: IMatch) {
     const fee = 200000 + 400000
     const winner = match.opponent.address
@@ -427,12 +470,12 @@ export class MatchesHelper {
 
   }
 
-  async finishMatch(player1Address: string, player2Address: string, matchPublicKey: string, matchAddress: string, move: Uint8Array) {
+  async finishMatch(match: IMatch, move: Uint8Array) {
     console.log('Revealing p1 move:')
     console.log(move)
 
     const revealP1 = data({
-      senderPublicKey: matchPublicKey,
+      senderPublicKey: match.publicKey,
       data: [
         { key: 'p1Move', value: move },
       ],
@@ -445,45 +488,7 @@ export class MatchesHelper {
       throw err
     }
 
-    const player2Move = await (this.http.get<{ value: string }>(`${environment.api.baseEndpoint}addresses/data/${matchAddress}/p2Move`))
-      .toPromise().then(x => BASE64_STRING(x.value.slice(7)))
-
-    const result = whoHasWon(Array.from(move), Array.from(player2Move))
-
-    const left = 197400000
-    const commission = 1 * wave / 200
-    let payout
-    if (result === MatchResult.Draw) {
-      const fee = 300000 + 400000
-      payout = massTransfer({
-        transfers: [
-          { amount: commission, recipient: environment.serviceAddress },
-          { amount: (left - fee - commission) / 2, recipient: player1Address },
-          { amount: (left - fee - commission) / 2, recipient: player2Address },
-        ],
-        senderPublicKey: matchPublicKey,
-        fee: fee
-      })
-    } else {
-      const fee = 200000 + 400000
-      const winner = result === MatchResult.Creator ? player1Address : player2Address
-      payout = massTransfer({
-        transfers: [
-          { amount: commission, recipient: environment.serviceAddress },
-          { amount: (left - fee - commission), recipient: winner },
-        ],
-        senderPublicKey: matchPublicKey,
-        fee: fee
-      })
-
-      console.log('Winner: ' + winner)
-    }
-
-    try {
-      await this.core.broadcastAndWait(payout)
-    } catch (err) {
-      throw err
-    }
+    this.payout(match, move)
 
     console.log('Payout completed')
   }
