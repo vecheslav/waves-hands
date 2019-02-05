@@ -300,6 +300,7 @@ export class MatchesHelper {
       throw { ... new Error('You have not enough balance to play!'), code: ErrorCode.NotEnoughBalance }
     }
 
+
     const player1Key = p1Transfer.senderPublicKey
     const player1Address = address({ public: player1Key }, environment.chainId)
 

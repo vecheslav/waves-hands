@@ -50,13 +50,13 @@ export class MatchComponent implements OnInit, OnDestroy {
   private _currentHeight
 
   constructor(private router: Router,
-              private route: ActivatedRoute,
-              private keeperService: KeeperService,
-              private matchesService: MatchesService,
-              private userServices: UserService,
-              private notificationsService: NotificationsService,
-              private translate: TranslateService,
-              private tourService: TourService) {
+    private route: ActivatedRoute,
+    private keeperService: KeeperService,
+    private matchesService: MatchesService,
+    private userServices: UserService,
+    private notificationsService: NotificationsService,
+    private translate: TranslateService,
+    private tourService: TourService) {
     this.matchAddress = this.route.snapshot.paramMap.get('address')
 
     if (this.matchAddress) {
@@ -221,6 +221,12 @@ export class MatchComponent implements OnInit, OnDestroy {
           this.notificationsService.add({
             type: NotificationType.Error,
             message: 'ERROR_API_REJECTED'
+          })
+          return true
+        case ErrorCode.WrongAddress:
+          this.notificationsService.add({
+            type: NotificationType.Error,
+            message: 'ERROR_WRONG_ADDRESS'
           })
           return true
       }

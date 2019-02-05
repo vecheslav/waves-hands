@@ -29,10 +29,10 @@ export class MatchesService implements OnDestroy {
   private _tourSubscriber
 
   constructor(private matchesHelper: MatchesHelper,
-              private userService: UserService,
-              private notificationsService: NotificationsService,
-              private ngZone: NgZone,
-              private tourService: TourService) {
+    private userService: UserService,
+    private notificationsService: NotificationsService,
+    private ngZone: NgZone,
+    private tourService: TourService) {
     this._userSubscriber = this.userService.user$.subscribe((user: IUser) => {
       this.user = user
       if (this.user) {
@@ -104,6 +104,7 @@ export class MatchesService implements OnDestroy {
 
   async createMatch(moves: HandSign[], progress?: (zeroToOne: number) => void): Promise<IMatch> {
     const { move, moveHash, match } = await this.matchesHelper.createMatch(moves, progress)
+
     this._setMyMatch(match)
     this._saveMove(match.address, move)
 
@@ -291,7 +292,7 @@ export class MatchesService implements OnDestroy {
       }
     } catch (err) {
       console.error(err)
-      this.notificationsService.add({ type: NotificationType.Error, message: 'ERROR_WRONG_MATCH'})
+      this.notificationsService.add({ type: NotificationType.Error, message: 'ERROR_WRONG_MATCH' })
     }
   }
 

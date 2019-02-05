@@ -72,6 +72,9 @@ export class KeeperService {
       if (error.message === 'User denied message') {
         throw { ... new Error('User denied'), code: ErrorCode.UserRejected }
       }
+      if (error.code === 3) {
+        throw { ... new Error('Wrong address'), code: ErrorCode.WrongAddress }
+      }
     }
   }
 
