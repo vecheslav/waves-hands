@@ -29,6 +29,10 @@
 
 .header {
   z-index: 1;
+
+  > .level {
+    align-items: flex-end;
+  }
 }
 
 .introduction {

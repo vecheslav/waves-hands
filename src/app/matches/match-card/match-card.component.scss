@@ -77,26 +77,14 @@ $card-padding: 1.5rem;
       border-radius: .3rem;
       color: $red;
 
-      &:before {
-        content: 'Looser';
-      }
-
       &--winner {
         background: rgba($blue, 0.1);
         color: $blue;
-
-        &:before {
-          content: 'Winner';
-        }
       }
 
       &--draw {
         background: $white-ter;
         color: $grey-light;
-
-        &:before {
-          content: 'Draw';
-        }
       }
     }
   }
@@ -131,24 +119,20 @@ $card-padding: 1.5rem;
     margin-top: -4px;
   }
 
-  &:after {
-    content: 'Open';
+  span {
     color: $grey-light;
   }
 
   &.status-0 {
     &:before { background-color: $green; }
-    &:after { content: 'Open'; }
   }
 
   &.status-1 {
     &:before { background-color: $yellow; }
-    &:after { content: 'Pending'; }
   }
 
   &.status-2 {
     &:before { background-color: $grey; }
-    &:after { content: 'Closed'; }
   }
 }
 

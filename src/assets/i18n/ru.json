@@ -1,0 +1,78 @@
+{
+  "TITLE": "WavesHands | The first blockchain hands game!",
+  "PREVIEW": {
+    "TITLE": "Первая самая честная камень-ножницы-бумага!",
+    "TEXT": "Dispute resolution fairly. Earn Waves easily! Powered by smartcontract based on Waves.",
+    "BUTTON": "How to play?"
+  },
+  "MATCHES": {
+    "TITLE": "Последние матчи",
+    "START": "Начать игру"
+  },
+  "USER": {
+    "LOGOUT": "Log Out",
+    "SIGNIN": "Sign In",
+    "INSTALL": "Install Keeper"
+  },
+  "CARD": {
+    "WAITING_PLAYERS": "Waiting players...",
+    "WAITING_FIRST": "Waiting for the first player...",
+    "BET": "Bet:",
+    "START": "Start Match",
+    "STATUS_OPEN": "Open",
+    "STATUS_PENDING": "Pending",
+    "STATUS_CLOSED": "Closed",
+    "WINNER": "Winner",
+    "LOOSER": "Looser",
+    "DRAW": "Draw"
+  },
+  "MATCH": {
+    "KEEPER": "Keeper is not available. <a href=\"https://chrome.google.com/webstore/detail/waves-keeper/lpilbniiabackdjcionkobglmddfbcjo\" target=\"_blank\">Install the extension</a> to access the game.",
+    "SELECT_HANDS": "Select your hands",
+    "YOU_CREATED": "You created the match",
+    "SHARE": "Share the match link to friends, or wait for players to join.",
+    "CLOSE": "Close window",
+    "YOU_JOINED": "You joined the match",
+    "NOW_WAIT_OPPONENT": "Now wait your opponent to reveal his move.",
+    "RESERVED": "The match was reserved",
+    "NOW_WAIT_CREATOR": "Now wait creator to reveal his move.",
+    "YOU_WON": "You won the match",
+    "TRY_LUCK": "You can try your luck in other matches.",
+    "PLAY_AGAIN": "Play again",
+    "YOU_LOST": "You lost the match",
+    "DRAW": "Your match with a draw",
+    "MATCH_FINISHED": "The match was finished",
+    "PLEASE_WAIT": "Please, wait...",
+    "DONT_CLOSE": "Don't close the window"
+  },
+  "TOUR": {
+    "WELCOME_TITLE": "Welcome to WavesHands",
+    "WELCOME_TEXT": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.",
+    "WELCOME_BUTTON": "How to play?",
+    "CLOSE_BUTTON": "Close",
+    "NEXT_BUTTON": "Next",
+    "PREV_BUTTON": "Previous",
+    "STEP1_TITLE": "Step title 1",
+    "STEP1_TEXT": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.",
+    "STEP2_TITLE": "Step title 2",
+    "STEP2_TEXT": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.",
+    "STEP3_TITLE": "Step title 3",
+    "STEP3_TEXT": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam."
+  },
+  "NOTIFICATIONS": {
+    "EMPTY": "There are no notifications"
+  },
+  "MESSAGE": {
+    "ERROR_USER_REJECTED": "You rejected process",
+    "ERROR_BALANCE": "Not enouth balance",
+    "ERROR_API_REJECTED": "You rejected access to keeper",
+    "ERROR_WRONG_MATCH": "Something went wrong",
+    "ACTION_RECEIVE": "You received a reward of {1} Waves for the match #{2}",
+    "ACTION_WON": "You won the match #{1}",
+    "ACTION_LOST": "You lost the match #{1}",
+    "ACTION_DRAW": "Your match #{1} has been completed with a draw",
+    "ACTION_YOU_CREATED": "Вы создали матч #{1}",
+    "ACTION_YOU_JOINED": "You joined a match #{1}",
+    "ACTION_OPPONENT_JOINED": "Opponent joined to match #{1}"
+  }
+}

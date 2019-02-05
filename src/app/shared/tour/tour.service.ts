@@ -1,6 +1,7 @@
 import { Injectable, NgZone } from '@angular/core'
 import * as Driver from 'driver.js'
 import { BehaviorSubject } from 'rxjs'
+import { LangChangeEvent, TranslateService } from '@ngx-translate/core'
 
 @Injectable()
 export class TourService {
@@ -8,11 +9,12 @@ export class TourService {
 
   private _driver: Driver
 
-  constructor(private ngZone: NgZone) {
+  constructor(private ngZone: NgZone, private translate: TranslateService) {
     this._driver = new Driver({
       animate: false,
       opacity: 0.3,
       padding: 8,
+      closeBtnText: 'Close',
       nextBtnText: 'Next',
       prevBtnText: 'Previous',
       onReset: () => {
@@ -46,20 +48,28 @@ export class TourService {
   }
 
   private _defineSteps() {
+    const defaultPopover = {
+      closeBtnText: this.translate.instant('TOUR.CLOSE_BUTTON'),
+      nextBtnText: this.translate.instant('TOUR.NEXT_BUTTON'),
+      prevBtnText: this.translate.instant('TOUR.PREV_BUTTON'),
+    }
+
     this._driver.defineSteps([
       {
         element: '#start-game',
         popover: {
-          title: 'Step title 1',
-          description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.',
+          ...defaultPopover,
+          title: this.translate.instant('TOUR.STEP1_TITLE'),
+          description: this.translate.instant('TOUR.STEP1_TEXT'),
           position: 'bottom-right',
         },
       },
       {
         element: '.matches-item:first-child',
         popover: {
-          title: 'Step title 2',
-          description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.',
+          ...defaultPopover,
+          title: this.translate.instant('TOUR.STEP2_TITLE'),
+          description: this.translate.instant('TOUR.STEP2_TEXT'),
           position: 'bottom-center',
           offset: 7,
         },
@@ -67,8 +77,9 @@ export class TourService {
       {
         element: '.matches-item:first-child .match-card__status',
         popover: {
-          title: 'Step title 3',
-          description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.',
+          ...defaultPopover,
+          title: this.translate.instant('TOUR.STEP3_TITLE'),
+          description: this.translate.instant('TOUR.STEP3_TEXT'),
           position: 'bottom-center',
           offset: 7,
         },

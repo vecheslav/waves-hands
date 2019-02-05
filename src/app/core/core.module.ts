@@ -4,23 +4,27 @@ import { PreviewComponent } from './preview/preview.component'
 import { HTTP_INTERCEPTORS } from '@angular/common/http'
 import { ApiInterceptor } from './api.interceptor'
 import { RouterModule } from '@angular/router'
+import { TranslateModule } from '@ngx-translate/core'
+import { SharedModule } from '../shared/shared.module'
 
 @NgModule({
   declarations: [
-    PreviewComponent
+    PreviewComponent,
   ],
   imports: [
     CommonModule,
-    RouterModule
+    RouterModule,
+    TranslateModule,
+    SharedModule,
   ],
   exports: [
-    PreviewComponent
+    PreviewComponent,
   ],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ApiInterceptor,
-      multi: true
+      multi: true,
     }
   ]
 })

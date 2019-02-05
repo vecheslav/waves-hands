@@ -7,6 +7,7 @@ import { SharedModule } from '../shared/shared.module'
 import { AuthGuard } from './auth.guard'
 import { RouterModule } from '@angular/router'
 import { NotificationsModule } from '../notifications/notifications.module'
+import { TranslateModule } from '@ngx-translate/core'
 
 @NgModule({
   declarations: [UserPanelComponent],
@@ -16,6 +17,7 @@ import { NotificationsModule } from '../notifications/notifications.module'
     SharedModule,
     RouterModule,
     NotificationsModule,
+    TranslateModule,
   ],
   providers: [
     UserService,

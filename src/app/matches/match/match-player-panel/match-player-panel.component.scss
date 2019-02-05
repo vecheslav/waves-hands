@@ -47,35 +47,19 @@
   background: $white-ter;
   color: $grey-light;
 
-  &:before {
-    content: '-';
-  }
-
   &--winner {
     background: rgba($blue, 0.1);
     color: $blue;
-
-    &:before {
-      content: 'Winner';
-    }
   }
 
   &--draw {
     background: $white-ter;
     color: $grey-light;
-
-    &:before {
-      content: 'Draw';
-    }
   }
 
   &--looser {
     background: rgba($red, 0.1);
     color: $red;
-
-    &:before {
-      content: 'Looser';
-    }
   }
 }
 

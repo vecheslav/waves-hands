@@ -6,6 +6,8 @@ import { ShareMatchComponent } from './share-match/share-match.component'
 import { ClickOutsideDirective } from './click-outside/click-outside.directive'
 import { TourComponent } from './tour/tour.component'
 import { TourService } from './tour/tour.service'
+import { TranslateModule } from '@ngx-translate/core';
+import { LangSwitcherComponent } from './lang-switcher/lang-switcher.component'
 
 @NgModule({
   declarations: [
@@ -13,10 +15,12 @@ import { TourService } from './tour/tour.service'
     MatchPlayerComponent,
     ShareMatchComponent,
     ClickOutsideDirective,
-    TourComponent
+    TourComponent,
+    LangSwitcherComponent
   ],
   imports: [
     CommonModule,
+    TranslateModule,
   ],
   providers: [
     TourService,
@@ -27,6 +31,7 @@ import { TourService } from './tour/tour.service'
     ShareMatchComponent,
     ClickOutsideDirective,
     TourComponent,
+    LangSwitcherComponent,
   ]
 })
 export class SharedModule { }

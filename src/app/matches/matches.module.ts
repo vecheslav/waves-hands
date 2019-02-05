@@ -12,6 +12,7 @@ import { MatchesHelper } from './shared/matches.helper'
 import { NotificationsModule } from '../notifications/notifications.module'
 import { MatchPlayerPanelComponent } from './match/match-player-panel/match-player-panel.component'
 import { MatchGuard } from './match/match.guard'
+import { TranslateModule } from '@ngx-translate/core'
 
 @NgModule({
   declarations: [MatchesComponent, MatchCardComponent, MatchComponent, MatchPlayerPanelComponent],
@@ -22,6 +23,7 @@ import { MatchGuard } from './match/match.guard'
     SharedModule,
     UserModule,
     NotificationsModule,
+    TranslateModule,
   ],
   providers: [
     MatchesService,

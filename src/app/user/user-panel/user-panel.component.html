@@ -2,7 +2,7 @@
   <div class="level">
     <div class="level-left">
       <div class="level-item user-panel__logout" *ngIf="isLogged">
-        <button class="button" (click)="logout()" i18n>Log Out</button>
+        <button class="button" (click)="logout()" [translate]="'USER.LOGOUT'">Log Out</button>
       </div>
       <div class="level-item user-panel__notifications"
            *ngIf="isLogged"
@@ -18,12 +18,12 @@
       </div>
     </div>
     <div class="level-right" *ngIf="!user && keeperIsAvailable">
-      <button class="button" (click)="signin()" i18n>Sign In</button>
+      <button class="button" (click)="signin()" [translate]="'USER.SIGNIN'">Sign In</button>
     </div>
     <div class="level-right" *ngIf="!keeperIsAvailable">
       <a href="https://chrome.google.com/webstore/detail/waves-keeper/lpilbniiabackdjcionkobglmddfbcjo"
          target="_blank"
-         class="button" i18n>Install Keeper</a>
+         class="button" [translate]="'USER.INSTALL'">Install Keeper</a>
     </div>
     <div class="level-right user-panel__user" *ngIf="isLogged">
       <div class="level-left">

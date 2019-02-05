@@ -1,27 +1,34 @@
-import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core'
-import { ActionType, INotification, NotificationType } from '../notifications.interface'
-import { messageText, messageIcon } from '../notifictions'
+import { Component, Input, OnDestroy, OnInit } from '@angular/core'
+import { INotification, NotificationType } from '../notifications.interface'
+import { messageIcon } from '../notifictions'
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser'
+import { LangChangeEvent, TranslateService } from '@ngx-translate/core'
 
 @Component({
   selector: 'app-notification-item',
   templateUrl: './notification-item.component.html',
   styleUrls: ['./notification-item.component.scss'],
 })
-export class NotificationItemComponent implements OnInit {
+export class NotificationItemComponent implements OnInit, OnDestroy {
   @Input() notification: INotification
   message: string
   messageSafeHtml: SafeHtml
-  messageClass: string
+  messageClass = ''
   iconKey: string
 
-  notificationType = NotificationType
-  actionType = ActionType
+  private _langSubscriber
 
-  constructor(private sanitizer: DomSanitizer) { }
+  constructor(private sanitizer: DomSanitizer, private translate: TranslateService) {
+  }
 
   ngOnInit() {
-    this._initMessage()
+    this._langSubscriber = this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
+      this._initMessage()
+    })
+  }
+
+  ngOnDestroy(): void {
+    this._langSubscriber.unsubscribe()
   }
 
   private _initMessage() {
@@ -36,14 +43,12 @@ export class NotificationItemComponent implements OnInit {
       this.iconKey = messageIcon[this.message]
     }
 
-    
-
     this._initMessageBody()
   }
 
   private _initMessageBody() {
     const params = this.notification.params
-    let messageBody = messageText[this.message]
+    let messageBody = this.translate.instant('MESSAGE.' + this.message)
 
     if (!messageBody) {
       return

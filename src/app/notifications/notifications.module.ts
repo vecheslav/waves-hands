@@ -6,6 +6,7 @@ import { SharedModule } from '../shared/shared.module'
 import { NotificationItemComponent } from './notification-item/notification-item.component'
 import { RouterModule } from '@angular/router';
 import { NotificationFlowComponent } from './notification-flow/notification-flow.component'
+import { TranslateModule } from '@ngx-translate/core'
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { NotificationFlowComponent } from './notification-flow/notification-flow
     CommonModule,
     RouterModule,
     SharedModule,
+    TranslateModule,
   ],
   exports: [
     NotificationsComponent,

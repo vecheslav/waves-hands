@@ -7,7 +7,7 @@
           <app-match-player [player]="match.creator"></app-match-player>
         </div>
       </div>
-      <div class="match-text" i18n>
+      <div class="match-text" [translate]="'CARD.WAITING_PLAYERS'">
           Waiting players...
         </div>
     </div>
@@ -21,7 +21,7 @@
           <app-match-player [player]="match.opponent"></app-match-player>
         </div>
       </div>
-      <div class="match-text" i18n>
+      <div class="match-text" [translate]="'CARD.WAITING_FIRST'">
         Waiting for the first player...
       </div>
     </div>
@@ -31,15 +31,23 @@
           <app-match-player [player]="match.creator"></app-match-player>
           <div class="player-status"
                [class.player-status--winner]="match.result === 0"
-               [class.player-status--draw]="match.result === 2">
+               [class.player-status--draw]="match.result === 2"
+               [ngSwitch]="match.result">
+            <span *ngSwitchCase="0" [translate]="'CARD.WINNER'">Winner</span>
+            <span *ngSwitchCase="1" [translate]="'CARD.LOOSER'">Looser</span>
+            <span *ngSwitchCase="2" [translate]="'CARD.DRAW'">Draw</span>
           </div>
         </div>
-        <div class="level-item" i18n>vs</div>
+        <div class="level-item">vs</div>
         <div class="level-item">
           <app-match-player [player]="match.opponent"></app-match-player>
           <div class="player-status"
                [class.player-status--winner]="match.result === 1"
-               [class.player-status--draw]="match.result === 2">
+               [class.player-status--draw]="match.result === 2"
+               [ngSwitch]="match.result">
+            <span *ngSwitchCase="0" [translate]="'CARD.LOOSER'">Looser</span>
+            <span *ngSwitchCase="1" [translate]="'CARD.WINNER'">Winner</span>
+            <span *ngSwitchCase="2" [translate]="'CARD.DRAW'">Draw</span>
           </div>
         </div>
       </div>
@@ -51,13 +59,18 @@
            [ngStyle]="{'width': pendingLeftPercent + '%'}"></div>
       <div class="level-left">
         <div class="level-item">
-          Bet:&nbsp;
-          <span class="has-text-primary" i18n>1 Waves</span>
+          <span [translate]="'CARD.BET'">Bet:</span>&nbsp;
+          <span class="has-text-primary">1 Waves</span>
         </div>
       </div>
       <div class="level-right match-card__status">
         <div class="level-item">
-          <div class="match-status" [ngClass]="['status-' + match.status]"></div>
+          <div class="match-status"
+               [ngClass]="['status-' + match.status]" [ngSwitch]="match.status">
+            <span *ngSwitchCase="0" [translate]="'CARD.STATUS_OPEN'">Open</span>
+            <span *ngSwitchCase="1" [translate]="'CARD.STATUS_PENDING'">Pending</span>
+            <span *ngSwitchCase="2" [translate]="'CARD.STATUS_CLOSED'">Closed</span>
+          </div>
         </div>
       </div>
     </div>
@@ -67,7 +80,7 @@
      class="start-overlay"
      [hidden]="!startIsShown">
     <div class="start-overlay__inner">
-      <button class="button is-primary" i18n>Start Match</button>
+      <button class="button is-primary" [translate]="'CARD.START'">Start Match</button>
     </div>
   </a>
 

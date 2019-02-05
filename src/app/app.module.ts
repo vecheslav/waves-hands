@@ -1,10 +1,10 @@
 import { BrowserModule } from '@angular/platform-browser'
-import { NgModule, LOCALE_ID, Injectable, ErrorHandler } from '@angular/core'
+import { NgModule, Injectable, ErrorHandler } from '@angular/core'
 
 import { AppRoutingModule } from './app-routing.module'
 import { AppComponent } from './app.component'
 import { GameModule } from './game/game.module'
-import { HttpClientModule } from '@angular/common/http'
+import { HttpClient, HttpClientModule } from '@angular/common/http'
 import { AuthModule } from './auth/auth.module'
 import { CoreModule } from './core/core.module'
 import { MatchesModule } from './matches/matches.module'
@@ -13,6 +13,8 @@ import { UserModule } from './user/user.module'
 import * as Sentry from '@sentry/browser'
 import { environment } from 'src/environments/environment'
 import { NotificationsModule } from './notifications/notifications.module'
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
+import { TranslateHttpLoader } from '@ngx-translate/http-loader'
 
 if (environment.production) {
   Sentry.init({
@@ -31,6 +33,11 @@ export class SentryErrorHandler implements ErrorHandler {
   }
 }
 
+// AoT requires an exported function for factories
+export function HttpLoaderFactory(httpClient: HttpClient) {
+  return new TranslateHttpLoader(httpClient)
+}
+
 @NgModule({
   declarations: [
     AppComponent
@@ -39,6 +46,13 @@ export class SentryErrorHandler implements ErrorHandler {
     BrowserModule,
     HttpClientModule,
     AppRoutingModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      }
+    }),
     AuthModule.forRoot(),
     GameModule,
     CoreModule,
@@ -51,7 +65,6 @@ export class SentryErrorHandler implements ErrorHandler {
       provide: ErrorHandler,
       useClass: environment.production ? SentryErrorHandler : ErrorHandler
     },
-    { provide: LOCALE_ID, useValue: 'ru' },
   ],
   bootstrap: [AppComponent]
 })

@@ -12,7 +12,12 @@
       <div class="player-status"
            [class.player-status--draw]="player?.status === undefined || player.status === 0"
            [class.player-status--looser]="player?.status === 1"
-           [class.player-status--winner]="player?.status === 2">
+           [class.player-status--winner]="player?.status === 2"
+           [ngSwitch]="player?.status">
+        <span *ngSwitchCase="1" [translate]="'CARD.LOOSER'">Winner</span>
+        <span *ngSwitchCase="2" [translate]="'CARD.WINNER'">Looser</span>
+        <span *ngSwitchCase="0" [translate]="'CARD.DRAW'">Draw</span>
+        <span *ngSwitchDefault [translate]="'CARD.DRAW'">Draw</span>
       </div>
     </div>
   </div>
