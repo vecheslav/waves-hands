@@ -1,27 +1,27 @@
 {
   "TITLE": "WavesHands | The first blockchain hands game!",
   "PREVIEW": {
-    "TITLE": "Первая самая честная камень-ножницы-бумага!",
-    "TEXT": "Dispute resolution fairly. Earn Waves easily! Powered by smartcontract based on Waves.",
-    "BUTTON": "How to play?"
+    "TITLE": "Waves Hands честная игра на блокчейне Waves.",
+    "TEXT": "Зарабатывай Waves! Разрешай споры! Победителя определяет смартконтракт.",
+    "BUTTON": "Как играть?"
   },
   "SHARE": {
-    "TEXT": "Я создал игру в Waves Hands. Сразись со мной"
+    "TEXT": "Я создал поединок Waves Hands. Сразись со мной?"
   },
   "MATCHES": {
-    "TITLE": "Последние матчи",
+    "TITLE": "Последние поединки",
     "START": "Начать игру"
   },
   "USER": {
-    "LOGOUT": "Log Out",
-    "SIGNIN": "Sign In",
-    "INSTALL": "Install Keeper"
+    "LOGOUT": "Выйти",
+    "SIGNIN": "Войти",
+    "INSTALL": "Установить Keeper"
   },
   "CARD": {
-    "WAITING_PLAYERS": "Waiting players...",
-    "WAITING_FIRST": "Waiting for the first player...",
-    "BET": "Bet:",
-    "START": "Start Match",
+    "WAITING_PLAYERS": "Ожидание игроков...",
+    "WAITING_FIRST": "Ждем первого игрока...",
+    "BET": "Ставка:",
+    "START": "Начать поединок",
     "STATUS_OPEN": "Открыт",
     "STATUS_PENDING": "Ожидание",
     "STATUS_CLOSED": "Закрыт",
@@ -30,57 +30,57 @@
     "DRAW": "Ничья"
   },
   "MATCH": {
-    "KEEPER": "Keeper is not available. <a href=\"https://chrome.google.com/webstore/detail/waves-keeper/lpilbniiabackdjcionkobglmddfbcjo\" target=\"_blank\">Install the extension</a> to access the game.",
-    "SELECT_HANDS": "Select your hands",
-    "YOU_CREATED": "You created the match",
-    "SHARE": "Share the match link to friends, or wait for players to join.",
-    "CLOSE": "Close window",
-    "YOU_JOINED": "You joined the match",
-    "NOW_WAIT_OPPONENT": "Now wait your opponent to reveal his move.",
-    "RESERVED": "The match was reserved",
-    "NOW_WAIT_CREATOR": "Now wait creator to reveal his move.",
-    "YOU_WON": "You won the match",
-    "TRY_LUCK": "You can try your luck in other matches.",
-    "PLAY_AGAIN": "Play again",
-    "YOU_LOST": "You lost the match",
-    "DRAW": "Your match with a draw",
-    "MATCH_FINISHED": "The match was finished",
-    "PLEASE_WAIT": "Please, wait...",
-    "DONT_CLOSE": "Don't close the window",
-    "CLOSE_CONFIRM": "The match in progress. You may lose your funds. Are you sure you want to close?"
+    "KEEPER": "Keeper не установлен. <a href=\"https://chrome.google.com/webstore/detail/waves-keeper/lpilbniiabackdjcionkobglmddfbcjo\" target=\"_blank\">Установи плагин</a> чтобы играть.",
+    "SELECT_HANDS": "Выбери руки:",
+    "YOU_CREATED": "Ты создал поединок!",
+    "SHARE": "Поделись ссылкой на матч с друзьями.",
+    "CLOSE": "Закрыть",
+    "YOU_JOINED": "Ты ворвался в поединок",
+    "NOW_WAIT_OPPONENT": "Ждем пока твой противник откроет свой ход.",
+    "RESERVED": "Поединок уже занят.",
+    "NOW_WAIT_CREATOR": "Ждем пока первый игрок откроет свой ход.",
+    "YOU_WON": "Ты победил!",
+    "TRY_LUCK": "Попытай удачу в других поединках.",
+    "PLAY_AGAIN": "Играть еще",
+    "YOU_LOST": "Ты проиграл",
+    "DRAW": "Ты сыграл вничью",
+    "MATCH_FINISHED": "Поединок завершился",
+    "PLEASE_WAIT": "Жди, пожалуйста...",
+    "DONT_CLOSE": "Не закрывай окно!",
+    "CLOSE_CONFIRM": "Если закроешь окно - есть вероятность потерять деньги которые ты поставил, уверен?"
   },
   "TOUR": {
-    "WELCOME_TITLE": "Welcome to Waves Hands",
-    "WELCOME_SUBTITLE": "Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
-    "WELCOME_TEXT": "<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.</p>\n<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>",
-    "WELCOME_BUTTON": "Let's start!",
-    "CLOSE_BUTTON": "Скрыть",
-    "NEXT_BUTTON": "Вперед",
-    "DONE_BUTTON": "Завершить",
+    "WELCOME_TITLE": "Добро пожаловать в Waves Hands",
+    "WELCOME_SUBTITLE": "_________________________________",
+    "WELCOME_TEXT": "<p>Эта игра как ‘Камень-Ножницы-Бумага’ - только полностью децентрализована и работает на смартконтрактах Waves.</p></br><p><b>Чтобы играть тебе понадобится:</b><ol><li>Операционная система (Windows, MacOs, Linux).</li><li>Последняя версия Google Chrome или Firefox.</li><li>Установленный плагин Waves Keeper (Chrome, Firefox).</li><li>Как минимум 1.001 WAVES.</li></ol></p>",
+    "WELCOME_BUTTON": "Начнем!",
+    "CLOSE_BUTTON": "Закрыть",
+    "NEXT_BUTTON": "Далее",
+    "DONE_BUTTON": "Готово",
     "PREV_BUTTON": "Назад",
-    "STEP1_TITLE": "Step title 1",
-    "STEP1_TEXT": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.",
-    "STEP2_TITLE": "Step title 2",
-    "STEP2_TEXT": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.",
-    "STEP3_TITLE": "Step title 3",
-    "STEP3_TEXT": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.",
-    "STEP4_TITLE": "Step title 4",
-    "STEP4_TEXT": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam."
+    "STEP1_TITLE": "Недавние поединки",
+    "STEP1_TEXT": "В этой области отображаются все последние поединки созданные игроками.",
+    "STEP2_TITLE": "Поединок",
+    "STEP2_TEXT": "Каждый поединок это смартконтракт на блокчейне Waves, все поединки проходят децентрализованно на 100% и обсалютно прозрачны.",
+    "STEP3_TITLE": "Статусы",
+    "STEP3_TEXT": "<p>Каждый поединок может находится в одном из статусов:<ul><li>Открыт — можешь присоединятся к игре</li><li>Ожидание — поединок уже начался и скоро будет определен победитель</li><li>Закрыт — победитель уже определен</li></ul></p>",
+    "STEP4_TITLE": "Ну все, ты готов!",
+    "STEP4_TEXT": "Жми на кнопку и выбирай свою выигрышную комбинацию рук!"
   },
   "NOTIFICATIONS": {
-    "EMPTY": "There are no notifications"
+    "EMPTY": "Тут нет уведомлений"
   },
   "MESSAGE": {
-    "ERROR_USER_REJECTED": "You rejected process",
-    "ERROR_BALANCE": "Not enouth balance",
-    "ERROR_API_REJECTED": "You rejected access to keeper",
-    "ERROR_WRONG_MATCH": "Something went wrong",
-    "ACTION_RECEIVE": "You received a reward of {1} Waves for the match #{2}",
-    "ACTION_WON": "You won the match #{1}",
-    "ACTION_LOST": "You lost the match #{1}",
-    "ACTION_DRAW": "Your match #{1} has been completed with a draw",
-    "ACTION_YOU_CREATED": "Вы создали матч #{1}",
-    "ACTION_YOU_JOINED": "You joined a match #{1}",
-    "ACTION_OPPONENT_JOINED": "Opponent joined to match #{1}"
+    "ERROR_USER_REJECTED": "Транзакция отменена",
+    "ERROR_BALANCE": "Не хватает Waves на балансе",
+    "ERROR_API_REJECTED": "Ты не дал согласие в Keeper",
+    "ERROR_WRONG_MATCH": "Что - то пошло не так",
+    "ACTION_RECEIVE": "Ты получил {1} Waves за поединок #{2}",
+    "ACTION_WON": "Ты выиграл поединок #{1}",
+    "ACTION_LOST": "Ты прогирал поединок #{1}",
+    "ACTION_DRAW": "Твой поединок #{1} завершился вничью",
+    "ACTION_YOU_CREATED": "Ты создал поединок #{1}",
+    "ACTION_YOU_JOINED": "Ты вступил в поединок #{1}",
+    "ACTION_OPPONENT_JOINED": "Соперник вступил в поединок #{1}"
   }
 }

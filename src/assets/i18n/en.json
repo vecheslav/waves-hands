@@ -1,12 +1,12 @@
 {
-  "TITLE": "WavesHands | The first blockchain hands game!",
+  "TITLE": "Waves Hands | The first blockchain hands game!",
   "PREVIEW": {
-    "TITLE": "The first blockchain hands game!",
-    "TEXT": "Dispute resolution fairly. Earn Waves easily! Powered by smartcontract based on Waves.",
+    "TITLE": "Waves Hands is a simple and transparent game on the Waves blockchain.",
+    "TEXT": "Earn Waves easily! Resolve disputes fairly. The winner is determined by a smart contract.",
     "BUTTON": "How to play?"
   },
   "SHARE": {
-    "TEXT": "I created a game on Waves Hands. Fight me"
+    "TEXT": "I created a game on Waves Hands. Fight me!"
   },
   "MATCHES": {
     "TITLE": "Recent Matches",
@@ -51,21 +51,21 @@
   },
   "TOUR": {
     "WELCOME_TITLE": "Welcome to Waves Hands",
-    "WELCOME_SUBTITLE": "Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
-    "WELCOME_TEXT": "<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.</p>\n<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>",
+    "WELCOME_SUBTITLE": "_________________________________",
+    "WELCOME_TEXT": "<p>This game is very similar to the well-known ‘Rock–Paper–Scissors’ - but this one is fully decentralised and powered by Waves’ smart contracts technology.</p></br><p><b>To play you need:</b><ol><li>Desktop operating system (Windows, MacOs, Linux).</li><li>The latest version of Google Chrome or Firefox.</li><li>Waves Keeper installed (Chrome, Firefox).</li><li>A minimum balance of 1.001 WAVES.</li></ol></p>",
     "WELCOME_BUTTON": "Let's start!",
     "CLOSE_BUTTON": "Close",
     "NEXT_BUTTON": "Next",
     "DONE_BUTTON": "Done",
     "PREV_BUTTON": "Previous",
-    "STEP1_TITLE": "Step title 1",
-    "STEP1_TEXT": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.",
-    "STEP2_TITLE": "Step title 2",
-    "STEP2_TEXT": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.",
-    "STEP3_TITLE": "Step title 3",
-    "STEP3_TEXT": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.",
-    "STEP4_TITLE": "Step title 4",
-    "STEP4_TEXT": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam."
+    "STEP1_TITLE": "Recent games",
+    "STEP1_TEXT": "In this area you can see all the games that have been played in the past, with their winners and losers, as well as games that have been created and are waiting for a second player and games that are in progress.",
+    "STEP2_TITLE": "Game",
+    "STEP2_TEXT": "Each game is a smart contract on the Waves blockchain, with all the game processes recorded and executed in a decentralised manner - 100% transparent and reliable.",
+    "STEP3_TITLE": "Status",
+    "STEP3_TEXT": "<p>Each game has one of three statuses:<ul><li>Open — the game has been created and can be joined by a second player</li><li>Pending — the game has two players and will resolve soon</li><li>Closed — the game is resolved</li></ul></p>",
+    "STEP4_TITLE": "You are ready!",
+    "STEP4_TEXT": "Push the button and choose your winning combination of hands!"
   },
   "NOTIFICATIONS": {
     "EMPTY": "There are no notifications"
