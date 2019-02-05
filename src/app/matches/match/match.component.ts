@@ -10,6 +10,7 @@ import { NotificationsService } from '../../notifications/notifications.service'
 import { NotificationType } from '../../notifications/notifications.interface'
 import { from, timer } from 'rxjs'
 import { environment } from '../../../environments/environment'
+import { TranslateService } from '@ngx-translate/core'
 
 const REVEAL_HEIGHT = environment.creatorRevealBlocksCount + 1
 const BLOCK_AS_MS = 60 * 1000
@@ -48,11 +49,12 @@ export class MatchComponent implements OnInit, OnDestroy {
   private _currentHeight
 
   constructor(private router: Router,
-    private route: ActivatedRoute,
-    private keeperService: KeeperService,
-    private matchesService: MatchesService,
-    private userServices: UserService,
-    private notificationsService: NotificationsService) {
+              private route: ActivatedRoute,
+              private keeperService: KeeperService,
+              private matchesService: MatchesService,
+              private userServices: UserService,
+              private notificationsService: NotificationsService,
+              private translate: TranslateService) {
     this.matchAddress = this.route.snapshot.paramMap.get('address')
 
 
@@ -152,6 +154,11 @@ export class MatchComponent implements OnInit, OnDestroy {
   }
 
   close() {
+    if (this.isProccesing) {
+      if (!confirm(this.translate.instant('MATCH.CLOSE_CONFIRM'))) {
+        return
+      }
+    }
     this.router.navigate(['../'])
   }
 
@@ -279,6 +286,9 @@ export class MatchComponent implements OnInit, OnDestroy {
       if (this.match.result < MatchResult.Draw) {
         this.creator.status = this.match.result === MatchResult.Creator ? PlayerStatus.Winner : PlayerStatus.Looser
         this.opponent.status = this.match.result === MatchResult.Opponent ? PlayerStatus.Winner : PlayerStatus.Looser
+      } else {
+        this.creator.status = PlayerStatus.Nothing
+        this.opponent.status = PlayerStatus.Nothing
       }
     }
   }

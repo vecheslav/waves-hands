@@ -19,12 +19,13 @@ export class NotificationItemComponent implements OnInit, OnDestroy {
   private _langSubscriber
 
   constructor(private sanitizer: DomSanitizer, private translate: TranslateService) {
-  }
-
-  ngOnInit() {
     this._langSubscriber = this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this._initMessage()
     })
+  }
+
+  ngOnInit() {
+    this._initMessage()
   }
 
   ngOnDestroy(): void {
