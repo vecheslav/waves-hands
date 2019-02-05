@@ -5,6 +5,9 @@
     "TEXT": "Dispute resolution fairly. Earn Waves easily! Powered by smartcontract based on Waves.",
     "BUTTON": "How to play?"
   },
+  "SHARE": {
+    "TEXT": "Я создал игру в Waves Hands. Сразись со мной"
+  },
   "MATCHES": {
     "TITLE": "Последние матчи",
     "START": "Начать игру"
@@ -19,12 +22,12 @@
     "WAITING_FIRST": "Waiting for the first player...",
     "BET": "Bet:",
     "START": "Start Match",
-    "STATUS_OPEN": "Open",
-    "STATUS_PENDING": "Pending",
-    "STATUS_CLOSED": "Closed",
-    "WINNER": "Winner",
-    "LOOSER": "Looser",
-    "DRAW": "Draw"
+    "STATUS_OPEN": "Открыт",
+    "STATUS_PENDING": "Ожидание",
+    "STATUS_CLOSED": "Закрыт",
+    "WINNER": "Победа",
+    "LOOSER": "Поражение",
+    "DRAW": "Ничья"
   },
   "MATCH": {
     "KEEPER": "Keeper is not available. <a href=\"https://chrome.google.com/webstore/detail/waves-keeper/lpilbniiabackdjcionkobglmddfbcjo\" target=\"_blank\">Install the extension</a> to access the game.",

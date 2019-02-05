@@ -5,6 +5,9 @@
     "TEXT": "Dispute resolution fairly. Earn Waves easily! Powered by smartcontract based on Waves.",
     "BUTTON": "How to play?"
   },
+  "SHARE": {
+    "TEXT": "I created a game on Waves Hands. Fight me"
+  },
   "MATCHES": {
     "TITLE": "Recent Matches",
     "START": "Start Game"
