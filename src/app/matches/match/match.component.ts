@@ -11,6 +11,7 @@ import { NotificationType } from '../../notifications/notifications.interface'
 import { from, timer } from 'rxjs'
 import { environment } from '../../../environments/environment'
 import { TranslateService } from '@ngx-translate/core'
+import { TourService } from '../../shared/tour/tour.service'
 
 const REVEAL_HEIGHT = environment.creatorRevealBlocksCount + 1
 const BLOCK_AS_MS = 60 * 1000
@@ -54,10 +55,9 @@ export class MatchComponent implements OnInit, OnDestroy {
               private matchesService: MatchesService,
               private userServices: UserService,
               private notificationsService: NotificationsService,
-              private translate: TranslateService) {
+              private translate: TranslateService,
+              private tourService: TourService) {
     this.matchAddress = this.route.snapshot.paramMap.get('address')
-
-
 
     if (this.matchAddress) {
       // Existing match
@@ -167,8 +167,6 @@ export class MatchComponent implements OnInit, OnDestroy {
     this._reset()
     this._updateParticipants()
 
-
-
     if (this.stage === MatchStage.CreatedMatch) {
       this.shareUrl = window.location.origin + '/match/' + this.match.address
       this.match.creator.moves = this.matchesService.getMyMoves(this.match.address)
@@ -195,6 +193,10 @@ export class MatchComponent implements OnInit, OnDestroy {
         this._updateParticipants()
       }
     })
+
+    if (this.isCreatingMatch && this.tourService.activated$.getValue()) {
+      this.tourService.startMatchTour()
+    }
 
     this.isLoading = false
   }

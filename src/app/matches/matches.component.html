@@ -14,11 +14,15 @@
     </div>
   </div>
 
-  <div class="matches-grid" *ngIf="!isLoading">
-    <div class="matches-item" *ngFor="let match of matches">
-      <app-match-card [match]="match"></app-match-card>
+  <div class="matches-wrapper" *ngIf="!isLoading">
+    <div class="matches-tour-space"></div>
+    <div class="matches-grid">
+      <div class="matches-item" *ngFor="let match of matches">
+        <app-match-card [match]="match"></app-match-card>
+      </div>
     </div>
   </div>
+
   <div class="matches-loading" *ngIf="isLoading">
     <app-circle-loader></app-circle-loader>
   </div>

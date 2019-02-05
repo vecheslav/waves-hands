@@ -8,7 +8,7 @@
   }
 
   .subtitle {
-    margin-top: 1rem;
+    //margin-top: 1rem;
   }
 
   &__start {
@@ -16,11 +16,17 @@
     width: 14rem;
     height: 3.4rem;
   }
+
+  &__text {
+    text-align: left;
+    margin-bottom: 1rem;
+    color: $grey;
+  }
 }
 
 .tour-wrapper {
   background: $white;
   border-radius: .5rem;
-  padding: 4rem 3rem;
+  padding: 3rem 3rem;
   text-align: center;
 }

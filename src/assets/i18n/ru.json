@@ -50,9 +50,10 @@
     "CLOSE_CONFIRM": "The match in progress. You may lose your funds. Are you sure you want to close?"
   },
   "TOUR": {
-    "WELCOME_TITLE": "Welcome to WavesHands",
-    "WELCOME_TEXT": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.",
-    "WELCOME_BUTTON": "How to play?",
+    "WELCOME_TITLE": "Welcome to Waves Hands",
+    "WELCOME_SUBTITLE": "Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
+    "WELCOME_TEXT": "<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.</p>\n<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>",
+    "WELCOME_BUTTON": "Let's start!",
     "CLOSE_BUTTON": "Close",
     "NEXT_BUTTON": "Next",
     "PREV_BUTTON": "Previous",
@@ -61,7 +62,9 @@
     "STEP2_TITLE": "Step title 2",
     "STEP2_TEXT": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.",
     "STEP3_TITLE": "Step title 3",
-    "STEP3_TEXT": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam."
+    "STEP3_TEXT": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.",
+    "STEP4_TITLE": "Step title 4",
+    "STEP4_TEXT": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam."
   },
   "NOTIFICATIONS": {
     "EMPTY": "There are no notifications"

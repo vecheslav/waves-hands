@@ -10,14 +10,21 @@ import { Router } from '@angular/router'
 export class TourComponent implements OnInit, OnDestroy {
   isActive = false
 
+  private _activeSubscriber
+
   constructor(private tourService: TourService,
-              private router: Router) { }
+              private router: Router) {
+    this._activeSubscriber = this.tourService.welcome$.subscribe(activated => {
+      this.isActive = activated
+    })
+  }
 
   ngOnInit(): void {
     this.isActive = this.router.url === '/' && this.tourService.isActiveWelcomePopup()
   }
 
   ngOnDestroy(): void {
+    this._activeSubscriber.unsubscribe()
   }
 
   startTour() {

@@ -5,6 +5,8 @@
   $num-columns: 2;
   $num-columns-fullhd: 3;
 
+  position: relative;
+
   &-header {
     display: flex;
     align-items: center;
@@ -22,7 +24,21 @@
     }
   }
 
+  &-wrapper {
+    position: relative;
+  }
+
+  &-tour-space {
+    height: 40rem;
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+
   &-grid {
+    position: relative;
     display: grid;
     grid-gap: $size-gap;
     grid-template-columns: repeat($num-columns, 1fr);

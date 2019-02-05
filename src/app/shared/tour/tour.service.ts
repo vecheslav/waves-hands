@@ -1,11 +1,12 @@
 import { Injectable, NgZone } from '@angular/core'
 import * as Driver from 'driver.js'
 import { BehaviorSubject } from 'rxjs'
-import { LangChangeEvent, TranslateService } from '@ngx-translate/core'
+import { TranslateService } from '@ngx-translate/core'
 
 @Injectable()
 export class TourService {
   activated$ = new BehaviorSubject<boolean>(false)
+  welcome$ = new BehaviorSubject<boolean>(false)
 
   private _driver: Driver
 
@@ -14,6 +15,9 @@ export class TourService {
       animate: false,
       opacity: 0.3,
       padding: 8,
+      scrollIntoViewOptions: {
+        block: null
+      },
       closeBtnText: 'Close',
       nextBtnText: 'Next',
       prevBtnText: 'Previous',
@@ -21,6 +25,10 @@ export class TourService {
         this.activated$.next(false)
       }
     })
+  }
+
+  startWelcome() {
+    this.welcome$.next(true)
   }
 
   startTour() {
@@ -32,6 +40,10 @@ export class TourService {
         this._driver.start()
       })
     })
+  }
+
+  startMatchTour() {
+    console.log('startMatchTour')
   }
 
   isActiveWelcomePopup(): boolean {
@@ -56,12 +68,12 @@ export class TourService {
 
     this._driver.defineSteps([
       {
-        element: '#start-game',
+        element: '.matches-grid',
         popover: {
           ...defaultPopover,
           title: this.translate.instant('TOUR.STEP1_TITLE'),
           description: this.translate.instant('TOUR.STEP1_TEXT'),
-          position: 'bottom-right',
+          position: 'left-top',
         },
       },
       {
@@ -83,7 +95,16 @@ export class TourService {
           position: 'bottom-center',
           offset: 7,
         },
-      }
+      },
+      {
+        element: '#start-game',
+        popover: {
+          ...defaultPopover,
+          title: this.translate.instant('TOUR.STEP4_TITLE'),
+          description: this.translate.instant('TOUR.STEP4_TEXT'),
+          position: 'bottom-right',
+        },
+      },
     ])
   }
 }

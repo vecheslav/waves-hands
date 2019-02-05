@@ -4,12 +4,15 @@
     <div class="modal-content">
       <div class="tour-wrapper">
         <div class="game-tour__icon">
-          <span class="emoji emoji--hello is-large"></span>
+          <span class="emoji emoji--hello is-medium"></span>
         </div>
         <h2 class="title has-text-centered" [translate]="'TOUR.WELCOME_TITLE'">Welcome to WavesHands</h2>
-        <p class="subtitle" [translate]="'TOUR.WELCOME_TEXT'">
+        <p class="subtitle" [translate]="'TOUR.WELCOME_SUBTITLE'">
           Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.
         </p>
+        <div class="game-tour__text" [innerHTML]="'TOUR.WELCOME_TEXT' | translate">
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.
+        </div>
         <button class="button is-primary is-main game-tour__start" (click)="startTour()" [translate]="'TOUR.WELCOME_BUTTON'">How to play?</button>
       </div>
     </div>

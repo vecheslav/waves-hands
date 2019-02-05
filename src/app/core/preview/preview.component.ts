@@ -13,7 +13,7 @@ export class PreviewComponent implements OnInit {
   ngOnInit() {
   }
 
-  startTour() {
-    this.tourService.startTour()
+  startWelcome() {
+    this.tourService.startWelcome()
   }
 }
