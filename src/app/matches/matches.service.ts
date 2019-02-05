@@ -132,11 +132,6 @@ export class MatchesService implements OnDestroy {
   }
 
   async finishMatch(player1Address: string, player2Address: string, matchPublicKey: string, matchAddress: string, move: Uint8Array) {
-    const notificationId = this.notificationsService.add({
-      type: NotificationType.Process,
-      message: 'PROCESS_FINISH_MATCH'
-    })
-
     const myMatch = this._myMatches[matchAddress]
     if (!myMatch) {
       return
@@ -146,6 +141,11 @@ export class MatchesService implements OnDestroy {
     if (myMatch.isFinishing) {
       return
     }
+
+    const notificationId = this.notificationsService.add({
+      type: NotificationType.Process,
+      message: 'PROCESS_FINISH_MATCH'
+    })
 
     // Book finish match
     myMatch.isFinishing = true
@@ -169,11 +169,6 @@ export class MatchesService implements OnDestroy {
   }
 
   async forceFinishMatch(matchAddress: string) {
-    const notificationId = this.notificationsService.add({
-      type: NotificationType.Process,
-      message: 'PROCESS_FINISH_MATCH'
-    })
-
     const myMatch = this._myMatches[matchAddress]
     if (!myMatch) {
       return
@@ -183,6 +178,11 @@ export class MatchesService implements OnDestroy {
     if (myMatch.isFinishing) {
       return
     }
+
+    const notificationId = this.notificationsService.add({
+      type: NotificationType.Process,
+      message: 'PROCESS_FINISH_MATCH'
+    })
 
     myMatch.isFinishing = true
 
