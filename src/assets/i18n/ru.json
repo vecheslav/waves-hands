@@ -76,6 +76,7 @@
     "ERROR_API_REJECTED": "Ты не дал согласие в Keeper",
     "ERROR_WRONG_MATCH": "Что - то пошло не так",
     "ACTION_RECEIVE": "Ты получил {1} Waves за поединок #{2}",
+    "PROCESS_FINISH_MATCH": "Поединок завершается. Жди...",
     "ACTION_WON": "Ты выиграл поединок #{1}",
     "ACTION_LOST": "Ты прогирал поединок #{1}",
     "ACTION_DRAW": "Твой поединок #{1} завершился вничью",

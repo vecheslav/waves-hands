@@ -8,7 +8,7 @@
     padding: 1rem;
     // border: 1px solid $white-ter;
     box-shadow: $shadow-default;
-    transition: opacity 1s ease;
+    transition: opacity .5s ease;
 
     &.faded {
       opacity: 0;

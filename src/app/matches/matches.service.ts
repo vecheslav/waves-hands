@@ -142,6 +142,11 @@ export class MatchesService implements OnDestroy {
       return
     }
 
+    const notificationId = this.notificationsService.add({
+      type: NotificationType.Process,
+      message: 'PROCESS_FINISH_MATCH'
+    })
+
     // Book finish match
     myMatch.isFinishing = true
 
@@ -154,8 +159,11 @@ export class MatchesService implements OnDestroy {
         matchAddress,
         move
       )
+
+      this.notificationsService.remove(notificationId)
     } catch (err) {
       myMatch.isFinishing = false
+      this.notificationsService.remove(notificationId)
       throw err
     }
   }
@@ -171,13 +179,20 @@ export class MatchesService implements OnDestroy {
       return
     }
 
+    const notificationId = this.notificationsService.add({
+      type: NotificationType.Process,
+      message: 'PROCESS_FINISH_MATCH'
+    })
+
     myMatch.isFinishing = true
 
     console.log('Force finish match', matchAddress)
     try {
       await this.matchesHelper.forceFinish(myMatch)
+      this.notificationsService.remove(notificationId)
     } catch (err) {
       myMatch.isFinishing = false
+      this.notificationsService.remove(notificationId)
       throw err
     }
   }

@@ -18,6 +18,7 @@ export const messageIcon: Record<string, string> = {
   ERROR: 'error_outline',
   WARNING: 'error_outline',
   INFO: 'info_outline',
+  PROCESS: 'spinner8',
   ACTION_RECEIVE: 'notifications_none',
   ACTION_WON: 'sentiment_satisfied',
   ACTION_LOST: 'sentiment_dissatisfied',
