@@ -62,6 +62,7 @@ match (tx) {
          p2payment.amount == 1*wave &&
          p2payment.recipient == me &&
          p2payment.senderPublicKey == extract(getBinary(me, player2Key)) &&
+         p2payment.senderPublicKey != player1Key &&
          !isDefined(p2payment.assetId) &&
          sigVerify(p2payment.bodyBytes, p2payment.proofs[0], p2payment.senderPublicKey)
     case _ => false
