@@ -1,4 +1,4 @@
-import { TTx, IDataTransaction, IMassTransferTransaction } from 'waves-transactions/transactions'
+import { TTx, IDataTransaction, IMassTransferTransaction, ISetScriptTransaction } from 'waves-transactions/transactions'
 import { environment } from 'src/environments/environment'
 
 export type DataTransaction = IDataTransaction & { sender: string }
@@ -16,6 +16,7 @@ export interface IWavesApi {
   broadcastAndWait(tx: TTx): Promise<TTx>
   waitForTx(txId: string): Promise<TTx>
   getDataTxsByKey(key: string, limit?: number): Promise<DataTransaction[]>
+  getSetScriptTxsByAddress(address: string, limit?: number): Promise<ISetScriptTransaction[]>
   getTxsByAddress(address: string, limit?: number): Promise<TTx[]>
   getMassTransfersByRecipient(recipient: string): Promise<MassTransferTransaction[]>
 }
@@ -81,6 +82,10 @@ export const api = (config: IConfig, http: IHttp): IWavesApi => {
   const getMassTransfersByRecipient = (recipient: string, limit: number = 100): Promise<MassTransferTransaction[]> =>
     getApi<{ data: { data: MassTransferTransaction }[] }>(`transactions/mass-transfer?recipient=${recipient}&sort=desc&limit=${limit}`).then(x => x.data.map(y => y.data))
 
+  const getSetScriptTxsByAddress = (address: string, limit: number = 100): Promise<ISetScriptTransaction[]> =>
+    getApi<{ data: { data: ISetScriptTransaction }[] }>(`transactions/set-script?sender=${address}&sort=desc&limit=${limit}`).then(x => x.data.map(y => y.data))
+
+
   return {
     getHeight,
     getTxById,
@@ -90,5 +95,6 @@ export const api = (config: IConfig, http: IHttp): IWavesApi => {
     getTxsByAddress,
     broadcastAndWait,
     getMassTransfersByRecipient,
+    getSetScriptTxsByAddress,
   }
 }
