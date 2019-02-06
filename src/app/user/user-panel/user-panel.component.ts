@@ -31,13 +31,7 @@ export class UserPanelComponent implements OnInit, OnDestroy {
     })
 
     this._notificationsSubscriber = this.notificationsService.notifications$.subscribe(_ => {
-      console.log('this.hasUnreadNotifications')
-      console.log(this.hasUnreadNotifications)
       this.hasUnreadNotifications = this.notificationsService.getUnreadCount() > 0
-      console.log(this.hasUnreadNotifications)
-
-      console.log('this.hasUnreadNotifications end')
-
     })
 
     this.router.events
