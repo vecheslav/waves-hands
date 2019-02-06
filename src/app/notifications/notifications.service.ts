@@ -12,8 +12,17 @@ export class NotificationsService {
 
   private _user: IUser
   private _total = 0
+  private _unread = 0
 
   constructor() {
+  }
+
+  getUnreadCount() {
+    return this._unread
+  }
+
+  markAllRead() {
+    this._unread = 0
   }
 
   add(notification: INotification) {
@@ -38,6 +47,7 @@ export class NotificationsService {
 
     if (notification.stored || notification.type === NotificationType.Action) {
       // Save notification
+      this._unread++
       this.notifications$.next(this.notifications$.getValue().concat([notification]))
       this._addNotificationToStorage(this._user.address, notification)
     }
