@@ -43,7 +43,7 @@
     "TRY_LUCK": "Попытай удачу в других играх.",
     "PLAY_AGAIN": "Играть еще",
     "YOU_LOST": "Ты проиграл",
-    "DRAW": "Ты сыграл вничью",
+    "DRAW": "Матч закончился вничью",
     "MATCH_FINISHED": "Игра завершилась",
     "PLEASE_WAIT": "Жди, пожалуйста...",
     "DONT_CLOSE": "Не закрывай окно!",
@@ -52,7 +52,7 @@
   "TOUR": {
     "WELCOME_TITLE": "Добро пожаловать в Waves Hands",
     "WELCOME_SUBTITLE": "Эта игра как <b>«Камень-Ножницы-Бумага»</b> - только полностью децентрализована и работает на смарт-контрактах Waves.",
-    "WELCOME_TEXT": "<p><h4 class=\"title\">Чтобы играть тебе понадобится:</h4><ol><li>Операционная система (Windows, MacOs, Linux).</li><li>Последняя версия Google Chrome или Firefox.</li><li>Установленный плагин Waves Keeper (Chrome, Firefox).</li><li>Как минимум 1.001 WAVES.</li></ol></p>",
+    "WELCOME_TEXT": "<p><h4 class=\"title\">Чтобы играть тебе понадобится:</h4><ol><li>Операционная система (Windows, MacOs, Linux).</li><li>Последняя версия Google Chrome или Firefox.</li><li>Установленный плагин Waves Keeper (<a href=\"https://chrome.google.com/webstore/detail/waves-keeper/lpilbniiabackdjcionkobglmddfbcjo\" target=\"_blank\">Chrome</a>, <a href=\"https://addons.mozilla.org/ru/firefox/addon/waves-keeper/\" target=\"_blank\">Firefox</a>).</li><li>Как минимум 1.001 WAVES.</li></ol></p>",
     "WELCOME_BUTTON": "Начнем!",
     "CLOSE_BUTTON": "Закрыть",
     "NEXT_BUTTON": "Далее",

@@ -270,7 +270,11 @@ export class MatchesHelper {
       const match = matches[m.match]
       if (match) {
         const moves = m.move
-        match.opponent.moves = [moves[0], moves[1], moves[2]]
+
+        if (match.opponent) {
+          match.opponent.moves = [moves[0], moves[1], moves[2]]
+        }
+
         if (match.status === MatchStatus.New) {
           match.status = MatchStatus.Waiting
         }
@@ -283,7 +287,10 @@ export class MatchesHelper {
         const moves = m.move
         match.creator.moves = [moves[0], moves[1], moves[2]]
         // match.status = MatchStatus.Done
-        match.result = whoHasWon(match.creator.moves, match.opponent.moves)
+
+        if (match.opponent) {
+          match.result = whoHasWon(match.creator.moves, match.opponent.moves)
+        }
       }
     })
 
