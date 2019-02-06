@@ -217,6 +217,8 @@ export class MatchesHelper {
       })
     }, {})
 
+
+
     payouts.forEach(p => {
       const m = matches[p.sender]
       if (m) {
@@ -357,6 +359,12 @@ export class MatchesHelper {
 
     const p2Transfer = await this.keeper.prepareWavesTransfer(matchAddress, 1 * wave, new TextDecoder('utf-8')
       .decode(move))
+
+    const contract = await this._api.getSetScriptTxsByAddress(matchAddress)
+
+    if (contract.length !== 1 || contract[0].script !== 'base64:' + compiledScript) {
+      throw { ... new Error('You trying to be fooled!'), code: ErrorCode.WrongAddress }
+    }
 
     const { account } = await this.keeper.keeper.publicState()
     if (!account || account.balance.available < environment.gameBetAmount + environment.defaultFee) {
