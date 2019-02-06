@@ -129,6 +129,3 @@ match (tx) {
 
 `
 export const compiledScript = Buffer.from(compile(scriptCode).result).toString('base64')
-
-
-console.log(compiledScript)
