@@ -4,6 +4,7 @@ import { IUser } from '../user.interface'
 import { Router, NavigationStart } from '@angular/router'
 import { filter } from 'rxjs/operators'
 import { KeeperService } from 'src/app/auth/keeper.service'
+import { NotificationsService } from 'src/app/notifications/notifications.service'
 
 @Component({
   selector: 'app-user-panel',
@@ -15,16 +16,28 @@ export class UserPanelComponent implements OnInit, OnDestroy {
   notificationsIsShown = false
   keeperIsAvailable = true
   isLogged = false
+  hasUnreadNotifications = false
 
   private _userSubscriber
+  private _notificationsSubscriber
 
   constructor(private userService: UserService,
-              private router: Router,
-              private keeperService: KeeperService) {
+    private router: Router,
+    private keeperService: KeeperService,
+    private notificationsService: NotificationsService) {
     this._userSubscriber = this.userService.user$.subscribe((user: IUser) => {
       this.user = user
-
       this.isLogged = this.user && this.keeperIsAvailable
+    })
+
+    this._notificationsSubscriber = this.notificationsService.notifications$.subscribe(_ => {
+      console.log('this.hasUnreadNotifications')
+      console.log(this.hasUnreadNotifications)
+      this.hasUnreadNotifications = this.notificationsService.getUnreadCount() > 0
+      console.log(this.hasUnreadNotifications)
+
+      console.log('this.hasUnreadNotifications end')
+
     })
 
     this.router.events
@@ -42,10 +55,15 @@ export class UserPanelComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this._userSubscriber.unsubscribe()
+    this._notificationsSubscriber.unsubscribe()
   }
 
   toggleNotifications(): void {
     this.notificationsIsShown = !this.notificationsIsShown
+    if (this.notificationsIsShown) {
+      this.notificationsService.markAllRead()
+      this.hasUnreadNotifications = false
+    }
   }
 
   closeNotifications(): void {

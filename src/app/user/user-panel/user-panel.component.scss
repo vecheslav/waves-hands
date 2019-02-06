@@ -1,26 +1,20 @@
 @import '~src/styles/variables';
-
 .user-panel {
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid $white-ter;
-
   &__notifications {
     position: relative;
   }
-
   &__user {
     align-items: center;
   }
-
   &__avatar {
     width: 3rem;
     height: 3rem;
   }
-
   &__details {
     margin-left: 1rem;
-
     .address {
       overflow: hidden;
       text-overflow: ellipsis;
@@ -33,23 +27,34 @@
 .notifications-icon {
   cursor: pointer;
   color: $text;
-
+  position: relative;
   &:hover,
   &:focus {
     color: $primary;
+  }
+  &.unread {
+    &:after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      top: 0;
+      right: 0;
+      width: 8px;
+      height: 8px;
+      background: $primary;
+      border: 2px solid $white;
+    }
   }
 }
 
 .notifications-tooltip {
   $triangle-size: 1rem;
-
   position: absolute;
   top: 3.2rem;
   left: 50%;
   transform: translateX(-50%);
   width: 24rem;
   z-index: 99;
-
   &__inner {
     background: $white;
     margin: 0 auto;
@@ -58,9 +63,8 @@
     border-radius: $radius-large;
     overflow: auto;
     max-height: 26rem;
-    box-shadow: 0 0 1.5rem 0 rgba($black,.07);
+    box-shadow: 0 0 1.5rem 0 rgba($black, .07);
   }
-
   &:before {
     content: '';
     position: absolute;

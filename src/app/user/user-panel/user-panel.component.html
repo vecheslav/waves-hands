@@ -7,7 +7,7 @@
       <div class="level-item user-panel__notifications"
            *ngIf="isLogged"
            appClickOutside (clickOutside)="notificationsIsShown && closeNotifications()">
-        <div class="notifications-icon" (click)="toggleNotifications()">
+        <div class="notifications-icon" [class.unread]="hasUnreadNotifications" (click)="toggleNotifications()">
           <svg class="icon"><use xlink:href="icons.svg#icon-notifications_none"></use></svg>
         </div>
         <div class="notifications-tooltip" [hidden]="!notificationsIsShown">

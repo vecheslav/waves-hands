@@ -7,7 +7,7 @@ import { IUser } from '../../user/user.interface'
 import { UserService } from '../../user/user.service'
 import { ErrorCode } from 'src/app/shared/error-code'
 import { NotificationsService } from '../../notifications/notifications.service'
-import { NotificationType } from '../../notifications/notifications.interface'
+import { NotificationType, ActionType } from '../../notifications/notifications.interface'
 import { from, timer } from 'rxjs'
 import { environment } from '../../../environments/environment'
 import { TranslateService } from '@ngx-translate/core'
@@ -112,6 +112,7 @@ export class MatchComponent implements OnInit, OnDestroy {
   }
 
   async create() {
+
     try {
       if (!this.user) {
         this.user = await this.userServices.authUser()
