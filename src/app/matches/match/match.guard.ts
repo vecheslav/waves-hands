@@ -10,7 +10,7 @@ import { NotificationType } from '../../notifications/notifications.interface'
 @Injectable()
 export class MatchGuard implements CanActivate {
   constructor(private keeperService: KeeperService,
-              private notificationsService: NotificationsService) {
+    private notificationsService: NotificationsService) {
   }
 
   canActivate(
@@ -26,8 +26,12 @@ export class MatchGuard implements CanActivate {
             const keeperPublicState = await this.keeperService.publicState()
 
             if (keeperPublicState.account &&
-                keeperPublicState.account.balance.available < environment.gameBetAmount) {
+              keeperPublicState.account.balance.available < environment.gameBetAmount) {
               throw { ... new Error('You have not enough balance to play!'), code: ErrorCode.NotEnoughBalance }
+            }
+
+            if (keeperPublicState.account && keeperPublicState.account.networkCode !== environment.chainId) {
+              throw { ... new Error('Wrong address!'), code: ErrorCode.WrongAddress }
             }
           }
         }
@@ -62,6 +66,12 @@ export class MatchGuard implements CanActivate {
           this.notificationsService.add({
             type: NotificationType.Error,
             message: 'ERROR_API_REJECTED'
+          })
+          return true
+        case ErrorCode.WrongAddress:
+          this.notificationsService.add({
+            type: NotificationType.Error,
+            message: 'ERROR_WRONG_ADDRESS'
           })
           return true
       }
