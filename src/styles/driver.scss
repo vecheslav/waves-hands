@@ -132,6 +132,17 @@ div#driver-popover-item .driver-popover-description {
   zoom: 1
 }
 
+.driver-popover-description {
+  li {
+    margin: .2rem 0;
+  }
+
+  b {
+    font-weight: $weight-medium;
+    color: $grey-dark;
+  }
+}
+
 .driver-stage-no-animation {
   transition: none!important;
   background: transparent!important;

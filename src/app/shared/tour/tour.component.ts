@@ -1,11 +1,12 @@
-import { Component, OnDestroy, OnInit } from '@angular/core'
+import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core'
 import { TourService } from './tour.service'
 import { Router } from '@angular/router'
 
 @Component({
   selector: 'app-tour',
   templateUrl: './tour.component.html',
-  styleUrls: ['./tour.component.scss']
+  styleUrls: ['./tour.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class TourComponent implements OnInit, OnDestroy {
   isActive = false

@@ -7,11 +7,10 @@
           <span class="emoji emoji--hello is-medium"></span>
         </div>
         <h2 class="title has-text-centered" [translate]="'TOUR.WELCOME_TITLE'">Welcome to WavesHands</h2>
-        <p class="subtitle" [translate]="'TOUR.WELCOME_SUBTITLE'">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.
+        <p class="description" [innerHTML]="'TOUR.WELCOME_SUBTITLE' | translate">
+          This game is very similar to the well-known<br/> <b>«Rock–Paper–Scissors»</b> - but this one is fully decentralised and powered by Waves’ smart contracts technology.
         </p>
         <div class="game-tour__text" [innerHTML]="'TOUR.WELCOME_TEXT' | translate">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi alias animi molestia in, aperiam.
         </div>
         <button class="button is-primary is-main game-tour__start" (click)="startTour()" [translate]="'TOUR.WELCOME_BUTTON'">How to play?</button>
       </div>

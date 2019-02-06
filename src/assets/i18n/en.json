@@ -51,8 +51,8 @@
   },
   "TOUR": {
     "WELCOME_TITLE": "Welcome to Waves Hands",
-    "WELCOME_SUBTITLE": "_________________________________",
-    "WELCOME_TEXT": "<p>This game is very similar to the well-known ‘Rock–Paper–Scissors’ - but this one is fully decentralised and powered by Waves’ smart contracts technology.</p></br><p><b>To play you need:</b><ol><li>Desktop operating system (Windows, MacOs, Linux).</li><li>The latest version of Google Chrome or Firefox.</li><li>Waves Keeper installed (Chrome, Firefox).</li><li>A minimum balance of 1.001 WAVES.</li></ol></p>",
+    "WELCOME_SUBTITLE": "This game is very similar to the well-known <b>«Rock–Paper–Scissors»</b> - but this one is fully decentralised and powered by Waves’ smart contracts technology.",
+    "WELCOME_TEXT": "<p><h4 class=\"title\">To play you need:</h4><ol><li>Desktop operating system (Windows, MacOs, Linux).</li><li>The latest version of Google Chrome or Firefox.</li><li>Waves Keeper installed (Chrome, Firefox).</li><li>A minimum balance of 1.001 WAVES.</li></ol></p>",
     "WELCOME_BUTTON": "Let's start!",
     "CLOSE_BUTTON": "Close",
     "NEXT_BUTTON": "Next",
@@ -63,7 +63,7 @@
     "STEP2_TITLE": "Game",
     "STEP2_TEXT": "Each game is a smart contract on the Waves blockchain, with all the game processes recorded and executed in a decentralised manner - 100% transparent and reliable.",
     "STEP3_TITLE": "Status",
-    "STEP3_TEXT": "<p>Each game has one of three statuses:<ul><li>Open — the game has been created and can be joined by a second player</li><li>Pending — the game has two players and will resolve soon</li><li>Closed — the game is resolved</li></ul></p>",
+    "STEP3_TEXT": "<p>Each game has one of three statuses:<ul><li><b>Open</b> - the game has been created and can be joined by a second player</li><li><b>Pending</b> - the game has two players and will resolve soon</li><li><b>Closed</b> - the game is resolved</li></ul></p>",
     "STEP4_TITLE": "You are ready!",
     "STEP4_TEXT": "Push the button and choose your winning combination of hands!"
   },

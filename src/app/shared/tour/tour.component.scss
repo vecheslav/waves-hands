@@ -7,8 +7,16 @@
     font-size: $h2title;
   }
 
-  .subtitle {
-    //margin-top: 1rem;
+  .description {
+    text-align: left;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    color: $grey;
+
+    b {
+      color: $primary;
+    }
   }
 
   &__start {
@@ -21,6 +29,39 @@
     text-align: left;
     margin-bottom: 1rem;
     color: $grey;
+
+    $li-circle-size: 1.5rem;
+
+    .title {
+      font-size: 1.2rem;
+      color: $basic700;
+      margin-bottom: 1rem;
+    }
+
+    ol {
+      counter-reset: myCounter;
+    }
+
+    li {
+      list-style: none;
+    }
+
+    li:before {
+      counter-increment: myCounter;
+      content:counter(myCounter);
+      color: $white;
+
+      background: $primary;
+      border-radius: 50%;
+
+      display: inline-block;
+      text-align: center;
+
+      margin: .4rem .8rem .4rem 0;
+      line-height: $li-circle-size;
+      width: $li-circle-size;
+      height: $li-circle-size;
+    }
   }
 }
 
