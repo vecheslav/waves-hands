@@ -99,13 +99,13 @@ match (tx) {
           if(score == 0) then
             size(payout.transfers) == 3 &&
             payout.transfers[1].amount == payout.transfers[2].amount &&
-            payout.transfers[1].amount == 98100000 &&
+            payout.transfers[1].amount == (wavesBalance(me) - serviceCommission - payout.fee) / 2  &&
             payout.transfers[1].recipient == p1 &&
             payout.transfers[2].recipient == p2
           else 
             size(payout.transfers) == 2 &&
             payout.transfers[1].recipient == (if score > 0 then p1 else p2) &&
-            payout.transfers[1].amount == 196300000
+            payout.transfers[1].amount == wavesBalance(me) - serviceCommission - payout.fee
 
       feeValid && isCommissionIncluded && payoutValid
     
