@@ -121,6 +121,7 @@ export class MatchComponent implements OnInit, OnDestroy {
       }
 
       const match = await this.matchesService.createMatch(this.selectedHandSigns, this._changeProgress.bind(this))
+      this._disablePreventCloseTab()
       this.router.navigate(['match', match.address])
     } catch (err) {
       if (!this._handleErrors(err)) {
@@ -144,6 +145,7 @@ export class MatchComponent implements OnInit, OnDestroy {
 
       this.stage = MatchStage.JoinedMatch
       this.isProccesing = false
+      this._disablePreventCloseTab()
 
       this.match.status = MatchStatus.Waiting
       this.match.reservationHeight = this.matchesService.currentHeight$.getValue()
