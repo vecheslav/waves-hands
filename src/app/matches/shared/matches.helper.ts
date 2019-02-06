@@ -194,12 +194,16 @@ export class MatchesHelper {
     const r = await this._api.getDataTxsByKey('matchKey')
 
     const payouts = await this._api.getMassTransfersByRecipient(environment.serviceAddress)
-
+    const scripts = await this._api.getSetScriptTxsByScript('base64:' + compiledScript)
+    const s = scripts.reduce((a, b) => ({ ...a, [b.sender]: true }), {})
     const currentHeight = await this._api.getHeight()
 
     const matches: Record<string, IMatch> = r.reduce((a, b) => {
       const p1Key = getDataByKey('player1Key', [b], x => base58encode(BASE64_STRING(x.slice(7))))
       if (!p1Key) {
+        return a
+      }
+      if (!s[b.sender]) {
         return a
       }
       const creatorAddress = address({ public: p1Key }, environment.chainId)

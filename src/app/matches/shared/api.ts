@@ -3,6 +3,7 @@ import { environment } from 'src/environments/environment'
 
 export type DataTransaction = IDataTransaction & { sender: string }
 export type MassTransferTransaction = IMassTransferTransaction & { sender: string }
+export type SetScriptTransaction = ISetScriptTransaction & { sender: string }
 
 export interface IHttp {
   get: <T>(url: string) => Promise<T>
@@ -16,7 +17,8 @@ export interface IWavesApi {
   broadcastAndWait(tx: TTx): Promise<TTx>
   waitForTx(txId: string): Promise<TTx>
   getDataTxsByKey(key: string, limit?: number): Promise<DataTransaction[]>
-  getSetScriptTxsByAddress(address: string, limit?: number): Promise<ISetScriptTransaction[]>
+  getSetScriptTxsByAddress(address: string, limit?: number): Promise<SetScriptTransaction[]>
+  getSetScriptTxsByScript(script: string, limit?: number): Promise<SetScriptTransaction[]>
   getTxsByAddress(address: string, limit?: number): Promise<TTx[]>
   getMassTransfersByRecipient(recipient: string): Promise<MassTransferTransaction[]>
 }
@@ -54,6 +56,7 @@ export const api = (config: IConfig, http: IHttp): IWavesApi => {
   const get = <T>(endpoint: string): Promise<T> => retry(() => http.get<T>(config.base + endpoint), 5, 1000)
   const getApi = <T>(endpoint: string): Promise<T> => retry(() => http.get<T>(config.tx + endpoint + '&timeStart=' + environment.api.timeStart), 5, 1000)
   const post = <T>(endpoint: string, data: any): Promise<T> => retry(() => http.post<T>(config.base + endpoint, data), 5, 1000)
+  const postApi = <T>(endpoint: string, data: any): Promise<T> => retry(() => http.post<T>(config.tx + endpoint, data), 5, 1000)
 
   const getHeight = async () =>
     get<{ height: number }>('blocks/last').then(x => x.height)
@@ -82,9 +85,16 @@ export const api = (config: IConfig, http: IHttp): IWavesApi => {
   const getMassTransfersByRecipient = (recipient: string, limit: number = 100): Promise<MassTransferTransaction[]> =>
     getApi<{ data: { data: MassTransferTransaction }[] }>(`transactions/mass-transfer?recipient=${recipient}&sort=desc&limit=${limit}`).then(x => x.data.map(y => y.data))
 
-  const getSetScriptTxsByAddress = (address: string, limit: number = 100): Promise<ISetScriptTransaction[]> =>
-    getApi<{ data: { data: ISetScriptTransaction }[] }>(`transactions/set-script?sender=${address}&sort=desc&limit=${limit}`).then(x => x.data.map(y => y.data))
+  const getSetScriptTxsByAddress = (address: string, limit: number = 100): Promise<SetScriptTransaction[]> =>
+    getApi<{ data: { data: SetScriptTransaction }[] }>(`transactions/set-script?sender=${address}&sort=desc&limit=${limit}`).then(x => x.data.map(y => y.data))
 
+  const getSetScriptTxsByScript = (script: string, limit: number = 100): Promise<SetScriptTransaction[]> => {
+    const data = {
+      script: script,
+      limit,
+    }
+    return postApi<{ data: { data: SetScriptTransaction }[] }>(`transactions/set-script`, data).then(x => x.data.map(y => y.data))
+  }
 
   return {
     getHeight,
@@ -96,5 +106,6 @@ export const api = (config: IConfig, http: IHttp): IWavesApi => {
     broadcastAndWait,
     getMassTransfersByRecipient,
     getSetScriptTxsByAddress,
+    getSetScriptTxsByScript
   }
 }
