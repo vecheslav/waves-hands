@@ -103,11 +103,15 @@ export class MatchComponent implements OnInit, OnDestroy {
     if (this.selectedHandSigns.length === 3) {
       this.isProccesing = true
 
+      this._togglePreventCloseTab()
+
       if (this.isCreatingMatch) {
         await this.create()
       } else {
         await this.join()
       }
+
+      this._togglePreventCloseTab()
     }
   }
 
@@ -200,6 +204,26 @@ export class MatchComponent implements OnInit, OnDestroy {
     if (this.tourService.activated$.getValue()) {
       this.tourService.stopTour()
       // this.tourService.startMatchTour()
+    }
+  }
+
+  private _togglePreventCloseTab() {
+    const confirmMessage = this.translate.instant('MATCH.CLOSE_CONFIRM')
+
+    if (this.isProccesing) {
+      window.onbeforeunload = function (e) {
+        e = e || window.event
+
+        // For IE and Firefox prior to version 4
+        if (e) {
+          e.returnValue = confirmMessage
+        }
+
+        // For Safari
+        return confirmMessage
+      }
+    } else {
+      window.onbeforeunload = null
     }
   }
 
