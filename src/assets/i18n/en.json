@@ -52,7 +52,7 @@
   "TOUR": {
     "WELCOME_TITLE": "Welcome to Waves Hands",
     "WELCOME_SUBTITLE": "This game is very similar to the well-known <b>«Rock–Paper–Scissors»</b> - but this one is fully decentralised and powered by Waves’ smart contracts technology.",
-    "WELCOME_TEXT": "<p><h4 class=\"title\">To play you need:</h4><ol><li>Desktop operating system (Windows, MacOs, Linux).</li><li>The latest version of Google Chrome or Firefox.</li><li>Waves Keeper installed (Chrome, Firefox).</li><li>A minimum balance of 1.001 WAVES.</li></ol></p>",
+    "WELCOME_TEXT": "<p><h4 class=\"title\">To play you need:</h4><ol><li>Desktop operating system (Windows, MacOs, Linux).</li><li>The latest version of Google Chrome or Firefox.</li><li>Waves Keeper installed (<a href=\"https://chrome.google.com/webstore/detail/waves-keeper/lpilbniiabackdjcionkobglmddfbcjo\" target=\"_blank\">Chrome</a>, <a href=\"https://addons.mozilla.org/ru/firefox/addon/waves-keeper/\" target=\"_blank\">Firefox</a>).</li><li>A minimum balance of 1.001 WAVES.</li></ol></p>",
     "WELCOME_BUTTON": "Let's start!",
     "CLOSE_BUTTON": "Close",
     "NEXT_BUTTON": "Next",
