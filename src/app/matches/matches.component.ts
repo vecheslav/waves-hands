@@ -12,7 +12,7 @@ export class MatchesComponent implements OnInit, OnDestroy {
   matches: IMatch[]
 
   isLoading = true
-  isDisabled = true
+  isDisabled = false
 
   private _matchesSubscribe
 
@@ -34,7 +34,7 @@ export class MatchesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    if (this.isDisabled) {
+    if (!this.isDisabled) {
       this.matchesService.startPollingMatches()
     }
   }

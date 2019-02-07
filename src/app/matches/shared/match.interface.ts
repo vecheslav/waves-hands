@@ -38,6 +38,7 @@ export enum MatchResult {
 export enum MatchResolve {
   Nothing,
   Accepted,
+  NeedReveal,
   CreatorMissed,
   OpponentWon,
   CreatorWon,
@@ -50,8 +51,14 @@ export interface IMatchChange {
   match?: IMatch
 }
 
+export enum MatchRevealStatus {
+  None = 0,
+  Process = 1,
+  Done = 2
+}
+
 export interface IMatchTemp {
-  isFinishing?: boolean
+  reveal?: MatchRevealStatus
   owns?: boolean
 }
 

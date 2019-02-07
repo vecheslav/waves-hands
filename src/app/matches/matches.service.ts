@@ -1,6 +1,6 @@
 import { Injectable, NgZone, OnDestroy } from '@angular/core'
 import { MatchesHelper } from './shared/matches.helper'
-import { HandSign, IMatch, IMatchChange, MatchResolve, MatchResult, MatchStatus, PlayerMoves } from './shared/match.interface'
+import { HandSign, IMatch, IMatchChange, MatchResolve, MatchResult, MatchRevealStatus, MatchStatus, PlayerMoves } from './shared/match.interface'
 import { BehaviorSubject, Observable, timer } from 'rxjs'
 import { UserService } from '../user/user.service'
 import { IUser } from '../user/user.interface'
@@ -20,7 +20,9 @@ export class MatchesService implements OnDestroy {
   user: IUser
   updateIsPaused = false
 
+  // Actual state of my matches
   private _myMatches: Record<string, IMatch> = {}
+
   private _userSubscriber
 
   private _polledMatches$: Observable<{ matches: Record<string, IMatch>, currentHeight: number }>
@@ -134,14 +136,19 @@ export class MatchesService implements OnDestroy {
     })
   }
 
-  async finishMatch(match: IMatch, move: Uint8Array) {
+  async revealMatch(match: IMatch) {
     const myMatch = this._myMatches[match.address]
     if (!myMatch) {
       return
     }
 
     // Skip matches with started finishing
-    if (myMatch.isFinishing) {
+    if (myMatch.reveal) {
+      return
+    }
+
+    const move = this._getMoveFromStorage(this.user.address, match.address)
+    if (!move) {
       return
     }
 
@@ -151,18 +158,16 @@ export class MatchesService implements OnDestroy {
     })
 
     // Book finish match
-    myMatch.isFinishing = true
+    myMatch.reveal = MatchRevealStatus.Process
 
-    console.log('Finish match', match.address)
+    console.log('Reveal match', match.address)
     try {
-      await this.matchesHelper.finishMatch(
-        match,
-        move
-      )
+      await this.matchesHelper.revealMatch(match, move)
+      myMatch.reveal = MatchRevealStatus.Done
 
       this.notificationsService.remove(notificationId)
     } catch (err) {
-      myMatch.isFinishing = false
+      myMatch.reveal = MatchRevealStatus.None
       this.notificationsService.remove(notificationId)
       throw err
     }
@@ -175,7 +180,7 @@ export class MatchesService implements OnDestroy {
     }
 
     // Skip matches with started finishing
-    if (myMatch.isFinishing) {
+    if (myMatch.reveal) {
       return
     }
 
@@ -184,14 +189,16 @@ export class MatchesService implements OnDestroy {
       message: 'PROCESS_FINISH_MATCH'
     })
 
-    myMatch.isFinishing = true
+    myMatch.reveal = MatchRevealStatus.Process
 
     console.log('Force finish match', matchAddress)
     try {
       await this.matchesHelper.forceFinish(myMatch)
+      myMatch.reveal = MatchRevealStatus.Done
+
       this.notificationsService.remove(notificationId)
     } catch (err) {
-      myMatch.isFinishing = false
+      myMatch.reveal = MatchRevealStatus.None
       this.notificationsService.remove(notificationId)
       throw err
     }
@@ -217,11 +224,7 @@ export class MatchesService implements OnDestroy {
       for (const change of changes) {
         switch (change.resolve) {
           case MatchResolve.Accepted:
-            const move = this._getMoveFromStorage(this.user.address, change.match.address)
-            if (!move) {
-              break
-            }
-
+            // Ignore opponents
             if (this.user.address !== change.match.creator.address) {
               break
             }
@@ -231,16 +234,21 @@ export class MatchesService implements OnDestroy {
               params: [ActionType.OpponentJoined, change.match.address]
             })
 
-
-            this.finishMatch(
-              change.match,
-              move
-            )
+            this.revealMatch(change.match)
+            break
+          case MatchResolve.NeedReveal:
+            // Ignore opponents
+            if (this.user.address !== change.match.creator.address) {
+              break
+            }
+            this.revealMatch(change.match)
             break
           case MatchResolve.CreatorMissed:
+            // Ignore creators
             if (this.user.address === change.match.creator.address) {
               break
             }
+
             this.forceFinishMatch(change.match.address)
             break
           case MatchResolve.OpponentWon:
@@ -278,9 +286,10 @@ export class MatchesService implements OnDestroy {
         }
 
         if (change.match) {
-          // Apply my match
-          this._setMyMatch(change.match)
+          // Apply to my match
+          this._setMyMatch(this._mergeTwoMatch(this._myMatches[change.match.address], change.match))
 
+          // Notice for match popup
           const currentMatch = this.currentMatch$.getValue()
           if (currentMatch && currentMatch.address === change.match.address) {
             this.currentMatch$.next(change.match)
@@ -309,15 +318,16 @@ export class MatchesService implements OnDestroy {
     return matchChanges.filter((change: IMatchChange) => change.resolve !== MatchResolve.Nothing)
   }
 
+  private _mergeTwoMatch(match0: IMatch, match1: IMatch) {
+    console.log(match0, match1)
+    return {
+      ...match0,
+      match1
+    }
+  }
+
   private _setMyMatch(match: IMatch) {
-    // Save temp values
-    const { isFinishing } = this._myMatches[match.address] || { isFinishing: false }
-
     this._myMatches[match.address] = match
-
-    // Restore temp values
-    this._myMatches[match.address] = { ...this._myMatches[match.address], isFinishing }
-
     this._setMatchInStorage(this.user.address, match)
   }
 
@@ -380,8 +390,15 @@ const matchDiff = (match: IMatch, newMatch: IMatch, currentHeight: number): IMat
     }
   }
 
+  if (match.reveal === MatchRevealStatus.None && newMatch.status === MatchStatus.Waiting) {
+    return {
+      resolve: MatchResolve.NeedReveal,
+      match: newMatch,
+    }
+  }
+
   if (newMatch.status === MatchStatus.Waiting &&
-    newMatch.reservationHeight - currentHeight < -environment.creatorRevealBlocksCount) {
+      newMatch.reservationHeight - currentHeight < -environment.creatorRevealBlocksCount) {
     return {
       resolve: MatchResolve.CreatorMissed,
       match: newMatch

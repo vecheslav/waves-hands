@@ -484,7 +484,7 @@ export class MatchesHelper {
 
   }
 
-  async finishMatch(match: IMatch, move: Uint8Array) {
+  async revealMatch(match: IMatch, move: Uint8Array) {
     console.log('Revealing p1 move:')
     console.log(move)
 
@@ -501,10 +501,6 @@ export class MatchesHelper {
     } catch (err) {
       throw err
     }
-
-    this.payout(match, move)
-
-    console.log('Payout completed')
   }
 }
 
