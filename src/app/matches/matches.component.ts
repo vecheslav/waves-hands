@@ -34,7 +34,7 @@ export class MatchesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    if (this.isDisabled) {
+    if (!this.isDisabled) {
       this.matchesService.startPollingMatches()
     }
   }
