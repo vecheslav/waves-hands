@@ -21,6 +21,7 @@ export interface IWavesApi {
   getSetScriptTxsByScript(script: string, limit?: number): Promise<SetScriptTransaction[]>
   getTxsByAddress(address: string, limit?: number): Promise<TTx[]>
   getMassTransfersByRecipient(recipient: string): Promise<MassTransferTransaction[]>
+  getBalance(address: string): Promise<number>
 }
 
 
@@ -96,6 +97,10 @@ export const api = (config: IConfig, http: IHttp): IWavesApi => {
     return postApi<{ data: { data: SetScriptTransaction }[] }>(`transactions/set-script`, data).then(x => x.data.map(y => y.data))
   }
 
+  const getBalance = (address: string): Promise<number> =>
+    get<{ available: number }>(`addresses/balance/details/${address}`).then(x => x.available)
+
+
   return {
     getHeight,
     getTxById,
@@ -106,6 +111,7 @@ export const api = (config: IConfig, http: IHttp): IWavesApi => {
     broadcastAndWait,
     getMassTransfersByRecipient,
     getSetScriptTxsByAddress,
-    getSetScriptTxsByScript
+    getSetScriptTxsByScript,
+    getBalance,
   }
 }

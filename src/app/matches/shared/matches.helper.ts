@@ -422,28 +422,28 @@ export class MatchesHelper {
     //   .toPromise().then(x => BASE64_STRING(x.value.slice(7)))
 
     const result = whoHasWon(Array.from(move || match.creator.moves), Array.from(match.opponent.moves))
-
-    const left = 197400000
+    const balance = await this._api.getBalance(match.address)
     const commission = 1 * wave / 200
     let payout
+
     if (result === MatchResult.Draw) {
-      const fee = 300000 + 400000
+      const fee = 700000
       payout = massTransfer({
         transfers: [
           { amount: commission, recipient: environment.serviceAddress },
-          { amount: (left - fee - commission) / 2, recipient: match.creator.address },
-          { amount: (left - fee - commission) / 2, recipient: match.opponent.address },
+          { amount: (balance - fee - commission) / 2, recipient: match.creator.address },
+          { amount: (balance - fee - commission) / 2, recipient: match.opponent.address },
         ],
         senderPublicKey: match.publicKey,
         fee: fee
       })
     } else {
-      const fee = 200000 + 400000
+      const fee = 600000
       const winner = result === MatchResult.Creator ? match.creator.address : match.opponent.address
       payout = massTransfer({
         transfers: [
           { amount: commission, recipient: environment.serviceAddress },
-          { amount: (left - fee - commission), recipient: winner },
+          { amount: (balance - fee - commission), recipient: winner },
         ],
         senderPublicKey: match.publicKey,
         fee: fee
@@ -461,15 +461,16 @@ export class MatchesHelper {
   }
 
   async forceFinish(match: IMatch) {
-    const fee = 200000 + 400000
+    const fee = 600000
     const winner = match.opponent.address
     const commission = 1 * wave / 200
-    const left = 197400000 + 500000
+
+    const balance = await this._api.getBalance(match.address)
 
     const payout = massTransfer({
       transfers: [
         { amount: commission, recipient: environment.serviceAddress },
-        { amount: (left - fee - commission), recipient: winner },
+        { amount: (balance - fee - commission), recipient: winner },
       ],
       senderPublicKey: match.publicKey,
       fee: fee
