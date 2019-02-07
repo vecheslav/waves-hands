@@ -12,11 +12,17 @@ export class MatchesComponent implements OnInit, OnDestroy {
   matches: IMatch[]
 
   isLoading = true
+  isDisabled = true
 
   private _matchesSubscribe
 
   constructor(private route: ActivatedRoute,
               private matchesService: MatchesService) {
+    if (this.isDisabled) {
+      this.isLoading = false
+      return
+    }
+
     this._matchesSubscribe = this.matchesService.matches$.subscribe((matches: Record<string, IMatch>) => {
       if (!matches) {
         return
@@ -28,11 +34,15 @@ export class MatchesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.matchesService.startPollingMatches()
+    if (this.isDisabled) {
+      this.matchesService.startPollingMatches()
+    }
   }
 
   ngOnDestroy() {
-    this._matchesSubscribe.unsubscribe()
+    if (this._matchesSubscribe) {
+      this._matchesSubscribe.unsubscribe()
+    }
     this.matchesService.stopPollingMatches()
   }
 }

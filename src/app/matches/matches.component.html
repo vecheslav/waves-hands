@@ -1,5 +1,20 @@
 <section class="section matches">
-  <div class="level matches-header">
+  <div class="matches-disabled" *ngIf="isDisabled">
+    <div class="matches-disabled__icon">
+      <span class="emoji emoji--lost is-large"></span>
+    </div>
+    <div class="matches-disabled__text">
+      <h2 class="title" [translate]="'MATCHES.DISABLED_TITLE'">Early access has been finished.</h2>
+      <p class="subtitle" [innerHTML]="'MATCHES.DISABLED_TEXT' | translate">
+        Thanks to everyone who participated.
+        Your money is safe, all games will be resolved.<br/>
+        Sorry for the inconvenience.
+        Stay tuned for updates...
+      </p>
+    </div>
+  </div>
+
+  <div class="level matches-header" *ngIf="!isDisabled">
     <div class="level-left">
       <h2 class="title matches-header__title" [translate]="'MATCHES.TITLE'">Recent Matches</h2>
     </div>
@@ -14,7 +29,7 @@
     </div>
   </div>
 
-  <div class="matches-wrapper" *ngIf="!isLoading">
+  <div class="matches-wrapper" *ngIf="!isLoading && !isDisabled">
     <div class="matches-tour-space"></div>
     <div class="matches-grid">
       <div class="matches-item" *ngFor="let match of matches">

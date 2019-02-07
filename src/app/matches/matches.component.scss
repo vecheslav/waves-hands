@@ -53,4 +53,26 @@
   &-loading {
     padding: 4rem 1rem;
   }
+
+  &-disabled {
+    text-align: center;
+
+    &__icon {
+      margin-right: 1rem;
+
+      .icon {
+        width: 3rem;
+        height: 3rem;
+      }
+    }
+
+    &__text {
+      flex: 1;
+
+      .subtitle {
+        line-height: 1.5;
+        margin-top: 0;
+      }
+    }
+  }
 }

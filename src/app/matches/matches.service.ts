@@ -88,7 +88,9 @@ export class MatchesService implements OnDestroy {
   }
 
   async stopPollingMatches() {
-    this._pollingSubscriber.unsubscribe()
+    if (this._pollingSubscriber) {
+      this._pollingSubscriber.unsubscribe()
+    }
   }
 
   getMatchList(): Promise<{ matches: Record<string, IMatch>, currentHeight: number }> {

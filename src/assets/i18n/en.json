@@ -10,7 +10,9 @@
   },
   "MATCHES": {
     "TITLE": "Recent Matches",
-    "START": "Start Game"
+    "START": "Start Game",
+    "DISABLED_TITLE": "Early access has been finished.",
+    "DISABLED_TEXT": "Thanks to everyone who participated. Your money is safe, all games will be resolved.<br/> Sorry for the inconvenience. Stay tuned for updates..."
   },
   "USER": {
     "LOGOUT": "Log Out",
