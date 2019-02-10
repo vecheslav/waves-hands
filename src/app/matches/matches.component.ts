@@ -23,12 +23,13 @@ export class MatchesComponent implements OnInit, OnDestroy {
       return
     }
 
-    this._matchesSubscribe = this.matchesService.matches$.subscribe((matches: Record<string, IMatch>) => {
-      if (!matches) {
+    this._matchesSubscribe = this.matchesService.updates$.subscribe((updates: Record<string, IMatch>) => {
+      if (!updates) {
         return
       }
+      console.log(updates)
       // Assign to array
-      this.matches = Object.values(matches)
+      // this.matches = Object.values(matches)
       this.isLoading = false
     })
   }

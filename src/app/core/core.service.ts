@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
 import { TTx } from 'waves-transactions/transactions'
-import { retryWhen, delay, take, concat } from 'rxjs/operators'
+import { retryWhen, delay, take, concat, tap } from 'rxjs/operators'
 import { throwError } from 'rxjs'
 import { environment } from 'src/environments/environment'
+import { ErrorCode } from '../shared/error-code'
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,9 @@ export class CoreService {
         n.pipe(
           delay(environment.retryDelay),
           take(environment.broadcastRetryLimit),
-          concat(throwError(`Retry limit exceeded! Tried ${environment.broadcastRetryLimit} times.`))
+          concat(throwError(
+            `Retry limit exceeded! Tried ${environment.broadcastRetryLimit} times.`
+          ))
         )))
       .toPromise()
   }
@@ -29,8 +32,15 @@ export class CoreService {
   }
 
   async broadcastAndWait(tx: TTx): Promise<TTx> {
-    const { id } = await this.broadcast(tx)
-    const r = await this.waitForTx(id)
-    return r
+    try {
+      const { id } = await this.broadcast(tx)
+      const res = await this.waitForTx(id)
+
+      return res
+    } catch (err) {
+      throw {
+        code: ErrorCode.IncorrectBroadcast
+      }
+    }
   }
 }

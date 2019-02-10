@@ -486,7 +486,6 @@ export class MatchesHelper {
 
   async revealMatch(match: IMatch, move: Uint8Array) {
     console.log('Revealing p1 move:')
-    console.log(move)
 
     const revealP1 = data({
       senderPublicKey: match.publicKey,

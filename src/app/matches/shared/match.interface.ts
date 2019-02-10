@@ -35,34 +35,31 @@ export enum MatchResult {
   Draw,
 }
 
-export enum MatchResolve {
+export enum MatchResolveType {
   Nothing,
   Accepted,
   NeedReveal,
   CreatorMissed,
-  OpponentWon,
-  CreatorWon,
+  Won,
+  Lost,
   Draw,
 }
 
-export interface IMatchChange {
-  resolve: MatchResolve
-  message?: string
-  match?: IMatch
+export interface IMatchResolve {
+  type: MatchResolveType
+  matchAddress?: string
 }
 
-export enum MatchRevealStatus {
-  None = 0,
-  Process = 1,
-  Done = 2
-}
-
-export interface IMatchTemp {
-  reveal?: MatchRevealStatus
+export interface IMatchView {
+  revealed?: boolean
   owns?: boolean
 }
 
-export interface IMatch extends IMatchTemp {
+export interface IMatchProcess {
+  isRevealing?: boolean
+}
+
+export interface IMatch extends IMatchView {
   address: string
   publicKey: string
   creator: IPlayer

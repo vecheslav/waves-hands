@@ -11,8 +11,8 @@ export const environment = {
     txEnpoint: 'https://api.testnet.wavesplatform.com/v0/',
     timeStart: '2019-01-29T00:00:00.388Z'
   },
-  broadcastRetryLimit: 10,
-  retryDelay: 1000,
+  broadcastRetryLimit: 5,
+  retryDelay: 2000,
   creatorRevealBlocksCount: 4,
   serviceAddress: '3N7oF5J5m9BwBFCmVJZWr3AEH3u4c6CLoB9'
 }

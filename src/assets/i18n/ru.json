@@ -77,6 +77,7 @@
     "ERROR_BALANCE": "Не хватает Waves на балансе",
     "ERROR_API_REJECTED": "Ты не дал согласие в Keeper",
     "ERROR_WRONG_MATCH": "Что-то пошло не так",
+    "ERROR_REVEAL_MATCH": "Некорректное раскрытие ходов",
     "ERROR_WRONG_ADDRESS": "Неверный адрес, проверь настройки Keeper",
     "ACTION_RECEIVE": "Ты получил {1} Waves за игру #{2}",
     "PROCESS_FINISH_MATCH": "Игра завершается. Жди...",
