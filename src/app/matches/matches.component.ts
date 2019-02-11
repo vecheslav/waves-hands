@@ -11,7 +11,6 @@ import { SubscriptionLike } from 'rxjs'
 })
 export class MatchesComponent implements OnInit, OnDestroy {
   matches: IMatch[] = []
-  // objectValues = Object.values
 
   isLoading = true
   isDisabled = false

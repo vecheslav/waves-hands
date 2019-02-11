@@ -11,8 +11,8 @@
   "MATCHES": {
     "TITLE": "Recent Matches",
     "START": "Start Game",
-    "DISABLED_TITLE": "Early access has been finished.",
-    "DISABLED_TEXT": "Thanks to everyone who participated. Your money is safe, all games will be resolved.<br/> Sorry for the inconvenience. Stay tuned for updates..."
+    "DISABLED_TITLE": "Under maintenance",
+    "DISABLED_TEXT": "Waves Hands is currently closed for maintenance. Sorry for the inconvenience. If your game was in progress, don’t worry - you can finish it after we’re back online. Your funds will be returned safely."
   },
   "USER": {
     "LOGOUT": "Log Out",
