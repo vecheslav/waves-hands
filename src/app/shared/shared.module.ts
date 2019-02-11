@@ -9,6 +9,7 @@ import { TourService } from './tour/tour.service'
 import { TranslateModule } from '@ngx-translate/core';
 import { LangSwitcherComponent } from './lang-switcher/lang-switcher.component'
 import { StorageHelper } from './storage/storage.helper'
+import { BookingService } from './booking/booking.service'
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { StorageHelper } from './storage/storage.helper'
   providers: [
     TourService,
     StorageHelper,
+    BookingService,
   ],
   exports: [
     CircleLoaderComponent,
