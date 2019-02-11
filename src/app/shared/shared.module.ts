@@ -8,6 +8,7 @@ import { TourComponent } from './tour/tour.component'
 import { TourService } from './tour/tour.service'
 import { TranslateModule } from '@ngx-translate/core';
 import { LangSwitcherComponent } from './lang-switcher/lang-switcher.component'
+import { StorageHelper } from './storage/storage.helper'
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { LangSwitcherComponent } from './lang-switcher/lang-switcher.component'
   ],
   providers: [
     TourService,
+    StorageHelper,
   ],
   exports: [
     CircleLoaderComponent,

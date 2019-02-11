@@ -3,12 +3,15 @@ import { KeeperService } from '../auth/keeper.service'
 import { BehaviorSubject } from 'rxjs'
 import { IUser } from './user.interface'
 import { NotificationsService } from '../notifications/notifications.service'
+import { StorageHelper } from '../shared/storage/storage.helper'
 
 @Injectable()
 export class UserService {
   user$ = new BehaviorSubject<IUser>(null)
 
-  constructor(private keeperService: KeeperService, private notificationsService: NotificationsService) {
+  constructor(private keeperService: KeeperService,
+              private notificationsService: NotificationsService,
+              private storage: StorageHelper) {
     this._subscribeOnKeeper()
   }
 
@@ -17,7 +20,7 @@ export class UserService {
 
     // Get from storage
     if (!user) {
-      user = this._getUserFromStorage()
+      user = this.storage.getUser()
 
       if (user) {
         this.user$.next(user)
@@ -48,14 +51,14 @@ export class UserService {
   }
 
   async setUser(user: IUser) {
-    this._setUserInStorage(user)
+    this.storage.setUser(user)
     this.user$.next(user)
     this.notificationsService.selectUser(user)
   }
 
   async logout() {
     this.user$.next(null)
-    this._setUserInStorage(null)
+    this.storage.setUser(null)
   }
 
   private _subscribeOnKeeper() {
@@ -69,13 +72,5 @@ export class UserService {
         }
       }
     })
-  }
-
-  private _getUserFromStorage() {
-    return JSON.parse(localStorage.getItem('user'))
-  }
-
-  private _setUserInStorage(user) {
-    localStorage.setItem('user', JSON.stringify(user))
   }
 }

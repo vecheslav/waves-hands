@@ -39,6 +39,7 @@ export enum MatchResolveType {
   Nothing,
   Accepted,
   NeedReveal,
+  NeedPayout,
   CreatorMissed,
   Won,
   Lost,
@@ -55,11 +56,12 @@ export interface IMatchView {
   owns?: boolean
 }
 
-export interface IMatchProcess {
+export interface IMatchTransient {
   isRevealing?: boolean
+  isPayout?: boolean
 }
 
-export interface IMatch extends IMatchView {
+export interface IBaseMatch {
   address: string
   publicKey: string
   creator: IPlayer
@@ -69,6 +71,8 @@ export interface IMatch extends IMatchView {
   result?: MatchResult
   timestamp?: number | string
 }
+
+export type IMatch = IBaseMatch & IMatchView & IMatchTransient
 
 export const EmptyMatch: IMatch = {
   address: '',

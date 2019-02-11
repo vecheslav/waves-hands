@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core'
-import { EmptyMatch, HandSign, IMatch, IPlayer, MatchResult, MatchStage, MatchStatus, PlayerStatus } from '../shared/match.interface'
+import { EmptyMatch, HandSign, IMatch, IPlayer, MatchResult, MatchStage, MatchStatus, PlayerMoves, PlayerStatus } from '../shared/match.interface'
 import { ActivatedRoute, Router } from '@angular/router'
 import { MatchesService } from '../matches.service'
 import { KeeperService } from '../../auth/keeper.service'
@@ -12,6 +12,7 @@ import { from, timer } from 'rxjs'
 import { environment } from '../../../environments/environment'
 import { TranslateService } from '@ngx-translate/core'
 import { TourService } from '../../shared/tour/tour.service'
+import { StorageHelper } from '../../shared/storage/storage.helper'
 
 const REVEAL_HEIGHT = environment.creatorRevealBlocksCount + 1
 const BLOCK_AS_MS = 60 * 1000
@@ -50,13 +51,14 @@ export class MatchComponent implements OnInit, OnDestroy {
   private _currentHeight
 
   constructor(private router: Router,
-    private route: ActivatedRoute,
-    private keeperService: KeeperService,
-    private matchesService: MatchesService,
-    private userServices: UserService,
-    private notificationsService: NotificationsService,
-    private translate: TranslateService,
-    private tourService: TourService) {
+              private route: ActivatedRoute,
+              private keeperService: KeeperService,
+              private matchesService: MatchesService,
+              private userServices: UserService,
+              private notificationsService: NotificationsService,
+              private translate: TranslateService,
+              private tourService: TourService,
+              private storage: StorageHelper) {
     this.matchAddress = this.route.snapshot.paramMap.get('address')
 
     if (this.matchAddress) {
@@ -148,7 +150,7 @@ export class MatchComponent implements OnInit, OnDestroy {
       this._disablePreventCloseTab()
 
       this.match.status = MatchStatus.Waiting
-      this.match.reservationHeight = this.matchesService.currentHeight$.getValue()
+      this.match.reservationHeight = this.matchesService.height$.getValue()
       this._initLeftPercent()
     } catch (err) {
       if (!this._handleErrors(err)) {
@@ -174,17 +176,17 @@ export class MatchComponent implements OnInit, OnDestroy {
 
     if (this.stage === MatchStage.CreatedMatch) {
       this.shareUrl = window.location.origin + '/match/' + this.match.address
-      this.match.creator.moves = this.matchesService.getMyMoves(this.match.address)
+      this.match.creator.moves = this._getMyMoves()
     }
 
-    this._heightSubscriber = this.matchesService.currentHeight$.subscribe(height => {
+    this._heightSubscriber = this.matchesService.height$.subscribe(height => {
       if (height && height !== this._currentHeight) {
         this._currentHeight = height
         this._initLeftPercent()
       }
     })
 
-    this._matchSubscriber = this.matchesService.currentMatch$.subscribe((match: IMatch) => {
+    this._matchSubscriber = this.matchesService.openMatch$.subscribe((match: IMatch) => {
       if (!match) {
         return
       }
@@ -205,6 +207,15 @@ export class MatchComponent implements OnInit, OnDestroy {
       this.tourService.stopTour()
       // this.tourService.startMatchTour()
     }
+  }
+
+  private _getMyMoves(): PlayerMoves {
+    if (!this.user) {
+      return
+    }
+
+    const moves = this.storage.getMove(this.user.address, this.match.address).slice(0, 3)
+    return Array.from(moves) as PlayerMoves
   }
 
   private _activePreventCloseTab() {

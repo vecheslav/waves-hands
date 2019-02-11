@@ -17,61 +17,6 @@ import { ErrorCode } from 'src/app/shared/error-code'
 const wave = 100000000
 const uint8Arr = Uint8Array.from([])
 
-const getString = (key: string, dataTx: IDataTransaction): string => {
-  const found = dataTx.data.find(x => x.key === key)
-  if (found) {
-    return found.value.toString()
-  }
-}
-
-const getNumber = (key: string, dataTx: IDataTransaction): number => {
-  const found = dataTx.data.find(x => x.key === key)
-  if (found) {
-    return parseInt(found.value.toString(), undefined)
-  }
-}
-
-const getBinary = (key: string, dataTx: IDataTransaction): Uint8Array => {
-  const found = dataTx.data.find(x => x.key === key)
-  if (found) {
-    return BASE64_STRING(found.value.toString().slice(7))
-  }
-}
-
-const getBinaryStruct = <T>(struct: T, dataTxs: IDataTransaction[]): T =>
-  Object.keys(struct).map(k => ({ key: k, value: getBinaries(k, dataTxs).firstOrUndefined() })).reduce((a, b) => ({
-    ...a,
-    [b.key]: b.value
-  }), {}) as T
-
-const getBinaries = (key: string, dataTxs: IDataTransaction[]): Array<Uint8Array> =>
-  dataTxs.map(x => x.data.filter(d => d.key === key))
-    .filter(x => x.length > 0)
-    .reduce((a, b) => [...a, ...b], [])
-    .map(x => BASE64_STRING(x.value.toString().slice(7)))
-
-const getNumbers = (key: string, dataTxs: IDataTransaction[]): Array<number> =>
-  dataTxs.map(x => getNumber(key, x))
-    .filter(x => x !== undefined)
-
-const getDataByKey = <T>(key: string, resp: IDataTransaction[], map?: (data: string) => T) => {
-  const found = resp.map(x => x.data.filter(y => y.key === key)).filter(x => x.length > 0)
-  return found.length === 1 ? (map ? map(found[0][0].value.toString()) : found[0][0].value.toString()) : undefined
-}
-
-const compareMoves = (m1: number, m2: number) =>
-  ((m1 === 0 && m2 === 2) ||
-    (m1 === 1 && m2 === 0) ||
-    (m1 === 2 && m2 === 1)) ? 1 : (m1 === m2 ? 0 : -1)
-
-export const whoHasWon = (p1: number[], p2: number[]) => {
-  if (!p1 || !p2) {
-    return
-  }
-  const score = p2.slice(0, 3).reduce((s, p2move, i) => s + compareMoves(p1[i], p2move), 0)
-  return score > 0 ? MatchResult.Creator : (score === 0 ? MatchResult.Draw : MatchResult.Opponent)
-}
-
 @Injectable()
 export class MatchesHelper {
   private _api: IWavesApi
@@ -102,92 +47,95 @@ export class MatchesHelper {
   }
 
   async getMatch(addr: string): Promise<IMatch> {
+    try {
+      const r = await this._api.getTxsByAddress(addr)
 
-    const r = await this._api.getTxsByAddress(addr)
+      const massTransfers = r.filter(x => x.type === TRANSACTION_TYPE.MASS_TRANSFER) as IMassTransferTransaction[]
 
-    const massTransfers = r.filter(x => x.type === TRANSACTION_TYPE.MASS_TRANSFER) as IMassTransferTransaction[]
+      const filteredTxs = r.filter(x => x.type === TRANSACTION_TYPE.DATA) as IDataTransaction[]
 
-    const filteredTxs = r.filter(x => x.type === TRANSACTION_TYPE.DATA) as IDataTransaction[]
+      const h = getNumbers('height', filteredTxs).firstOrUndefined()
 
-    const h = getNumbers('height', filteredTxs).firstOrUndefined()
+      const {
+        p2MoveHash,
+        p2Move,
+        p1Move,
+        player1Key,
+        player2Key,
+        matchKey,
+      } = getBinaryStruct({
+        p2MoveHash: uint8Arr,
+        p2Move: uint8Arr,
+        p1Move: uint8Arr,
+        player1Key: uint8Arr,
+        player2Key: uint8Arr,
+        matchKey: uint8Arr,
+      }, filteredTxs)
 
-    const {
-      p2MoveHash,
-      p2Move,
-      p1Move,
-      player1Key,
-      player2Key,
-      matchKey,
-    } = getBinaryStruct({
-      p2MoveHash: uint8Arr,
-      p2Move: uint8Arr,
-      p1Move: uint8Arr,
-      player1Key: uint8Arr,
-      player2Key: uint8Arr,
-      matchKey: uint8Arr,
-    }, filteredTxs)
-
-    if (!player1Key || !matchKey) {
-      return undefined
-    }
-
-    let status = MatchStatus.New
-
-    const p1Key = base58encode(player1Key)
-
-    const creator: IPlayer = player1Key ? {
-      address: address({ public: p1Key }, environment.chainId),
-      publicKey: p1Key,
-    } : undefined
-
-    let opponent
-    if (p2MoveHash) {
-      const p2Key = base58encode(player2Key)
-      opponent = {
-        address: address({ public: p2Key }, environment.chainId),
-        publicKey: p2Key,
+      if (!player1Key || !matchKey) {
+        return undefined
       }
-    }
 
-    if (p2Move && p2Move.length > 0) {
-      status = MatchStatus.Waiting
-      opponent.moves = this.toMoves(p2Move)
-    }
+      let status = MatchStatus.New
 
-    if (p1Move && p1Move.length > 0) {
-      creator.moves = this.toMoves(p1Move)
-      status = MatchStatus.Done
-    }
+      const p1Key = base58encode(player1Key)
 
-    const result = (opponent && opponent.moves) ? whoHasWon(creator.moves, opponent.moves) : undefined
+      const creator: IPlayer = player1Key ? {
+        address: address({ public: p1Key }, environment.chainId),
+        publicKey: p1Key,
+      } : undefined
 
-    const match = {
-      address: addr,
-      creator,
-      opponent,
-      status,
-      result,
-      publicKey: base58encode(matchKey),
-      timestamp: filteredTxs.min(x => x.timestamp).timestamp,
-      reservationHeight: h
-    }
-
-    if (massTransfers.length === 1) {
-      const p = massTransfers[0]
-      const winner = p.transfers.find(x => x.amount > 1 * wave)
-      if (winner) {
-        if (match.creator.address === winner.recipient) {
-          match.result = MatchResult.Creator
-        } else {
-          match.result = MatchResult.Opponent
+      let opponent
+      if (p2MoveHash) {
+        const p2Key = base58encode(player2Key)
+        opponent = {
+          address: address({ public: p2Key }, environment.chainId),
+          publicKey: p2Key,
         }
-      } else {
-        match.result = MatchResult.Draw
       }
-      match.status = MatchStatus.Done
-    }
 
-    return match
+      if (p2Move && p2Move.length > 0) {
+        status = MatchStatus.Waiting
+        opponent.moves = this.toMoves(p2Move)
+      }
+
+      if (p1Move && p1Move.length > 0) {
+        creator.moves = this.toMoves(p1Move)
+        status = MatchStatus.Done
+      }
+
+      const result = (opponent && opponent.moves) ? whoHasWon(creator.moves, opponent.moves) : undefined
+
+      const match = {
+        address: addr,
+        creator,
+        opponent,
+        status,
+        result,
+        publicKey: base58encode(matchKey),
+        timestamp: filteredTxs.min(x => x.timestamp).timestamp,
+        reservationHeight: h
+      }
+
+      if (massTransfers.length === 1) {
+        const p = massTransfers[0]
+        const winner = p.transfers.find(x => x.amount > 1 * wave)
+        if (winner) {
+          if (match.creator.address === winner.recipient) {
+            match.result = MatchResult.Creator
+          } else {
+            match.result = MatchResult.Opponent
+          }
+        } else {
+          match.result = MatchResult.Draw
+        }
+        match.status = MatchStatus.Done
+      }
+
+      return match
+    } catch (err) {
+      throw err
+    }
   }
 
   async getMatchList(): Promise<{ matches: Record<string, IMatch>, currentHeight: number }> {
@@ -199,26 +147,29 @@ export class MatchesHelper {
     const currentHeight = await this._api.getHeight()
 
     const matches: Record<string, IMatch> = r.reduce((a, b) => {
-      const p1Key = getDataByKey('player1Key', [b], x => base58encode(BASE64_STRING(x.slice(7))))
-      if (!p1Key) {
-        return a
-      }
-      if (!s[b.sender]) {
-        return a
-      }
-      const creatorAddress = address({ public: p1Key }, environment.chainId)
-      return ({
-        ...a, [b.sender]: {
-          address: b.sender,
-          publicKey: b.senderPublicKey,
-          creator: {
-            address: creatorAddress,
-            publicKey: p1Key
-          },
-          timestamp: b.timestamp,
-          status: MatchStatus.New
+      try {
+        const p1Key = getDataByKey('player1Key', [b], x => base58encode(BASE64_STRING(x.slice(7))))
+        if (!p1Key) {
+          return a
         }
-      })
+        if (!s[b.sender]) {
+          return a
+        }
+        const creatorAddress = address({ public: p1Key }, environment.chainId)
+        return ({
+          ...a, [b.sender]: {
+            address: b.sender,
+            publicKey: b.senderPublicKey,
+            creator: {
+              address: creatorAddress,
+              publicKey: p1Key
+            },
+            timestamp: b.timestamp,
+            status: MatchStatus.New
+          }
+        })
+      } catch (err) {
+      }
     }, {})
 
 
@@ -242,19 +193,22 @@ export class MatchesHelper {
 
     const _ = (await this._api.getDataTxsByKey('p2MoveHash'))
       .forEach(p => {
-        const p2Key = base58encode(getBinary('player2Key', p))
-        const h = getNumber('height', p)
+        try {
+          const p2Key = base58encode(getBinary('player2Key', p))
+          const h = getNumber('height', p)
 
-        const addr = address({ public: p2Key }, environment.chainId)
+          const addr = address({ public: p2Key }, environment.chainId)
 
-        const match = matches[p.sender]
-        if (match) {
-          match.reservationHeight = h
-          match.opponent = {
-            publicKey: p2Key,
-            address: addr
+          const match = matches[p.sender]
+          if (match) {
+            match.reservationHeight = h
+            match.opponent = {
+              publicKey: p2Key,
+              address: addr
+            }
           }
-
+        } catch (err) {
+          // console.log(p)
         }
       })
 
@@ -506,4 +460,59 @@ export class MatchesHelper {
 export const prepareSetScriptTx = (matchSeed: string, chainId: string) => {
   const tx = setScript({ script: compiledScript, chainId }, matchSeed)
   return tx
+}
+
+const getString = (key: string, dataTx: IDataTransaction): string => {
+  const found = dataTx.data.find(x => x.key === key)
+  if (found) {
+    return found.value.toString()
+  }
+}
+
+const getNumber = (key: string, dataTx: IDataTransaction): number => {
+  const found = dataTx.data.find(x => x.key === key)
+  if (found) {
+    return parseInt(found.value.toString(), undefined)
+  }
+}
+
+const getBinary = (key: string, dataTx: IDataTransaction): Uint8Array => {
+  const found = dataTx.data.find(x => x.key === key)
+  if (found) {
+    return BASE64_STRING(found.value.toString().slice(7))
+  }
+}
+
+const getBinaryStruct = <T>(struct: T, dataTxs: IDataTransaction[]): T =>
+  Object.keys(struct).map(k => ({ key: k, value: getBinaries(k, dataTxs).firstOrUndefined() })).reduce((a, b) => ({
+    ...a,
+    [b.key]: b.value
+  }), {}) as T
+
+const getBinaries = (key: string, dataTxs: IDataTransaction[]): Array<Uint8Array> =>
+  dataTxs.map(x => x.data.filter(d => d.key === key))
+    .filter(x => x.length > 0)
+    .reduce((a, b) => [...a, ...b], [])
+    .map(x => BASE64_STRING(x.value.toString().slice(7)))
+
+const getNumbers = (key: string, dataTxs: IDataTransaction[]): Array<number> =>
+  dataTxs.map(x => getNumber(key, x))
+    .filter(x => x !== undefined)
+
+const getDataByKey = <T>(key: string, resp: IDataTransaction[], map?: (data: string) => T) => {
+  const found = resp.map(x => x.data.filter(y => y.key === key)).filter(x => x.length > 0)
+  return found.length === 1 ? (map ? map(found[0][0].value.toString()) : found[0][0].value.toString()) : undefined
+}
+
+const compareMoves = (m1: number, m2: number) =>
+  ((m1 === 0 && m2 === 2) ||
+    (m1 === 1 && m2 === 0) ||
+    (m1 === 2 && m2 === 1)) ? 1 : (m1 === m2 ? 0 : -1)
+
+export const whoHasWon = (p1: number[], p2: number[]) => {
+  if (!p1 || !p2) {
+    return
+  }
+  const score = p2.slice(0, 3).reduce((s, p2move, i) => s + compareMoves(p1[i], p2move), 0)
+  return score > 0 ? MatchResult.Creator : (score === 0 ? MatchResult.Draw : MatchResult.Opponent)
 }
