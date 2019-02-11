@@ -9,10 +9,11 @@ import { compiledScript } from './contract'
 import { randomAccount } from './util'
 import { IMatch, MatchStatus, PlayerMoves, HandSign, MatchResult, IPlayer } from './match.interface'
 import { TRANSACTION_TYPE, IDataTransaction, IMassTransferTransaction } from 'waves-transactions/transactions'
-import { api, apiConfig, IWavesApi, MassTransferTransaction } from './api'
+import { api, apiConfig, IWavesApi } from './api'
 import { fromAngular } from './api-angular'
 import './extensions'
 import { ErrorCode } from 'src/app/shared/error-code'
+import { randomBytes } from 'crypto'
 
 const wave = 100000000
 const uint8Arr = Uint8Array.from([])
@@ -88,12 +89,8 @@ export class MatchesHelper {
     return [uint8Array[0], uint8Array[1], uint8Array[2]] as PlayerMoves
   }
 
-  randomBytes(count: number) {
-    return new Array(count).fill(0).map(x => Math.round(Math.random() * 125))
-  }
-
   hideMoves(moves: number[]) {
-    const salt = this.randomBytes(29)
+    const salt = randomBytes(29)
 
     const move = concat([moves[0], moves[1], moves[2]], salt)
     const moveHash = sha256(move)
