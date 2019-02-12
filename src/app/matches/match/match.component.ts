@@ -20,7 +20,7 @@ const BLOCK_AS_MS = 60 * 1000
 @Component({
   selector: 'app-match',
   templateUrl: './match.component.html',
-  styleUrls: ['./match.component.scss']
+  styleUrls: ['./match.component.scss'],
 })
 export class MatchComponent implements OnInit, OnDestroy {
   match: IMatch = EmptyMatch
@@ -51,14 +51,14 @@ export class MatchComponent implements OnInit, OnDestroy {
   private _currentHeight
 
   constructor(private router: Router,
-              private route: ActivatedRoute,
-              private keeperService: KeeperService,
-              private matchesService: MatchesService,
-              private userServices: UserService,
-              private notificationsService: NotificationsService,
-              private translate: TranslateService,
-              private tourService: TourService,
-              private storage: StorageHelper) {
+    private route: ActivatedRoute,
+    private keeperService: KeeperService,
+    private matchesService: MatchesService,
+    private userServices: UserService,
+    private notificationsService: NotificationsService,
+    private translate: TranslateService,
+    private tourService: TourService,
+    private storage: StorageHelper) {
     this.matchAddress = this.route.snapshot.paramMap.get('address')
 
     if (this.matchAddress) {
@@ -149,8 +149,6 @@ export class MatchComponent implements OnInit, OnDestroy {
       this.isProccesing = false
       this._disablePreventCloseTab()
 
-      this.match.status = MatchStatus.Waiting
-      this.match.reservationHeight = this.matchesService.height$.getValue()
       this._initLeftPercent()
     } catch (err) {
       if (!this._handleErrors(err)) {
@@ -191,7 +189,7 @@ export class MatchComponent implements OnInit, OnDestroy {
         return
       }
 
-      if (this.stage !== MatchStage.SelectHands && match.status > MatchStatus.New) {
+      if (this.stage !== MatchStage.SelectHands && match.status > MatchStatus.WaitingForP2) {
         console.log('Update match', match.address)
         // Update match
         this.isCreatingMatch = false
@@ -246,25 +244,25 @@ export class MatchComponent implements OnInit, OnDestroy {
         case ErrorCode.UserRejected:
           this.notificationsService.add({
             type: NotificationType.Error,
-            message: 'ERROR_USER_REJECTED'
+            message: 'ERROR_USER_REJECTED',
           })
           return true
         case ErrorCode.NotEnoughBalance:
           this.notificationsService.add({
             type: NotificationType.Error,
-            message: 'ERROR_BALANCE'
+            message: 'ERROR_BALANCE',
           })
           return true
         case ErrorCode.ApiRejected:
           this.notificationsService.add({
             type: NotificationType.Error,
-            message: 'ERROR_API_REJECTED'
+            message: 'ERROR_API_REJECTED',
           })
           return true
         case ErrorCode.WrongAddress:
           this.notificationsService.add({
             type: NotificationType.Error,
-            message: 'ERROR_WRONG_ADDRESS'
+            message: 'ERROR_WRONG_ADDRESS',
           })
           return true
       }
@@ -284,12 +282,15 @@ export class MatchComponent implements OnInit, OnDestroy {
     }
 
     switch (this.match.status) {
-      case MatchStatus.New:
+      case MatchStatus.WaitingForP2:
         if (this._isAsCreator()) {
           this.stage = MatchStage.CreatedMatch
         }
         break
-      case MatchStatus.Waiting:
+      case MatchStatus.WaitingBothToReveal:
+      case MatchStatus.WaitingP1ToReveal:
+      case MatchStatus.WaitingP2ToReveal:
+      case MatchStatus.WaitingForPayout:
         if (this._isAsCreator()) {
           this.stage = MatchStage.ReservedMatch
         } else if (this._isAsOpponent()) {
@@ -367,7 +368,12 @@ export class MatchComponent implements OnInit, OnDestroy {
   }
 
   private _initLeftPercent() {
-    if (this.match.status === MatchStatus.Waiting && this.match.reservationHeight) {
+    if (
+      this.match.status === MatchStatus.WaitingBothToReveal ||
+      this.match.status === MatchStatus.WaitingP1ToReveal ||
+      this.match.status === MatchStatus.WaitingP2ToReveal ||
+      this.match.status === MatchStatus.WaitingForPayout
+      && this.match.reservationHeight) {
       const heightPassed = this._currentHeight - this.match.reservationHeight
       const leftHeight = Math.max(REVEAL_HEIGHT - heightPassed, 0)
       this.pendingLeftPercent = leftHeight * 100 / REVEAL_HEIGHT

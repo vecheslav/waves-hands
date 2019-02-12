@@ -34,10 +34,10 @@ export class MatchesService {
   private _pollingSubscriber: SubscriptionLike
 
   constructor(private matchesHelper: MatchesHelper,
-              private ngZone: NgZone,
-              private userService: UserService,
-              private notificationsService: NotificationsService,
-              private storage: StorageHelper) {
+    private ngZone: NgZone,
+    private userService: UserService,
+    private notificationsService: NotificationsService,
+    private storage: StorageHelper) {
     this._polling = timer(0, environment.matchesPollingDelay).pipe(
       concatMap(_ => {
         return this.matchesHelper.getMatchList()
@@ -88,7 +88,7 @@ export class MatchesService {
 
     this.notificationsService.add({
       type: NotificationType.Action,
-      params: [ActionType.YouCreated, match.address]
+      params: [ActionType.YouCreated, match.address],
     })
 
     return match
@@ -103,7 +103,7 @@ export class MatchesService {
 
     this.notificationsService.add({
       type: NotificationType.Action,
-      params: [ActionType.YouJoined, match.address]
+      params: [ActionType.YouJoined, match.address],
     })
 
     return match
@@ -122,7 +122,7 @@ export class MatchesService {
 
     const nId = this.notificationsService.add({
       type: NotificationType.Process,
-      message: 'PROCESS_REVEAL_MATCH'
+      message: 'PROCESS_REVEAL_MATCH',
     })
 
     // Exclude revealing
@@ -150,7 +150,7 @@ export class MatchesService {
 
     const nId = this.notificationsService.add({
       type: NotificationType.Process,
-      message: 'PROCESS_PAYOUT_MATCH'
+      message: 'PROCESS_PAYOUT_MATCH',
     })
 
     // Exclude revealing
@@ -208,7 +208,7 @@ export class MatchesService {
     const mergedMatch: IMatch = {
       ...this._receivedMatches[match.address],
       ...(this._transientMatches[match.address] || {}),
-      ...match
+      ...match,
     }
     if (this._user) {
       mergedMatch.owns = match.creator.address === this._user.address
@@ -287,7 +287,7 @@ export class MatchesService {
 
       matchResolves.push({
         type: resolve,
-        matchAddress
+        matchAddress,
       })
     }
 
@@ -308,27 +308,36 @@ export class MatchesService {
       return MatchResolveType.Nothing
     }
 
-    if (match.status === MatchStatus.New &&
-        newMatch.status === MatchStatus.Waiting &&
-        isCreator) {
+    if (match.status === MatchStatus.WaitingForP2 &&
+      (newMatch.status === MatchStatus.WaitingBothToReveal ||
+        newMatch.status === MatchStatus.WaitingP1ToReveal ||
+        newMatch.status === MatchStatus.WaitingP2ToReveal ||
+        newMatch.status === MatchStatus.WaitingForPayout) &&
+      isCreator) {
       return MatchResolveType.Accepted
     }
 
     if (!match.revealed &&
-        newMatch.status === MatchStatus.Waiting &&
-        !newMatch.result &&
-        isCreator) {
+      (newMatch.status === MatchStatus.WaitingBothToReveal ||
+        newMatch.status === MatchStatus.WaitingP1ToReveal ||
+        newMatch.status === MatchStatus.WaitingP2ToReveal ||
+        newMatch.status === MatchStatus.WaitingForPayout) &&
+      !newMatch.result &&
+      isCreator) {
       return MatchResolveType.NeedReveal
     }
 
-    if (newMatch.status === MatchStatus.Waiting &&
-        newMatch.reservationHeight - this.height$.getValue() < -environment.creatorRevealBlocksCount &&
-        isOpponent) {
+    if ((newMatch.status === MatchStatus.WaitingBothToReveal ||
+      newMatch.status === MatchStatus.WaitingP1ToReveal ||
+      newMatch.status === MatchStatus.WaitingP2ToReveal ||
+      newMatch.status === MatchStatus.WaitingForPayout) &&
+      newMatch.reservationHeight - this.height$.getValue() < -environment.creatorRevealBlocksCount &&
+      isOpponent) {
       return MatchResolveType.CreatorMissed
     }
 
-    if (newMatch.status === MatchStatus.Waiting &&
-        newMatch.result) {
+    if (newMatch.status === MatchStatus.WaitingForPayout &&
+      newMatch.result) {
       return MatchResolveType.NeedPayout
     }
 
