@@ -15,25 +15,34 @@ export interface CreateMatchResult {
   match: IMatch
 }
 
+export type MatchProgress = (zeroToOne: number, message?: string) => void
+
 export const service = (api: IWavesApi, keeper: IKeeper) => {
   const config = api.config()
   const { setKeysAndValues, setScript, massTransferWaves } = apiHelpers(api)
 
   return {
 
-    create: async (hands: number[]): Promise<CreateMatchResult> => {
+    create: async (hands: number[], progress: MatchProgress = () => {}): Promise<CreateMatchResult> => {
       const { seed: matchSeed, address: matchAddress, publicKey: matchKey } = randomAccount(config.chainId)
 
+      progress(0)
       // #STEP1 P1 => C (+GameBet)
       const p1p = await keeper.prepareWavesTransfer(matchAddress, gameBet)
-      const { id: p1PaymentId, senderPublicKey: player1Key } = await api.broadcastAndWait(p1p)
-      const { move, moveHash } = hideMoves(hands
-      )
+      progress(.15)
 
+      const { id: p1PaymentId, senderPublicKey: player1Key } = await api.broadcastAndWait(p1p)
+      const { move, moveHash } = hideMoves(hands)
+
+      progress(.4)
       // #STEP2# C => data
       await setKeysAndValues({ seed: matchSeed }, { 'p1k': from58(player1Key), 'p1mh': moveHash, 'mk': from58(matchKey), })
+
+      progress(.8)
       // #STEP3# C => script
       await setScript(matchSeed, compiledScript)
+
+      progress(1)
 
       return {
         move,

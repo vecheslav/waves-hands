@@ -7,7 +7,7 @@ import './extensions'
 import { fromAngular } from './hands/api-angular'
 import { api, IWavesApi } from './hands/api'
 import { apiConfig } from './hands/config'
-import { CreateMatchResult, service } from './hands/game-related/service'
+import { CreateMatchResult, MatchProgress, service } from './hands/game-related/service'
 import { EmptyMatch, HandSign } from './hands/game-related/interfaces'
 import { IKeeper } from './hands/keeper/interfaces'
 
@@ -29,8 +29,8 @@ export class MatchesHelper {
     return Promise.resolve({ matches: { '': EmptyMatch }, currentHeight: 0 })
   }
 
-  async create(hands: HandSign[], progress: (zeroToOne: number) => void = () => { }): Promise<CreateMatchResult> {
-    return await this._gameService.create(hands)
+  async create(hands: HandSign[], progress: MatchProgress = () => {}): Promise<CreateMatchResult> {
+    return await this._gameService.create(hands, progress)
   }
 
   async join(match: IMatch, hands: HandSign[], progress: (zeroToOne: number) => void = () => { }): Promise<IMatch> {
