@@ -21,11 +21,12 @@ export class MatchesHelper {
   }
 
   async getMatch(addr: string): Promise<IMatch> {
-    return Promise.resolve(EmptyMatch)
+    return await this._gameService.match(addr)
   }
 
   async getMatchList(): Promise<{ matches: Record<string, IMatch>, currentHeight: number }> {
-    return Promise.resolve({ matches: { '': EmptyMatch }, currentHeight: 0 })
+    const currentHeight = await this._api.getHeight()
+    return { matches: (await this._gameService.matches()).toRecord(x => x.address), currentHeight }
   }
 
   async create(hands: HandSign[], progress: (zeroToOne: number) => void = () => { }): Promise<CreateMatchResult> {
