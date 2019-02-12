@@ -22,6 +22,7 @@
   "CARD": {
     "WAITING_PLAYERS": "Waiting players...",
     "WAITING_FIRST": "Waiting for the first player...",
+    "WAITING_PAYOUT": "Waiting for payout...",
     "BET": "Bet:",
     "START": "Start Match",
     "STATUS_OPEN": "Open",

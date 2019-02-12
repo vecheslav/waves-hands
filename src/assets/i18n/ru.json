@@ -22,6 +22,7 @@
   "CARD": {
     "WAITING_PLAYERS": "Ожидание игроков...",
     "WAITING_FIRST": "Ждем первого игрока...",
+    "WAITING_PAYOUT": "Ждем выплат...",
     "BET": "Ставка:",
     "START": "Начать игру",
     "STATUS_OPEN": "Открыт",

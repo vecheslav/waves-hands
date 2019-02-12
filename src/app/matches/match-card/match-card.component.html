@@ -1,17 +1,17 @@
-
 <div class="match-card">
   <a [routerLink]="['match', match.address]" class="match-card__inner">
-    <div class="match-card__overview" *ngIf="match.status !== 2 && !match.opponent">
+    <div class="match-card__overview" *ngIf="match.status === 0">
       <div class="level has-text-centered match-players">
         <div class="level-item">
           <app-match-player [player]="match.creator"></app-match-player>
         </div>
       </div>
       <div class="match-text" [translate]="'CARD.WAITING_PLAYERS'">
-          Waiting players...
-        </div>
+        Waiting players...
+      </div>
     </div>
-    <div class="match-card__overview" *ngIf="match.status !== 2 && match.opponent">
+
+    <div class="match-card__overview" *ngIf="(match.status === 1 || match.status === 2 || match.status === 3)">
       <div class="level has-text-centered match-players">
         <div class="level-item">
           <app-match-player [player]="match.creator"></app-match-player>
@@ -25,14 +25,28 @@
         Waiting for the first player...
       </div>
     </div>
-    <div class="match-card__overview" *ngIf="match.status === 2">
+
+    <div class="match-card__overview" *ngIf="match.status === 4">
+      <div class="level has-text-centered match-players">
+        <div class="level-item">
+          <app-match-player [player]="match.creator"></app-match-player>
+        </div>
+        <div class="level-item">vs</div>
+        <div class="level-item">
+          <app-match-player [player]="match.opponent"></app-match-player>
+        </div>
+      </div>
+      <div class="match-text" [translate]="'CARD.WAITING_PAYOUT'">
+        Waiting for payout...
+      </div>
+    </div>
+
+    <div class="match-card__overview" *ngIf="match.status === 5">
       <div class="level has-text-centered match-players match-players--result">
         <div class="level-item">
           <app-match-player [player]="match.creator"></app-match-player>
-          <div class="player-status"
-               [class.player-status--winner]="match.result === 0"
-               [class.player-status--draw]="match.result === 2"
-               [ngSwitch]="match.result">
+          <div class="player-status" [class.player-status--winner]="match.result === 0"
+            [class.player-status--draw]="match.result === 2" [ngSwitch]="match.result">
             <span *ngSwitchCase="0" [translate]="'CARD.WINNER'">Winner</span>
             <span *ngSwitchCase="1" [translate]="'CARD.LOOSER'">Looser</span>
             <span *ngSwitchCase="2" [translate]="'CARD.DRAW'">Draw</span>
@@ -41,10 +55,8 @@
         <div class="level-item">vs</div>
         <div class="level-item">
           <app-match-player [player]="match.opponent"></app-match-player>
-          <div class="player-status"
-               [class.player-status--winner]="match.result === 1"
-               [class.player-status--draw]="match.result === 2"
-               [ngSwitch]="match.result">
+          <div class="player-status" [class.player-status--winner]="match.result === 1"
+            [class.player-status--draw]="match.result === 2" [ngSwitch]="match.result">
             <span *ngSwitchCase="0" [translate]="'CARD.LOOSER'">Looser</span>
             <span *ngSwitchCase="1" [translate]="'CARD.WINNER'">Winner</span>
             <span *ngSwitchCase="2" [translate]="'CARD.DRAW'">Draw</span>
@@ -54,9 +66,8 @@
     </div>
 
     <div class="level match-card__details">
-      <div class="match-pending"
-           *ngIf="match.status === 1 && pendingLeftPercent > 0"
-           [ngStyle]="{'width': pendingLeftPercent + '%'}"></div>
+      <div class="match-pending" *ngIf="match.status === 1 && pendingLeftPercent > 0"
+        [ngStyle]="{'width': pendingLeftPercent + '%'}"></div>
       <div class="level-left">
         <div class="level-item">
           <span [translate]="'CARD.BET'">Bet:</span>&nbsp;
@@ -65,11 +76,13 @@
       </div>
       <div class="level-right match-card__status">
         <div class="level-item">
-          <div class="match-status"
-               [ngClass]="['status-' + match.status]" [ngSwitch]="match.status">
+          <div class="match-status" [ngClass]="['status-' + match.status]" [ngSwitch]="match.status">
             <span *ngSwitchCase="0" [translate]="'CARD.STATUS_OPEN'">Open</span>
             <span *ngSwitchCase="1" [translate]="'CARD.STATUS_PENDING'">Pending</span>
-            <span *ngSwitchCase="2" [translate]="'CARD.STATUS_CLOSED'">Closed</span>
+            <span *ngSwitchCase="2" [translate]="'CARD.STATUS_PENDING'">Pending</span>
+            <span *ngSwitchCase="3" [translate]="'CARD.STATUS_PENDING'">Pending</span>
+            <span *ngSwitchCase="4" [translate]="'CARD.STATUS_PENDING'">Pending</span>
+            <span *ngSwitchCase="5" [translate]="'CARD.STATUS_CLOSED'">Closed</span>
           </div>
         </div>
       </div>
@@ -78,9 +91,7 @@
     </div>
   </a>
 
-  <a [routerLink]="['match', match.address]"
-     class="start-overlay"
-     [hidden]="!startIsShown">
+  <a [routerLink]="['match', match.address]" class="start-overlay" [hidden]="!startIsShown">
     <div class="start-overlay__inner">
       <button class="button is-primary" [translate]="'CARD.START'">Start Match</button>
     </div>
