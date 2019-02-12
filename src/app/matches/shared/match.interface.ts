@@ -24,8 +24,11 @@ export interface IPlayer extends IUser {
 }
 
 export enum MatchStatus {
-  New,
-  Waiting,
+  WaitingForP2,
+  WaitingBothToReveal,
+  WaitingP2ToReveal,
+  WaitingP1ToReveal,
+  WaitingForPayout,
   Done,
 }
 
@@ -82,7 +85,7 @@ export const EmptyMatch: IMatch = {
     publicKey: '',
   },
   timestamp: 0,
-  status: MatchStatus.New,
+  status: MatchStatus.WaitingForP2,
   result: MatchResult.Creator,
 }
 

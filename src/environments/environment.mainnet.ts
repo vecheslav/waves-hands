@@ -7,9 +7,9 @@ export const environment = {
   chainId: ChainId.Mainnet,
   defaultTimeout: 1000 * 60,
   api: {
-    baseEndpoint: 'https://nodes.wavesnodes.com/',
-    txEnpoint: 'https://api.wavesplatform.com/v0/',
-    timeStart: '2019-01-29T00:00:00.000Z'
+    base: 'https://nodes.wavesnodes.com/',
+    tx: 'https://api.wavesplatform.com/v0/',
+    chainId: ChainId.Mainnet,
   },
   broadcastRetryLimit: 5,
   retryDelay: 2000,

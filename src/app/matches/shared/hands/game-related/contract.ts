@@ -1,6 +1,5 @@
 import { compile } from '@waves/ride-js'
-import { environment } from './environment'
-
+import { environment } from 'src/environments/environment'
 export const scriptCode = `
 
 let me = tx.sender
@@ -46,7 +45,7 @@ match (tx) {
       let p1m2 = takeRight(take(p1moves, 2), 1)
       let p1m3 = takeRight(p1moves, 1)
       let err1 = p1m1 != rock && p1m1 != scissors && p1m1 != paper && p1m2 != rock && p1m2 != scissors && p1m2 != paper && p1m3 != rock && p1m3 != scissors && p1m3 != paper
-
+      wavesBalance(me) >= bet &&
       !err1 &&
       !isDefined(getBinary(me, "p1m")) &&
       size(data.data) == 1 &&
@@ -69,7 +68,7 @@ true
     else
     none
 
-    dataValid
+    data.fee == 500000 && dataValid
 
     case payout:MassTransferTransaction => 
     let pt = payout.transfers
@@ -101,8 +100,8 @@ true
     let looser = if p1 == winner then p2 else p1
     let prizePool = wavesBalance(me) - serviceCommission - payout.fee
     let payoutValid =
-    (pt[1].recipient == winner || throw("1")) && (pt[1].amount == (if noWinner then prizePool/2 else prizePool) || throw("3")) &&
-    (pt[2].recipient == looser || throw("2")) && (pt[2].amount == (if noWinner then prizePool/2 else 0) || throw("4"))
+    pt[1].recipient == winner && (pt[1].amount == if noWinner then prizePool/2 else prizePool) &&
+    pt[2].recipient == looser && (pt[2].amount == if noWinner then prizePool/2 else 0)
     payout.fee == 700000 && pt[0].recipient == serviceAddress && pt[0].amount == serviceCommission && payoutValid
     case _ => false
   }

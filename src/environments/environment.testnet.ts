@@ -7,9 +7,9 @@ export const environment = {
   chainId: ChainId.Testnet,
   defaultTimeout: 1000 * 60,
   api: {
-    baseEndpoint: 'https://testnodes.wavesnodes.com/',
-    txEnpoint: 'https://api.testnet.wavesplatform.com/v0/',
-    timeStart: '2019-01-29T00:00:00.388Z'
+    base: 'https://testnodes.wavesnodes.com/',
+    tx: 'https://api.testnet.wavesplatform.com/v0/',
+    chainId: ChainId.Testnet,
   },
   broadcastRetryLimit: 5,
   retryDelay: 2000,
