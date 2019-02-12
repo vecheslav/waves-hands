@@ -1,4 +1,4 @@
-import { IAliasTransaction, IIssueTransaction, TTx } from 'waves-transactions/transactions'
+import { IAliasTransaction, IIssueTransaction, TTx } from '@waves/waves-transactions'
 
 export class CoreServiceMock {
   constructor() { }

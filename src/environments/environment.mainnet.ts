@@ -16,4 +16,5 @@ export const environment = {
   creatorRevealBlocksCount: 15,
   serviceAddress: '3PFdhb7QmEGHLh8YGHKspAKeeVCEhqxdUfM',
   matchesPollingDelay: 5000,
+  bookingServiceEndpoint: 'http://127.0.0.1:3000',
 }

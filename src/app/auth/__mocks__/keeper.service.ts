@@ -1,5 +1,5 @@
 import { DataEntry, KeeperStatus } from '../shared/keeper.interface'
-import { IDataTransaction } from 'waves-transactions/transactions'
+import { IDataTransaction } from '@waves/waves-transactions'
 
 export class KeeperServiceMock {
   constructor() {

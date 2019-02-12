@@ -1,5 +1,5 @@
 import { randomBytes } from 'crypto'
-import { address, publicKey } from 'waves-crypto'
+import { address, publicKey } from '@waves/waves-crypto'
 import { environment } from 'src/environments/environment'
 
 export const randomAccount = () => {

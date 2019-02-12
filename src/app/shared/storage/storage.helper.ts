@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { IMatch } from '../../matches/shared/match.interface'
-import { base58decode, base58encode } from 'waves-crypto'
+import { base58decode, base58encode } from '@waves/waves-crypto'
 
 @Injectable()
 export class StorageHelper {

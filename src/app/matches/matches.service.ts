@@ -10,6 +10,7 @@ import { ActionType, NotificationType } from '../notifications/notifications.int
 import { NotificationsService } from '../notifications/notifications.service'
 import { StorageHelper } from '../shared/storage/storage.helper'
 import * as equal from 'fast-deep-equal'
+import { hideMoves } from './shared/hands/game-related/game'
 
 interface IMatchListResponse {
   matches: Record<string, IBaseMatch>
@@ -79,8 +80,8 @@ export class MatchesService {
     return match
   }
 
-  async createMatch(moves: HandSign[], progress?: (zeroToOne: number) => void): Promise<IMatch> {
-    const { move, match } = await this.matchesHelper.createMatch(moves, progress)
+  async createMatch(hands: HandSign[], progress?: (zeroToOne: number) => void): Promise<IMatch> {
+    const { move, match } = await this.matchesHelper.create(hands, progress)
 
     this._setMyMatch(match)
     this._setMyMove(match.address, move)
@@ -93,9 +94,9 @@ export class MatchesService {
     return match
   }
 
-  async joinMatch(match: IMatch, moves: number[], progress?: (zeroToOne: number) => void): Promise<IMatch> {
-    await this.matchesHelper.joinMatch(match.publicKey, match.address, moves, progress)
-    const { move } = this.matchesHelper.hideMoves(moves)
+  async joinMatch(match: IMatch, hands: number[], progress?: (zeroToOne: number) => void): Promise<IMatch> {
+    await this.matchesHelper.join(match, hands, progress)
+    const { move } = hideMoves(hands)
 
     this._setMyMatch(match)
     this._setMyMove(match.address, move)
@@ -127,7 +128,7 @@ export class MatchesService {
     // Exclude revealing
     match.isRevealing = true
     try {
-      await this.matchesHelper.revealMatch(match, move)
+      await this.matchesHelper.reveal(match, move)
       match.revealed = true
       match.isRevealing = false
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { IKeeper, KeeperStatus, KeeperAuth, KeeperPublicState } from './shared/keeper.interface'
-import { DataEntry } from 'waves-transactions/transactions'
+import { TTx } from '@waves/waves-transactions'
 import { KeeperProvider } from './keeper.provider'
 import { ErrorCode } from '../shared/error-code'
 
@@ -43,6 +43,10 @@ export class KeeperService {
     return await this.keeper.auth(param)
   }
 
+  async signTransaction(p: { type: number, data: any }): Promise<TTx> {
+    return await this.keeper.signTransaction(p)
+  }
+
   async prepareWavesTransfer(recipient: string, amount: number, attachment?: string): Promise<any> {
     const d = {
       type: 4, data: {
@@ -76,23 +80,5 @@ export class KeeperService {
         throw { ... new Error('Wrong address'), code: ErrorCode.WrongAddress }
       }
     }
-  }
-
-  async prepareDataTx(data: DataEntry[], senderPublicKey: string, fee: number): Promise<any> {
-    return await this.keeper.signTransaction({
-      type: 12,
-      data: {
-        fee: {
-          assetId: 'WAVES',
-          tokens: (fee / 100000000).toString(),
-        },
-        data,
-        senderPublicKey,
-      },
-    }).then((x: any) => {
-      const res = JSON.parse(x)
-      res.fee = parseInt(res.fee.toString(), undefined)
-      return res
-    })
   }
 }
