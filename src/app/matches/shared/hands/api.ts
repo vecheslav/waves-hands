@@ -1,6 +1,6 @@
 import { TTx as Tx, IDataTransaction, IMassTransferTransaction, WithId } from '@waves/waves-transactions'
 import { IApiConfig } from './config'
-import { DataTransaction, MassTransferTransaction } from './tx-interfaces'
+import { DataTransaction, MassTransferTransaction, SetScriptTransaction } from './tx-interfaces'
 type TTx = Tx & WithId
 
 
@@ -9,15 +9,34 @@ export interface IHttp {
   post: <T>(url: string, data: any) => Promise<T>
 }
 
+export type DataType = 'binary' | 'integer' | 'boolean' | 'string'
+
+export interface GetMassTransferTxsByKeyParams {
+  sender?: string
+  recipient?: string
+  limit?: number
+  timeStart?: number
+  timeEnd?: number
+}
+
+export interface GetDataTxsByKeyParams {
+  key: string
+  type?: DataType
+  limit?: number
+  timeStart?: number
+  timeEnd?: number
+}
+
 export interface IWavesApi {
   getHeight(): Promise<number>
   getTxById(txId: string): Promise<TTx>
   broadcast(tx: TTx): Promise<TTx>
   broadcastAndWait(tx: Tx): Promise<TTx>
   waitForTx(txId: string): Promise<TTx>
-  getDataTxsByKey(key: string, limit?: number): Promise<DataTransaction[]>
+  getDataTxsByKey(params: GetDataTxsByKeyParams): Promise<DataTransaction[]>
+  getMassTransfers(params: GetMassTransferTxsByKeyParams): Promise<MassTransferTransaction[]>
   getTxsByAddress(address: string, limit?: number): Promise<TTx[]>
-  getMassTransfersByRecipient(recipient: string): Promise<MassTransferTransaction[]>
+  getSetScriptTxsByScript(script: string, limit?: number): Promise<SetScriptTransaction[]>
   getBalance(address: string): Promise<number>
   config(): IApiConfig
 }
@@ -38,13 +57,13 @@ const wrapError = (error: any) => {
           tx: error.response.data.tx,
         }
         break
-      case 199: // script too lagre
+      case 199: //script too lagre
         er = {
           code: 199,
           message: error.response.data.message,
         }
         break
-      case 306: // error while executing
+      case 306: //error while executing
         er = {
           code: 306,
           message: error.response.data.message,
@@ -62,7 +81,6 @@ const wrapError = (error: any) => {
         break
       default:
         er = error
-        break
     }
 
     return er
@@ -74,7 +92,7 @@ export const retry = async <T>(action: () => Promise<T>, limit: number, delayAft
     return await action()
   } catch (error) {
     const er = wrapError(error)
-    if (limit < 1 || (er && er.code)) {
+    if (limit < 1 || er.code) {
       throw er
     }
   }
@@ -87,7 +105,8 @@ export const api = (config: IApiConfig, http: IHttp): IWavesApi => {
   const get = <T>(endpoint: string): Promise<T> => retry(() => http.get<T>(config.base + endpoint), 5, 1000)
   const getApi = <T>(endpoint: string): Promise<T> => retry(() => http.get<T>(config.tx + endpoint), 5, 1000)
   const post = <T>(endpoint: string, data: any): Promise<T> => retry(() => http.post<T>(config.base + endpoint, data), 5, 1000)
-
+  const postApi = <T>(endpoint: string, data: any): Promise<T> => retry(() => http.post<T>(config.tx + endpoint, data), 5, 1000)
+  const p = (args: any) => Object.entries(args).map(x => x[1] !== undefined ? `&${x[0]}=` + x[1] : '').join('')
   const getHeight = async () =>
     get<{ height: number }>('blocks/last').then(x => x.height)
 
@@ -106,8 +125,11 @@ export const api = (config: IApiConfig, http: IHttp): IWavesApi => {
       return tx
     }, 500, 1000)
 
-  const getDataTxsByKey = async (key: string, limit: number = 100): Promise<DataTransaction[]> =>
-    getApi<{ data: { data: DataTransaction }[] }>(`transactions/data?key=${key}&sort=desc&limit=${limit}`).then(x => x.data.map(y => y.data))
+  const getDataTxsByKey = async ({ key, limit, type, timeStart, timeEnd }: GetDataTxsByKeyParams): Promise<DataTransaction[]> =>
+    getApi<{ data: { data: DataTransaction }[] }>(`transactions/data?key=${key}&sort=desc${p({ type, timeStart, timeEnd })}&limit=${limit || 100}`).then(x => x.data.map(y => y.data))
+
+  const getMassTransfers = ({ sender, limit, recipient, timeStart, timeEnd }: GetMassTransferTxsByKeyParams): Promise<MassTransferTransaction[]> =>
+    getApi<{ data: { data: MassTransferTransaction }[] }>(`transactions/mass-transfer?&sort=desc${p({ sender, recipient, timeStart, timeEnd })}&limit=${limit || 100}`).then(x => x.data.map(y => y.data))
 
   const getTxsByAddress = async (address: string, limit: number = 100): Promise<TTx[]> =>
     (await get<TTx[][]>(`transactions/address/${address}/limit/${limit}`))[0]
@@ -118,11 +140,14 @@ export const api = (config: IApiConfig, http: IHttp): IWavesApi => {
     return r
   }
 
-  const getMassTransfersByRecipient = (recipient: string, limit: number = 100): Promise<MassTransferTransaction[]> =>
-    getApi<{ data: { data: MassTransferTransaction }[] }>(`transactions/mass-transfer?recipient=${recipient}&sort=desc&limit=${limit}`).then(x => x.data.map(y => y.data))
-
   const getBalance = (address: string): Promise<number> =>
     get<{ available: number }>(`addresses/balance/details/${address}`).then(x => x.available)
+
+  const getSetScriptTxsByScript = (script: string, limit: number = 100): Promise<SetScriptTransaction[]> =>
+    postApi<{ data: { data: SetScriptTransaction }[] }>('transactions/set-script', {
+      script: 'base64:' + script,
+      limit,
+    }).then(x => x.data.map(y => y.data))
 
   return {
     getHeight,
@@ -132,8 +157,9 @@ export const api = (config: IApiConfig, http: IHttp): IWavesApi => {
     getDataTxsByKey,
     getTxsByAddress,
     broadcastAndWait,
-    getMassTransfersByRecipient,
+    getMassTransfers,
     getBalance,
+    getSetScriptTxsByScript,
     config: () => config,
   }
 }

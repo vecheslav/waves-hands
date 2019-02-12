@@ -8,12 +8,12 @@ const REVEAL_HEIGHT = environment.creatorRevealBlocksCount + 1
 @Component({
   selector: 'app-match-card',
   templateUrl: './match-card.component.html',
-  styleUrls: ['./match-card.component.scss']
+  styleUrls: ['./match-card.component.scss'],
 })
 export class MatchCardComponent implements OnInit {
   @Input() match: IMatch = {
     address: 'address',
-    status: MatchStatus.New
+    status: MatchStatus.WaitingForP2,
   } as IMatch
 
   startIsShown = false
@@ -33,7 +33,7 @@ export class MatchCardComponent implements OnInit {
 
   @HostListener('mouseenter')
   onMouseEnter(): void {
-    if (this.match.status === MatchStatus.New && !this.match.owns && !this.match.opponent) {
+    if (this.match.status === MatchStatus.WaitingForP2 && !this.match.owns && !this.match.opponent) {
       this.startIsShown = true
     }
   }
@@ -44,7 +44,12 @@ export class MatchCardComponent implements OnInit {
   }
 
   private _initLeftPercent() {
-    if (this.match.status === MatchStatus.Waiting && this.match.reservationHeight) {
+    if ((
+      this.match.status === MatchStatus.WaitingBothToReveal ||
+      this.match.status === MatchStatus.WaitingP1ToReveal ||
+      this.match.status === MatchStatus.WaitingP2ToReveal ||
+      this.match.status === MatchStatus.WaitingForPayout
+    ) && this.match.reservationHeight) {
       const heightPassed = this.matchesService.height$.getValue() - this.match.reservationHeight
       this._pendingLeftHeight = Math.max(REVEAL_HEIGHT - heightPassed, 0)
       this.pendingLeftPercent = this._pendingLeftHeight * 100 / REVEAL_HEIGHT
