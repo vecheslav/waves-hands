@@ -73,6 +73,10 @@ export class KeeperService {
 
       return r
     } catch (error) {
+      console.log(error)
+      if (error.code === 9) {
+        throw { ... new Error('Wrong address'), code: ErrorCode.WrongAddress }
+      }
       if (error.message === 'User denied message') {
         throw { ... new Error('User denied'), code: ErrorCode.UserRejected }
       }
