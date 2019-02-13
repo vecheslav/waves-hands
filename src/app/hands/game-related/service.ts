@@ -8,7 +8,7 @@ import { compiledScript } from './contract'
 import '../extensions'
 import { toKeysAndValuesExact, binary, num } from '../dataTxs'
 import { IMatch, MatchStatus, MatchResult, HandSign } from '../../matches/shared/match.interface'
-import { environment } from 'src/environments/environment.prod'
+import { environment } from '../../../environments/environment'
 
 export interface CreateMatchResult {
   move: Uint8Array
@@ -157,7 +157,7 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
       else throw new Error('Match not found')
     },
 
-    create: async (hands: number[], progress: MatchProgress = () => {}): Promise<CreateMatchResult> => {
+    create: async (hands: number[], progress: MatchProgress = () => { }): Promise<CreateMatchResult> => {
       const { seed: matchSeed, address: matchAddress, publicKey: matchKey } = randomAccount(config.chainId)
 
       progress(0)
@@ -193,7 +193,7 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
       }
     },
 
-    join: async (match: IMatch, hands: number[], progress: MatchProgress = () => {}): Promise<IMatch> => {
+    join: async (match: IMatch, hands: number[], progress: MatchProgress = () => { }): Promise<IMatch> => {
       if (match.opponent)
         throw new Error('Match is already taken')
 

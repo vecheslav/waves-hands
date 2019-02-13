@@ -1,29 +1,24 @@
 import { conf, testingHostSeed } from '../settings'
 import { axiosHttp } from '../../src/app/hands/api-axios'
 import { api as apiCtor } from '../../src/app/hands/api'
-import { tests, printAddress, bruteForce, oneOf } from '..'
-import { apiHelpers } from '../../src/app/hands/helpers'
+import { tests } from '..'
 import { defaultFee } from '../fees'
-import { base58decode as from58, address, publicKey, base58encode } from '@waves/waves-crypto'
-import { compiledScript } from '../../src/app/hands/game-related/contract'
-import { hideMoves, gameBet, serviceCommission, serviceAddress } from '../../src/app/hands/game-related/game'
+import { gameBet } from '../../src/app/hands/game-related/game'
 import { service } from '../../src/app/hands/game-related/service'
 import { IKeeper, KeeperAuth, KeeperPublicState } from '../../src/app/hands/keeper/interfaces'
 import { transfer, TTx, ITransferTransaction } from '@waves/waves-transactions'
-import { BASE64_STRING } from '@waves/marshall/dist/serializePrimitives'
 import { IMatch, MatchResult, MatchStatus } from '../../src/app/matches/shared/match.interface'
 
 jest.setTimeout(1000 * 60 * 60)
 
 const api = apiCtor(conf, axiosHttp)
-const config = api.config()
 const keeperMock = (seeds: string[]): IKeeper => {
 
   let i = 0
 
   return {
-    on: (event: string, cb: (state: any) => void) => { },
-    auth: (param?: { data: string }): Promise<KeeperAuth> => Promise.resolve<KeeperAuth>({
+    on: () => { },
+    auth: (): Promise<KeeperAuth> => Promise.resolve<KeeperAuth>({
       address: '',
       data: '',
       host: 'string',
@@ -31,7 +26,7 @@ const keeperMock = (seeds: string[]): IKeeper => {
       publicKey: '',
       signature: 'string',
     }),
-    signTransaction: (p: { type: number, data: any }): Promise<TTx> => Promise.resolve(transfer({ recipient: '', amount: 1 }, '')),
+    signTransaction: (): Promise<TTx> => Promise.resolve(transfer({ recipient: '', amount: 1 }, '')),
     prepareWavesTransfer: (recipient: string, amount: number): Promise<ITransferTransaction> => Promise.resolve(transfer({ recipient, amount }, seeds[i++])),
     publicState: (): Promise<KeeperPublicState> => Promise.resolve<KeeperPublicState>({
       initialized: false,
@@ -78,7 +73,7 @@ const playFullMatch = async (p1Moves: number[], p2Moves: number[]) => {
   const { player1Address, player2Address, player1Seed, player2Seed } = await createPlayers()
   const s = service(api, keeperMock([player1Seed, player2Seed]))
 
-  const { match, move: p1Move, moveHash: p1MoveHash } = await s.create(p1Moves)
+  const { match, move: p1Move } = await s.create(p1Moves)
 
   await s.join(match, p2Moves)
 
@@ -121,7 +116,7 @@ it('create match and get it back', async () => {
 
   const s = service(api, keeperMock([player1Seed, player2Seed]))
 
-  const { match, move: p1Move, moveHash: p1MoveHash } = await s.create(p1Moves)
+  const { match, move: p1Move } = await s.create(p1Moves)
 
   let m: IMatch
 

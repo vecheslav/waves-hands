@@ -6,7 +6,7 @@
     "start": "ng serve --host 0.0.0.0",
     "startp": "ng serve -c production --host 0.0.0.0",
     "build": "ng build",
-    "test": "ng test",
+    "test": "jest --runInBand --bail --useStderr",
     "test:contract": "jest --runInBand --bail --useStderr",
     "lint": "ng lint",
     "e2e": "ng e2e",
