@@ -7,7 +7,7 @@ import { base58decode as from58, address, base58encode } from '@waves/waves-cryp
 import { compiledScript } from './contract'
 import '../extensions'
 import { toKeysAndValuesExact, binary, num } from '../dataTxs'
-import { IMatch, MatchStatus, MatchResult, HandSign } from '../../match.interface'
+import { IMatch, MatchStatus, MatchResult, HandSign } from '../../matches/shared/match.interface'
 import { environment } from 'src/environments/environment.prod'
 
 export interface CreateMatchResult {

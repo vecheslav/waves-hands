@@ -10,7 +10,7 @@ import { ActionType, NotificationType } from '../notifications/notifications.int
 import { NotificationsService } from '../notifications/notifications.service'
 import { StorageHelper } from '../shared/storage/storage.helper'
 import * as equal from 'fast-deep-equal'
-import { hideMoves } from './shared/hands/game-related/game'
+import { hideMoves } from '../hands/game-related/game'
 
 interface IMatchListResponse {
   matches: Record<string, IBaseMatch>
