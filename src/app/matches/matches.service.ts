@@ -322,7 +322,7 @@ export class MatchesService {
         newMatch.status === MatchStatus.WaitingP1ToReveal ||
         newMatch.status === MatchStatus.WaitingP2ToReveal ||
         newMatch.status === MatchStatus.WaitingForPayout) &&
-      !newMatch.result &&
+      typeof newMatch.result === 'undefined' &&
       isCreator) {
       return MatchResolveType.NeedReveal
     }
@@ -337,7 +337,7 @@ export class MatchesService {
     }
 
     if (newMatch.status === MatchStatus.WaitingForPayout &&
-      newMatch.result) {
+      typeof newMatch.result !== 'undefined') {
       return MatchResolveType.NeedPayout
     }
 
