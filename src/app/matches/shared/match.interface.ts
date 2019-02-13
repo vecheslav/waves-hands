@@ -79,7 +79,6 @@ export interface IBaseMatch {
 
 export class Match implements IBaseMatch, IMatchView, IMatchTransient {
   address: string
-  publicKey: string
   creator: IPlayer
   opponent?: IPlayer
   reservationHeight?: number
@@ -90,7 +89,11 @@ export class Match implements IBaseMatch, IMatchView, IMatchTransient {
   owns?: boolean
   isRevealing?: boolean
   isPayout?: boolean
-  constructor() { }
+  constructor(private _publicKey: string, ) { }
+
+  get publicKey() {
+    return this._publicKey
+  }
 
   private _done: boolean = false
   done() { this._done = true }
