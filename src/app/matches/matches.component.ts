@@ -29,8 +29,6 @@ export class MatchesComponent implements OnInit, OnDestroy {
         return
       }
 
-      console.log(updates)
-
       for (const update of Object.values(updates)) {
         let match = this.matches.find(m => m.address === update.address)
 
@@ -40,6 +38,10 @@ export class MatchesComponent implements OnInit, OnDestroy {
           this.matches.push(update)
         }
       }
+
+      this.matches.sort((a: IMatch, b: IMatch) => {
+        return (a.timestamp > b.timestamp) ? -1 : 1
+      })
       this.isLoading = false
     })
   }

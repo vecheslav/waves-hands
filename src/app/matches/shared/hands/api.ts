@@ -92,7 +92,7 @@ export const retry = async <T>(action: () => Promise<T>, limit: number, delayAft
     return await action()
   } catch (error) {
     const er = wrapError(error)
-    if (limit < 1 || er.code) {
+    if (limit < 1 || (er && er.code)) {
       throw er
     }
   }

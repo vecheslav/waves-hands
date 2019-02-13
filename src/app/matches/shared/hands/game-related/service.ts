@@ -193,24 +193,32 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
       }
     },
 
-    join: async (match: IMatch, hands: number[]): Promise<IMatch> => {
+    join: async (match: IMatch, hands: number[], progress: MatchProgress = () => {}): Promise<IMatch> => {
       if (match.opponent)
         throw new Error('Match is already taken')
 
+      progress(0)
       const { setKeysAndValues } = apiHelpers(api)
       const matchKey = match.publicKey
       const matchAddress = address({ public: matchKey }, config.chainId)
 
       //#STEP4# P2 => bet
       const p2p = await keeper.prepareWavesTransfer(matchAddress, gameBet)
+      progress(.15)
+
       const { id: p2PaymentId, senderPublicKey: player2Key } = await api.broadcastAndWait(p2p)
       const { move, moveHash } = hideMoves(hands)
+
+      progress(.4)
       //#STEP5# P2 => move
       const h = await api.getHeight()
       await setKeysAndValues({ publicKey: matchKey }, { 'p2k': from58(player2Key), 'p2mh': moveHash, 'h': h, 'p2p': from58(p2PaymentId) })
+
+      progress(.8)
       //#STEP6# P2 => reveal
       await setKeysAndValues({ publicKey: matchKey }, { 'p2m': move })
 
+      progress(1)
       //update match
       match.status = MatchStatus.WaitingP1ToReveal
       match.reservationHeight = h

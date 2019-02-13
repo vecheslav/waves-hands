@@ -33,8 +33,8 @@ export class MatchesHelper {
     return await this._gameService.create(hands, progress)
   }
 
-  async join(match: IMatch, hands: HandSign[], progress: (zeroToOne: number) => void = () => { }): Promise<IMatch> {
-    return await this._gameService.join(match, hands)
+  async join(match: IMatch, hands: HandSign[], progress: MatchProgress = () => {}): Promise<IMatch> {
+    return await this._gameService.join(match, hands, progress)
   }
 
   async reveal(match: IMatch, move: Uint8Array) {

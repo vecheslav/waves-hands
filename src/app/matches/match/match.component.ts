@@ -239,7 +239,7 @@ export class MatchComponent implements OnInit, OnDestroy {
   }
 
   private _handleErrors(err: any): boolean {
-    if (err.code) {
+    if (err && err.code) {
       switch (err.code) {
         case ErrorCode.UserRejected:
           this.notificationsService.add({
