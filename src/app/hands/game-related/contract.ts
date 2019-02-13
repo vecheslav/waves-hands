@@ -1,7 +1,7 @@
 import { compile } from '@waves/ride-js'
-import { environment } from 'src/environments/environment'
-export const scriptCode = `
+import { environment } from '../../../environments/environment'
 
+export const scriptCode = `
 let me = tx.sender
 let wave = 100000000
 let bet = 1 * wave

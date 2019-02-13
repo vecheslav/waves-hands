@@ -1,7 +1,8 @@
 import { randomBytes } from 'crypto'
 import { concat, sha256 } from '@waves/waves-crypto'
 import { MatchResult } from '../../matches/shared/match.interface'
-import { environment } from 'src/environments/environment'
+import { environment } from '../../../environments/environment'
+
 
 export const waves = 100000000
 export const gameBet = 1 * waves
