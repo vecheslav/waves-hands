@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
-import { IMatch } from '../matches/shared/match.interface'
+import { Match } from '../matches/shared/match.interface'
 import { CoreService } from '../core/core.service'
 import { address, randomUint8Array } from '@waves/waves-crypto'
 import { KeeperService } from '../auth/keeper.service'
@@ -8,10 +8,10 @@ import { KeeperService } from '../auth/keeper.service'
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
-  styleUrls: ['./game.component.scss']
+  styleUrls: ['./game.component.scss'],
 })
 export class GameComponent implements OnInit {
-  currentMatch: IMatch
+  currentMatch: Match
 
   constructor(private route: ActivatedRoute, private core: CoreService, private keeper: KeeperService) {
 

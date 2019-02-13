@@ -78,18 +78,33 @@ export interface IBaseMatch {
 }
 
 export class Match implements IBaseMatch, IMatchView, IMatchTransient {
-  address: string
-  creator: IPlayer
   opponent?: IPlayer
   reservationHeight?: number
   winner?: string
   result?: MatchResult
-  timestamp?: string | number
   revealed?: boolean
   owns?: boolean
   isRevealing?: boolean
   isPayout?: boolean
-  constructor(private _publicKey: string, ) { }
+
+
+  constructor(
+    private _publicKey: string,
+    private _address: string,
+    private _timestamp: number,
+    private _creator: IPlayer
+  ) { }
+
+  get creator() {
+    return this._creator
+  }
+  get timestamp() {
+    return this._timestamp
+  }
+
+  get address() {
+    return this._address
+  }
 
   get publicKey() {
     return this._publicKey
@@ -116,7 +131,7 @@ export class Match implements IBaseMatch, IMatchView, IMatchTransient {
   }
 }
 
-export const EmptyMatch: Match = new Match()
+export const EmptyMatch: Match = new Match('', '', 0, null)
 
 export enum MatchStage {
   SelectHands,

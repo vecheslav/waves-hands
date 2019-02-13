@@ -5,7 +5,7 @@ import { tests } from '..'
 import { defaultFee } from '../fees'
 import { gameBet } from '../../src/app/hands/game-related/game'
 import { service } from '../../src/app/hands/game-related/service'
-import { IMatch, MatchResult, MatchStatus, EmptyMatch } from '../../src/app/matches/shared/match.interface'
+import { Match, MatchResult, MatchStatus, EmptyMatch } from '../../src/app/matches/shared/match.interface'
 import { createPlayers, keeperMock } from '../generic'
 
 jest.setTimeout(1000 * 60 * 60)
@@ -78,7 +78,7 @@ xit('create match and get it back', async () => {
 
   const { match, move: p1Move } = await s.create(p1Moves)
 
-  let m: IMatch
+  let m: Match
 
   m = await s.match(match.address)
   expect(m.status).toBe(MatchStatus.WaitingForP2)

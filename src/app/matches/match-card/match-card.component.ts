@@ -1,5 +1,5 @@
 import { Component, HostListener, Input, OnInit } from '@angular/core'
-import { IMatch, MatchStatus } from '../shared/match.interface'
+import { Match, MatchStatus } from '../shared/match.interface'
 import { environment } from 'src/environments/environment'
 import { MatchesService } from '../matches.service'
 
@@ -11,10 +11,10 @@ const REVEAL_HEIGHT = environment.creatorRevealBlocksCount + 1
   styleUrls: ['./match-card.component.scss'],
 })
 export class MatchCardComponent implements OnInit {
-  @Input() match: IMatch = {
+  @Input() match: Match = {
     address: 'address',
     status: MatchStatus.WaitingForP2,
-  } as IMatch
+  } as Match
 
   startIsShown = false
   shareUrl: string

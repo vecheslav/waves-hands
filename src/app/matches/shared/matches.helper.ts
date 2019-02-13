@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 import { KeeperService } from '../../auth/keeper.service'
 import { CoreService } from '../../core/core.service'
 import { HttpClient } from '@angular/common/http'
-import { IMatch, EmptyMatch, HandSign } from './match.interface'
+import { Match, EmptyMatch, HandSign } from './match.interface'
 import './extensions'
 import { fromAngular } from '../../hands/api-angular'
 import { api, IWavesApi } from '../../hands/api'
@@ -20,11 +20,11 @@ export class MatchesHelper {
     this._gameService = service(this._api, this.keeperService as IKeeper)
   }
 
-  async getMatch(addr: string): Promise<IMatch> {
+  async getMatch(addr: string): Promise<Match> {
     return await this._gameService.match(addr)
   }
 
-  async getMatchList(): Promise<{ matches: Record<string, IMatch>, currentHeight: number }> {
+  async getMatchList(): Promise<{ matches: Record<string, Match>, currentHeight: number }> {
     const currentHeight = await this._api.getHeight()
     return { matches: (await this._gameService.matches()).toRecord(x => x.address), currentHeight }
   }
@@ -33,15 +33,15 @@ export class MatchesHelper {
     return await this._gameService.create(hands, progress)
   }
 
-  async join(match: IMatch, hands: HandSign[], progress: MatchProgress = () => {}): Promise<IMatch> {
+  async join(match: Match, hands: HandSign[], progress: MatchProgress = () => {}): Promise<Match> {
     return await this._gameService.join(match, hands, progress)
   }
 
-  async reveal(match: IMatch, move: Uint8Array) {
+  async reveal(match: Match, move: Uint8Array) {
     return await this._gameService.reveal(match, move)
   }
 
-  async payout(match: IMatch, move?: Uint8Array) {
+  async payout(match: Match, move?: Uint8Array) {
     return await this._gameService.payout(match)
   }
 }

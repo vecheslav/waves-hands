@@ -1,5 +1,5 @@
 import { Injectable, NgZone } from '@angular/core'
-import { HandSign, IBaseMatch, IMatch, IMatchResolve, MatchResolveType, MatchResult, MatchStatus } from './shared/match.interface'
+import { HandSign, IBaseMatch, Match, IMatchResolve, MatchResolveType, MatchResult, MatchStatus } from './shared/match.interface'
 import { environment } from '../../environments/environment'
 import { MatchesHelper } from './shared/matches.helper'
 import { BehaviorSubject, Observable, SubscriptionLike, timer } from 'rxjs'
@@ -19,15 +19,15 @@ interface IMatchListResponse {
 
 @Injectable()
 export class MatchesService {
-  updates$ = new BehaviorSubject<Record<string, IMatch>>(null)
+  updates$ = new BehaviorSubject<Record<string, Match>>(null)
   height$ = new BehaviorSubject<number>(null)
-  openMatch$ = new BehaviorSubject<IMatch>(null)
+  openMatch$ = new BehaviorSubject<Match>(null)
 
   // All received matches
   private _receivedMatches: Record<string, IBaseMatch> = {}
 
   // All transient matches
-  private _transientMatches: Record<string, IMatch> = {}
+  private _transientMatches: Record<string, Match> = {}
 
   private _user: IUser
   private _polling: Observable<any>
@@ -73,14 +73,14 @@ export class MatchesService {
     }
   }
 
-  async getMatch(address: string): Promise<IMatch> {
+  async getMatch(address: string): Promise<Match> {
     const match = await this.matchesHelper.getMatch(address)
     this.openMatch$.next(match)
 
     return match
   }
 
-  async createMatch(hands: HandSign[], progress?: (zeroToOne: number) => void): Promise<IMatch> {
+  async createMatch(hands: HandSign[], progress?: (zeroToOne: number) => void): Promise<Match> {
     const { move, match } = await this.matchesHelper.create(hands, progress)
 
     this._setMyMatch(match)
@@ -94,7 +94,7 @@ export class MatchesService {
     return match
   }
 
-  async joinMatch(match: IMatch, hands: number[], progress?: (zeroToOne: number) => void): Promise<IMatch> {
+  async joinMatch(match: Match, hands: number[], progress?: (zeroToOne: number) => void): Promise<Match> {
     await this.matchesHelper.join(match, hands, progress)
     const { move } = hideMoves(hands)
 
@@ -168,7 +168,7 @@ export class MatchesService {
   }
 
   private _updateMatches(newMatches: Record<string, IBaseMatch>): void {
-    const updates: Record<string, IMatch> = {}
+    const updates: Record<string, Match> = {}
     const openMatch = this.openMatch$.getValue()
 
     // Resolve changes with local matches
@@ -204,8 +204,8 @@ export class MatchesService {
     }
   }
 
-  private _buildMatch(match: IBaseMatch): IMatch {
-    const mergedMatch: IMatch = {
+  private _buildMatch(match: IBaseMatch): Match {
+    const mergedMatch: Match = {
       ...this._receivedMatches[match.address],
       ...(this._transientMatches[match.address] || {}),
       ...match,
@@ -217,7 +217,7 @@ export class MatchesService {
     return mergedMatch
   }
 
-  private _ignoreTransient(match: IMatch): IMatch {
+  private _ignoreTransient(match: Match): Match {
     const newMatch = { ...match }
     delete newMatch.isRevealing
     delete newMatch.isPayout
@@ -269,7 +269,7 @@ export class MatchesService {
    * @param newMatches
    * @private
    */
-  private _compareMatches(matches: Record<string, IMatch>, newMatches: Record<string, IBaseMatch>): IMatchResolve[] {
+  private _compareMatches(matches: Record<string, Match>, newMatches: Record<string, IBaseMatch>): IMatchResolve[] {
     const matchResolves = []
 
     for (const matchAddress of Object.keys(matches)) {
@@ -300,7 +300,7 @@ export class MatchesService {
    * @param newMatch
    * @private
    */
-  private _resolveMatch(match: IMatch, newMatch: IMatch): MatchResolveType {
+  private _resolveMatch(match: Match, newMatch: Match): MatchResolveType {
     const isCreator = match.creator && this._user.address === match.creator.address
     const isOpponent = match.opponent && this._user.address === match.opponent.address
 
@@ -364,7 +364,7 @@ export class MatchesService {
     return MatchResolveType.Nothing
   }
 
-  private _setMyMatch(match: IMatch): void {
+  private _setMyMatch(match: Match): void {
     if (!this._user) {
       return
     }
