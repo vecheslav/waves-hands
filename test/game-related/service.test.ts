@@ -5,47 +5,13 @@ import { tests } from '..'
 import { defaultFee } from '../fees'
 import { gameBet } from '../../src/app/hands/game-related/game'
 import { service } from '../../src/app/hands/game-related/service'
-import { IKeeper, KeeperAuth, KeeperPublicState } from '../../src/app/hands/keeper/interfaces'
-import { transfer, TTx, ITransferTransaction } from '@waves/waves-transactions'
-import { IMatch, MatchResult, MatchStatus } from '../../src/app/matches/shared/match.interface'
+import { IMatch, MatchResult, MatchStatus, EmptyMatch } from '../../src/app/matches/shared/match.interface'
+import { createPlayers, keeperMock } from '../generic'
 
 jest.setTimeout(1000 * 60 * 60)
 
 const api = apiCtor(conf, axiosHttp)
-const keeperMock = (seeds: string[]): IKeeper => {
-
-  let i = 0
-
-  return {
-    on: () => { },
-    auth: (): Promise<KeeperAuth> => Promise.resolve<KeeperAuth>({
-      address: '',
-      data: '',
-      host: 'string',
-      prefix: 'WavesWalletAuthentication',
-      publicKey: '',
-      signature: 'string',
-    }),
-    signTransaction: (): Promise<TTx> => Promise.resolve(transfer({ recipient: '', amount: 1 }, '')),
-    prepareWavesTransfer: (recipient: string, amount: number): Promise<ITransferTransaction> => Promise.resolve(transfer({ recipient, amount }, seeds[i++])),
-    publicState: (): Promise<KeeperPublicState> => Promise.resolve<KeeperPublicState>({
-      initialized: false,
-      locked: false,
-    }),
-  }
-}
-
-const createPlayers = async () => {
-  const [
-    { seed: player1Seed, address: player1Address },
-    { seed: player2Seed, address: player2Address },
-  ] = await Promise.all(
-    [randomAccountWithBalance(gameBet + defaultFee.transfer),
-    randomAccountWithBalance(gameBet + defaultFee.transfer)]
-  )
-
-  return { player1Address, player2Address, player1Seed, player2Seed }
-}
+const { randomAccountWithBalance } = tests(testingHostSeed, api)
 
 const benchmark = async (times: number, a: () => Promise<any>) => {
   let avg = 0
@@ -95,19 +61,13 @@ const createMatch = async (p1Moves: number[]) => {
   return { player1Seed, p1Move, p1MoveHash, match }
 }
 
-const { randomAccountWithBalance } = tests(testingHostSeed, api)
 
-xit('get match', async () => {
-  const matchAddress = '3N92yfWhjrkCDJJfrg9H6SGT9fjHQiHwrr7'
-
+it('get match', async () => {
   const s = service(api, keeperMock([]))
-
-  const m = await s.match(matchAddress)
-
-  console.log(m)
+  await s.reveal({...EmptyMatch, status: MatchStatus.WaitingP2ToReveal}, Uint8Array.from([1,2,1]))
 })
 
-it('create match and get it back', async () => {
+xit('create match and get it back', async () => {
 
   const p1Moves = [1, 1, 1]
   const p2Moves = [2, 2, 2]

@@ -28,6 +28,7 @@ export enum MatchStatus {
   WaitingBothToReveal,
   WaitingP2ToReveal,
   WaitingP1ToReveal,
+  WaitingForDeclare,
   WaitingForPayout,
   Done,
 }
@@ -69,25 +70,50 @@ export interface IBaseMatch {
   publicKey: string
   creator: IPlayer
   opponent?: IPlayer
+  winner?: string | 'draw'
   reservationHeight?: number
   status: MatchStatus
   result?: MatchResult
   timestamp?: number | string
 }
 
-export type IMatch = IBaseMatch & IMatchView & IMatchTransient
+export class Match implements IBaseMatch, IMatchView, IMatchTransient {
+  address: string
+  publicKey: string
+  creator: IPlayer
+  opponent?: IPlayer
+  reservationHeight?: number
+  winner?: string
+  result?: MatchResult
+  timestamp?: string | number
+  revealed?: boolean
+  owns?: boolean
+  isRevealing?: boolean
+  isPayout?: boolean
+  constructor() { }
 
-export const EmptyMatch: IMatch = {
-  address: '',
-  publicKey: '',
-  creator: {
-    address: '',
-    publicKey: '',
-  },
-  timestamp: 0,
-  status: MatchStatus.WaitingForP2,
-  result: MatchResult.Creator,
+  private _done: boolean = false
+  done() { this._done = true }
+
+  get status(): MatchStatus {
+    if (this._done)
+      return MatchStatus.Done
+    if (!this.opponent)
+      return MatchStatus.WaitingForP2
+    if (!this.opponent.moves && !this.creator.moves)
+      return MatchStatus.WaitingBothToReveal
+    if (!this.creator.moves)
+      return MatchStatus.WaitingP1ToReveal
+    if (!this.opponent.moves)
+      return MatchStatus.WaitingP2ToReveal
+    if (!this.winner)
+      return MatchStatus.WaitingForDeclare
+
+    return MatchStatus.WaitingForPayout
+  }
 }
+
+export const EmptyMatch: Match = new Match()
 
 export enum MatchStage {
   SelectHands,

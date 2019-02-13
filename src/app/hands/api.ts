@@ -1,6 +1,7 @@
-import { TTx as Tx, IDataTransaction, IMassTransferTransaction, WithId } from '@waves/waves-transactions'
+import { TTx as Tx, WithId } from '@waves/waves-transactions'
 import { IApiConfig } from './config'
 import { DataTransaction, MassTransferTransaction, SetScriptTransaction } from './tx-interfaces'
+import { logger } from './logger'
 type TTx = Tx & WithId
 
 
@@ -101,12 +102,25 @@ export const retry = async <T>(action: () => Promise<T>, limit: number, delayAft
   return await retry(action, limit - 1, delayAfterFail)
 }
 
-export const api = (config: IApiConfig, http: IHttp): IWavesApi => {
+export const api = (config: IApiConfig, h: IHttp): IWavesApi => {
+
+  const http = {
+    get: <T>(url: string): Promise<T> => {
+      logger.verbose(url)
+      return h.get(url)
+    },
+    post: <T>(url: string, data: any): Promise<T> => {
+      logger.verbose(url)
+      return h.post(url, data)
+    },
+  }
+
   const get = <T>(endpoint: string): Promise<T> => retry(() => http.get<T>(config.base + endpoint), 5, 1000)
   const getApi = <T>(endpoint: string): Promise<T> => retry(() => http.get<T>(config.tx + endpoint), 5, 1000)
   const post = <T>(endpoint: string, data: any): Promise<T> => retry(() => http.post<T>(config.base + endpoint, data), 5, 1000)
   const postApi = <T>(endpoint: string, data: any): Promise<T> => retry(() => http.post<T>(config.tx + endpoint, data), 5, 1000)
   const p = (args: any) => Object.entries(args).map(x => x[1] !== undefined ? `&${x[0]}=` + x[1] : '').join('')
+
   const getHeight = async () =>
     get<{ height: number }>('blocks/last').then(x => x.height)
 
@@ -115,9 +129,6 @@ export const api = (config: IApiConfig, http: IHttp): IWavesApi => {
 
   const broadcast = async (tx: Tx): Promise<TTx & WithId> =>
     post<TTx>('transactions/broadcast', tx)
-
-  const getUtxById = async (txId: string): Promise<TTx> =>
-    get<TTx>(`transactions/unconfirmed/info/${txId}`)
 
   const waitForTx = async (txId: string): Promise<TTx> =>
     retry(() => {

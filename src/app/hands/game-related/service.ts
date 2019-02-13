@@ -50,6 +50,12 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
     return match
   }
 
+  const ensureStatus = (match: IMatch, expectedStatus: MatchStatus, ...or: MatchStatus[]) => {
+    if (match.status !== expectedStatus && or.filter(x => x === match.status).length == 0) {
+      throw new Error(`Match status error, expected: ${MatchStatus[expectedStatus]}${or ? ' or ' + or.map(x => MatchStatus[x]).join('or ') : ''} actual: ${MatchStatus[match.status]}`)
+    }
+  }
+
   const matches = async (): Promise<IMatch[]> => {
     const matchScripts = await api.getSetScriptTxsByScript(compiledScript).then(s => s.map(x => ({ ...x, timestamp: Date.parse(x.timestamp.toString()) })).toRecord(x => x.sender))
 
@@ -194,8 +200,7 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
     },
 
     join: async (match: IMatch, hands: number[], progress: MatchProgress = () => { }): Promise<IMatch> => {
-      if (match.opponent)
-        throw new Error('Match is already taken')
+      ensureStatus(match, MatchStatus.WaitingForP2)
 
       progress(0)
       const { setKeysAndValues } = apiHelpers(api)
@@ -233,6 +238,8 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
     },
 
     reveal: async (match: IMatch, move: Uint8Array): Promise<IMatch> => {
+      ensureStatus(match, MatchStatus.WaitingP1ToReveal, MatchStatus.WaitingBothToReveal)
+
       //#STEP7# P1 => reveal
       await setKeysAndValues({ publicKey: match.publicKey }, { 'p1m': move })
 
@@ -242,7 +249,18 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
       return match
     },
 
+    declareWinnerAndPayout: async (match: IMatch): Promise<IMatch> => {
+      ensureStatus(match, MatchStatus.WaitingForDeclare)
+
+      m
+      //#STEP8# Winner => declare
+      await setKeysAndValues({ publicKey: match.publicKey }, { 'w': true, })
+
+      return match
+    },
+
     payout: async (match: IMatch): Promise<IMatch> => {
+      ensureStatus(match, MatchStatus.WaitingForPayout)
 
       if (!match.reservationHeight)
         throw new Error('There is no reservation height on match')
@@ -254,14 +272,10 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
       //update match
       match = resolveStatusAndResult(match, h)
 
-      if (match.status !== MatchStatus.WaitingForPayout) {
-        throw new Error('Match is not ready for payout yet')
-      }
-
       const winner = match.result == MatchResult.Opponent ? match.opponent!.address : match.creator.address
       const looser = match.result == MatchResult.Opponent ? match.creator.address : match.opponent!.address
 
-      //#STEP8# payout
+      //#STEP9# payout
       const matchBalance = (await api.getBalance(match.address)) - serviceCommission - 700000
       await massTransferWaves({ publicKey: match.publicKey }, {
         [serviceAddress]: serviceCommission,
