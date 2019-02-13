@@ -157,19 +157,26 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
       else throw new Error('Match not found')
     },
 
-    create: async (hands: number[]): Promise<CreateMatchResult> => {
+    create: async (hands: number[], progress: MatchProgress = () => {}): Promise<CreateMatchResult> => {
       const { seed: matchSeed, address: matchAddress, publicKey: matchKey } = randomAccount(config.chainId)
 
-      //#STEP1 P1 => C (+GameBet)
+      progress(0)
+      // #STEP1 P1 => C (+GameBet)
       const p1p = await keeper.prepareWavesTransfer(matchAddress, gameBet)
-      const { id: p1PaymentId, senderPublicKey: player1Key } = await api.broadcastAndWait(p1p)
-      const { move, moveHash } = hideMoves(hands
-      )
+      progress(.15)
 
-      //#STEP2# C => data
+      const { id: p1PaymentId, senderPublicKey: player1Key } = await api.broadcastAndWait(p1p)
+      const { move, moveHash } = hideMoves(hands)
+
+      progress(.4)
+      // #STEP2# C => data
       await setKeysAndValues({ seed: matchSeed }, { 'p1k': from58(player1Key), 'p1mh': moveHash, 'mk': from58(matchKey), })
-      //#STEP3# C => script
+
+      progress(.8)
+      // #STEP3# C => script
       await setScript(matchSeed, compiledScript)
+
+      progress(1)
 
       return {
         move,
@@ -186,23 +193,32 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
       }
     },
 
-    join: async (match: IMatch, hands: number[]): Promise<IMatch> => {
+    join: async (match: IMatch, hands: number[], progress: MatchProgress = () => {}): Promise<IMatch> => {
       if (match.opponent)
         throw new Error('Match is already taken')
 
+      progress(0)
       const { setKeysAndValues } = apiHelpers(api)
       const matchKey = match.publicKey
       const matchAddress = address({ public: matchKey }, config.chainId)
 
       //#STEP4# P2 => bet
       const p2p = await keeper.prepareWavesTransfer(matchAddress, gameBet)
+      progress(.15)
+
       const { id: p2PaymentId, senderPublicKey: player2Key } = await api.broadcastAndWait(p2p)
       const { move, moveHash } = hideMoves(hands)
+
+      progress(.4)
       //#STEP5# P2 => move
       const h = await api.getHeight()
       await setKeysAndValues({ publicKey: matchKey }, { 'p2k': from58(player2Key), 'p2mh': moveHash, 'h': h, 'p2p': from58(p2PaymentId) })
+
+      progress(.8)
       //#STEP6# P2 => reveal
       await setKeysAndValues({ publicKey: matchKey }, { 'p2m': move })
+
+      progress(1)
 
       //update match
       match.status = MatchStatus.WaitingP1ToReveal
