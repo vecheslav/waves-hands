@@ -195,7 +195,7 @@ export class MatchesService {
     }
   }
 
-  applyReimbursed(address: string) {
+  applyRevoke(address: string) {
     const match = this._transientMatches[address]
     if (!match || match.reimbursed === ReimbursedStatus.Done || !this._user) {
       return
@@ -230,6 +230,7 @@ export class MatchesService {
         // Update my matches
         if (resolvedMatchAddresses && resolvedMatchAddresses.indexOf(match.address) > -1) {
           this._transientMatches[match.address] = actualMatch
+          console.log(actualMatch)
           this._setMyMatch(this._ignoreTransient(actualMatch))
         }
       }
@@ -253,6 +254,16 @@ export class MatchesService {
 
     if (this._user) {
       mergedMatch.owns = match.creator.address === this._user.address
+
+      if (match.status === MatchStatus.WaitingForDeclare) {
+        if (match.result === MatchResult.Opponent) {
+          mergedMatch.canDeclare = this._user.address === match.opponent.address
+        } else if (match.result === MatchResult.Creator) {
+          mergedMatch.canDeclare = this._user.address === match.creator.address
+        } else {
+          mergedMatch.canDeclare = this._user.address === match.creator.address || this._user.address === match.opponent.address
+        }
+      }
     }
 
     return mergedMatch
@@ -283,7 +294,7 @@ export class MatchesService {
           this.reveal(resolve.matchAddress)
           break
         case MatchResolveType.NeedReimbursed:
-          this.applyReimbursed(resolve.matchAddress)
+          this.applyRevoke(resolve.matchAddress)
           break
         case MatchResolveType.Won:
           this.notificationsService.add({ type: NotificationType.Action, params: [ActionType.Won, resolve.matchAddress] })
@@ -349,6 +360,7 @@ export class MatchesService {
       (newMatch.status === MatchStatus.WaitingBothToReveal ||
         newMatch.status === MatchStatus.WaitingP1ToReveal ||
         newMatch.status === MatchStatus.WaitingP2ToReveal ||
+        newMatch.status === MatchStatus.WaitingForDeclare ||
         newMatch.status === MatchStatus.WaitingForPayout) &&
       isCreator) {
       return MatchResolveType.Accepted
@@ -358,6 +370,7 @@ export class MatchesService {
       (newMatch.status === MatchStatus.WaitingBothToReveal ||
         newMatch.status === MatchStatus.WaitingP1ToReveal ||
         newMatch.status === MatchStatus.WaitingP2ToReveal ||
+        newMatch.status === MatchStatus.WaitingForDeclare ||
         newMatch.status === MatchStatus.WaitingForPayout) &&
       typeof newMatch.result === 'undefined' &&
       isCreator) {

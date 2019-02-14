@@ -66,6 +66,7 @@ export interface IMatchResolve {
 export interface IMatchView {
   revealed?: boolean
   owns?: boolean
+  canDeclare?: boolean
   reimbursed?: ReimbursedStatus
 }
 
@@ -95,6 +96,7 @@ export type TMatch = IBaseMatch & IMatchView & IMatchTransient
 export class Match implements TMatch {
   revealed?: boolean
   owns?: boolean
+  canDeclare?: boolean
   reimbursed?: ReimbursedStatus
   isRevealing?: boolean
   isPayout?: boolean
@@ -111,6 +113,7 @@ export class Match implements TMatch {
       match.payout)
 
     m.owns = match.owns
+    m.canDeclare = match.canDeclare
     m.reimbursed = match.reimbursed
     m.revealed = match.revealed
     m.isPayout = match.isPayout
@@ -211,7 +214,7 @@ export class Match implements TMatch {
     if (this._payout)
       return MatchStatus.Done
     if (this._timeout)
-      return MatchStatus.WaitingForPayout
+      return MatchStatus.WaitingForDeclare
     if (!this.opponent)
       return MatchStatus.WaitingForP2
     if (!this.opponent.moves && !this.creator.moves)
