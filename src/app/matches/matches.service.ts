@@ -1,5 +1,5 @@
 import { Injectable, NgZone } from '@angular/core'
-import { HandSign, IBaseMatch, Match, IMatchResolve, MatchResolveType, MatchResult, MatchStatus } from './shared/match.interface'
+import { HandSign, Match, IMatchResolve, MatchResolveType, MatchResult, MatchStatus } from './shared/match.interface'
 import { environment } from '../../environments/environment'
 import { MatchesHelper } from './shared/matches.helper'
 import { BehaviorSubject, Observable, SubscriptionLike, timer } from 'rxjs'
@@ -13,7 +13,7 @@ import * as equal from 'fast-deep-equal'
 import { hideMoves } from '../hands/game-related/game'
 
 interface IMatchListResponse {
-  matches: Record<string, IBaseMatch>
+  matches: Record<string, Match>
   currentHeight: number
 }
 
@@ -24,7 +24,7 @@ export class MatchesService {
   openMatch$ = new BehaviorSubject<Match>(null)
 
   // All received matches
-  private _receivedMatches: Record<string, IBaseMatch> = {}
+  private _receivedMatches: Record<string, Match> = {}
 
   // All transient matches
   private _transientMatches: Record<string, Match> = {}
@@ -167,7 +167,7 @@ export class MatchesService {
     }
   }
 
-  private _updateMatches(newMatches: Record<string, IBaseMatch>): void {
+  private _updateMatches(newMatches: Record<string, Match>): void {
     const updates: Record<string, Match> = {}
     const openMatch = this.openMatch$.getValue()
 
@@ -205,12 +205,12 @@ export class MatchesService {
     }
   }
 
-  private _buildMatch(match: IBaseMatch): Match {
+  private _buildMatch(match: Match): Match {
 
     const mergedMatch: Match = Match.create({
-      ...Match.toParams(this._receivedMatches[match.address] as Match),
+      ...Match.toParams(this._receivedMatches[match.address]),
       ...Match.toParams((this._transientMatches[match.address] || {}) as Match),
-      ...Match.toParams(match as Match),
+      ...Match.toParams(match),
     })
 
     if (this._user) {
@@ -227,7 +227,7 @@ export class MatchesService {
     return newMatch
   }
 
-  private _resolveMatches(newMatches: Record<string, IBaseMatch>): string[] {
+  private _resolveMatches(newMatches: Record<string, Match>): string[] {
     if (!this._user) {
       return
     }
@@ -271,7 +271,7 @@ export class MatchesService {
    * @param newMatches
    * @private
    */
-  private _compareMatches(matches: Record<string, Match>, newMatches: Record<string, IBaseMatch>): IMatchResolve[] {
+  private _compareMatches(matches: Record<string, Match>, newMatches: Record<string, Match>): IMatchResolve[] {
     const matchResolves = []
 
     for (const matchAddress of Object.keys(matches)) {
@@ -302,7 +302,7 @@ export class MatchesService {
    * @param newMatch
    * @private
    */
-  private _resolveMatch(match: Match, newMatch: IBaseMatch): MatchResolveType {
+  private _resolveMatch(match: Match, newMatch: Match): MatchResolveType {
     const isCreator = match.creator && this._user.address === match.creator.address
     const isOpponent = match.opponent && this._user.address === match.opponent.address
 
