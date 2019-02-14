@@ -1,5 +1,4 @@
 import { IWavesApi } from '../api'
-import { IKeeper } from '../keeper/interfaces'
 import { apiHelpers } from '../helpers'
 import { gameBet, hideMoves, serviceCommission, serviceAddress } from './game'
 import { randomAccount } from './core'
@@ -9,6 +8,9 @@ import '../extensions'
 import { toKeysAndValuesExact, binary, num } from '../dataTxs'
 import { Match, MatchStatus, MatchResult, HandSign, IBaseMatch, IMatchParams } from '../../matches/shared/match.interface'
 import { environment } from '../../../environments/environment'
+import { IKeeper } from '../../../../src/app/auth/shared/keeper.interface'
+import { MassTransferTransaction } from '../tx-interfaces'
+import { IMassTransferTransaction } from '@waves/waves-transactions'
 
 export interface CreateMatchResult {
   move: Uint8Array
@@ -16,11 +18,12 @@ export interface CreateMatchResult {
   match: Match
 }
 
+
 export type MatchProgress = (zeroToOne: number, message?: string) => void
 
 export const service = (api: IWavesApi, keeper: IKeeper) => {
   const config = api.config()
-  const { setKeysAndValues, setScript, massTransferWaves } = apiHelpers(api)
+  const { setKeysAndValues, setScript, prepareMassTransferWaves } = apiHelpers(api)
 
   const timeGap = 1000 * 60 * 5
 
@@ -79,6 +82,16 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
       x => ({ sender: x.sender }))
       .toRecord(x => x.sender)
 
+    const declares = toKeysAndValuesExact((await api.getDataTxsByKey({ key: 'w', timeStart: minMax.min.timestamp - timeGap })), {
+      'w': binary,
+    },
+      x => ({ sender: x.sender }))
+      .map(x => ({
+        sender: x.sender,
+        w: base58encode(x.w),
+      }))
+      .toRecord(x => x.sender)
+
     const payouts = (await api.getMassTransfers({ recipient: serviceAddress, timeStart: minMax.min.timestamp })).toRecord(x => x.sender)
 
     const h = await api.getHeight()
@@ -116,7 +129,13 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
         match.creator.moves = [p1m[0], p1m[1], p1m[2]] as [HandSign, HandSign, HandSign]
       }
 
+      if (declares[a]) {
+        const { w } = declares[a]
+        match.winner = w
+      }
       const m = Match.create(match)
+
+      m.height(h)
 
       if (payouts[a]) {
         m.done()
@@ -223,16 +242,34 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
       return match
     },
 
-    declare: async (match: Match): Promise<Match> => {
+    declare: async (match: Match): Promise<{ match: Match, payout: IMassTransferTransaction }> => {
       ensureStatus(match, MatchStatus.WaitingForDeclare)
 
+      const w = match.result == MatchResult.Draw ? '1' : match.result == MatchResult.Creator ? match.creator.publicKey : match.opponent.publicKey
       //#STEP8# Winner => declare
-      await setKeysAndValues({ publicKey: match.publicKey }, { 'w': true, })
+      //await setKeysAndValues({ publicKey: match.publicKey }, { 'w': from58(w), })
 
-      return match
+      const winner = match.result == MatchResult.Opponent ? match.opponent!.address : match.creator.address
+      const looser = match.result == MatchResult.Opponent ? match.creator.address : match.opponent!.address
+
+      const matchBalance = (await api.getBalance(match.address)) - serviceCommission - 700000
+      const payout = await prepareMassTransferWaves({ publicKey: match.publicKey }, {
+        [serviceAddress]: serviceCommission,
+        [winner]: match.result == MatchResult.Draw ? matchBalance / 2 : matchBalance,
+        [looser]: match.result == MatchResult.Draw ? matchBalance / 2 : 0,
+      }, { fee: 700000 })
+
+      const tx = await keeper.prepareDataTransaction({
+        'w': from58(w),
+        [payout.id]: true,
+      }, match.publicKey)
+
+      await api.broadcastAndWait(tx)
+
+      return { match, payout }
     },
 
-    payout: async (match: Match): Promise<Match> => {
+    payout: async (match: Match, payout: MassTransferTransaction): Promise<Match> => {
       ensureStatus(match, MatchStatus.WaitingForPayout)
 
       if (!match.reservationHeight)
@@ -243,16 +280,8 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
 
       const h = await api.getHeight()
 
-      const winner = match.result == MatchResult.Opponent ? match.opponent!.address : match.creator.address
-      const looser = match.result == MatchResult.Opponent ? match.creator.address : match.opponent!.address
-
       //#STEP9# payout
-      const matchBalance = (await api.getBalance(match.address)) - serviceCommission - 700000
-      await massTransferWaves({ publicKey: match.publicKey }, {
-        [serviceAddress]: serviceCommission,
-        [winner]: match.result == MatchResult.Draw ? matchBalance / 2 : matchBalance,
-        [looser]: match.result == MatchResult.Draw ? matchBalance / 2 : 0,
-      }, { fee: 700000 })
+      await api.broadcastAndWait(payout)
 
       match.done()
 

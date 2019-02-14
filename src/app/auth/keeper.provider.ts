@@ -6,7 +6,7 @@ declare var window: any
 @Injectable()
 export class KeeperProvider {
   status: KeeperStatus = {
-    isExist: false
+    isExist: false,
   }
 
   private _keeper: IKeeper

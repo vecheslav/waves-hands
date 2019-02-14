@@ -7,8 +7,8 @@ import '../../hands/extensions'
 import { fromAngular } from '../../hands/api-angular'
 import { api, IWavesApi } from '../../hands/api'
 import { CreateMatchResult, MatchProgress, service } from '../../hands/game-related/service'
-import { IKeeper } from '../../hands/keeper/interfaces'
 import { environment } from 'src/environments/environment'
+import { IKeeper } from '../../../../src/app/auth/shared/keeper.interface'
 
 @Injectable()
 export class MatchesHelper {
@@ -30,11 +30,11 @@ export class MatchesHelper {
     return { matches: (a).toRecord(x => x.address), currentHeight }
   }
 
-  async create(hands: HandSign[], progress: MatchProgress = () => {}): Promise<CreateMatchResult> {
+  async create(hands: HandSign[], progress: MatchProgress = () => { }): Promise<CreateMatchResult> {
     return await this._gameService.create(hands, progress)
   }
 
-  async join(match: Match, hands: HandSign[], progress: MatchProgress = () => {}): Promise<Match> {
+  async join(match: Match, hands: HandSign[], progress: MatchProgress = () => { }): Promise<Match> {
     return await this._gameService.join(match, hands, progress)
   }
 

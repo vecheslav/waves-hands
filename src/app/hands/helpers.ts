@@ -1,7 +1,7 @@
 import { IWavesApi } from './api'
 import { transfer, data, setScript as setScriptTx, massTransfer } from '@waves/waves-transactions'
 import { address } from '@waves/waves-crypto'
-import { ITransferTransaction, IMassTransferTransaction, IDataTransaction, ISetScriptTransaction, WithSender } from '@waves/waves-transactions/dist/transactions'
+import { ITransferTransaction, IMassTransferTransaction, IDataTransaction, ISetScriptTransaction, WithSender, WithId } from '@waves/waves-transactions/dist/transactions'
 import { TransferTransaction, DataTransaction, MassTransferTransaction, SetScriptTransaction } from './tx-interfaces'
 
 export interface Seed {
@@ -20,7 +20,7 @@ export type Account = Seed | PublicKey | Address
 
 export interface IApiHelpers {
   transferWaves: (from: Seed, to: Account, amount: number) => Promise<TransferTransaction>,
-  massTransferWaves: (from: Seed | PublicKey, to: Record<string, number>, options?: { fee: number }) => Promise<MassTransferTransaction>,
+  prepareMassTransferWaves: (from: Seed | PublicKey, to: Record<string, number>, options?: { fee: number }) => IMassTransferTransaction & WithId,
   setKeysAndValues: (account: PublicKey | Seed, map: Record<string, string | number | boolean | Buffer | Uint8Array | number[]>) => Promise<DataTransaction>
   setScript: (seed: string, script: string) => Promise<SetScriptTransaction>
 }
@@ -45,16 +45,11 @@ export const apiHelpers = (api: IWavesApi): IApiHelpers => {
     return await api.broadcastAndWait(tx) as TransferTransaction
   }
 
-  const massTransferWaves = async (from: Seed | PublicKey, to: Record<string, number>, options?: { fee: number }): Promise<MassTransferTransaction> => {
-    if (isPublicKey(from)) {
-      const tx = massTransfer({ ...options, additionalFee: 400000, senderPublicKey: from.publicKey, transfers: Object.keys(to).map(x => ({ recipient: x, amount: to[x] })) })
-      return await api.broadcastAndWait(tx) as MassTransferTransaction
-    }
-    else {
-      const tx = massTransfer({ transfers: Object.keys(to).map(x => ({ recipient: x, amount: to[x] })) }, from.seed)
-      return await api.broadcastAndWait(tx) as MassTransferTransaction
-    }
-  }
+  const prepareMassTransferWaves = (from: Seed | PublicKey, to: Record<string, number>, options?: { fee: number }): IMassTransferTransaction & WithId =>
+    isPublicKey(from) ?
+      massTransfer({ ...options, additionalFee: 400000, senderPublicKey: from.publicKey, transfers: Object.keys(to).map(x => ({ recipient: x, amount: to[x] })) }) :
+      massTransfer({ transfers: Object.keys(to).map(x => ({ recipient: x, amount: to[x] })) }, from.seed)
+
 
   const setKeysAndValues = async (account: PublicKey | Seed, map: Record<string, string | number | boolean | Buffer | Uint8Array | number[]>): Promise<DataTransaction> => {
     if (isSeed(account)) {
@@ -74,7 +69,7 @@ export const apiHelpers = (api: IWavesApi): IApiHelpers => {
 
   return {
     transferWaves,
-    massTransferWaves,
+    prepareMassTransferWaves,
     setKeysAndValues,
     setScript,
   }
