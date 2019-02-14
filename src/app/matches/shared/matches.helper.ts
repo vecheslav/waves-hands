@@ -6,14 +6,14 @@ import { Match, HandSign } from './match.interface'
 import '../../hands/extensions'
 import { fromAngular } from '../../hands/api-angular'
 import { api, IWavesApi } from '../../hands/api'
-import { CreateMatchResult, MatchProgress, service } from '../../hands/game-related/service'
+import { CreateMatchResult, IService, MatchProgress, service } from '../../hands/game-related/service'
 import { environment } from 'src/environments/environment'
 import { IKeeper } from '../../../../src/app/auth/shared/keeper.interface'
 
 @Injectable()
 export class MatchesHelper {
   private _api: IWavesApi
-  private _gameService
+  private _gameService: IService
 
   constructor(private keeperService: KeeperService, private core: CoreService, private http: HttpClient) {
     this._api = api(environment.api, fromAngular(http))
@@ -42,7 +42,13 @@ export class MatchesHelper {
     return await this._gameService.reveal(match, move)
   }
 
-  async payout(match: Match, move?: Uint8Array) {
-    return await this._gameService.payout(match)
+  async cashback(match: Match, paymentId: string) {
+    const { cashback: cashbackTx } = await this._gameService.declareCashback(match, paymentId)
+    return await this._gameService.cashback(cashbackTx)
+  }
+
+  async payout(match: Match) {
+    const { payout: payoutTx } = await this._gameService.declarePayout(match)
+    return await this._gameService.payout(match, payoutTx)
   }
 }
