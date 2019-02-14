@@ -111,13 +111,13 @@ export class MatchesService {
     return match
   }
 
-  async revealMatch(address: string) {
-    const match = this._transientMatches[address]
+  async reveal(matchAddress: string) {
+    const match = this._transientMatches[matchAddress]
     if (!match || match.isRevealing || !this._user) {
       return
     }
 
-    const move = this.storage.getMove(this._user.address, address)
+    const move = this.storage.getMove(this._user.address, matchAddress)
     if (!move) {
       return
     }
@@ -144,8 +144,34 @@ export class MatchesService {
     }
   }
 
-  async payoutMatch(address: string) {
-    const match = this._transientMatches[address]
+  async revokeBet(matchAddress: string) {
+    const match = this._transientMatches[matchAddress]
+
+    if (!match || !match.reimbursed || !this._user) {
+      return
+    }
+
+    const nId = this.notificationsService.add({
+      type: NotificationType.Process,
+      message: 'PROCESS_PAYOUT_MATCH',
+    })
+
+    try {
+      await this.matchesHelper.cashback(match, '')
+      match.reimbursed = ReimbursedStatus.Done
+
+      this._setMyMatch(this._ignoreTransient(match))
+
+      this.notificationsService.remove(nId)
+    } catch (err) {
+      this.notificationsService.remove(nId)
+      this.notificationsService.add({ type: NotificationType.Error, message: 'ERROR_PAYOUT_MATCH' })
+      throw err
+    }
+  }
+
+  async payout(matchAddress: string) {
+    const match = this._transientMatches[matchAddress]
     if (!match || match.isPayout || !this._user) {
       return
     }
@@ -251,10 +277,10 @@ export class MatchesService {
       switch (resolve.type) {
         case MatchResolveType.Accepted:
           this.notificationsService.add({ type: NotificationType.Action, params: [ActionType.OpponentJoined, resolve.matchAddress] })
-          this.revealMatch(resolve.matchAddress)
+          this.reveal(resolve.matchAddress)
           break
         case MatchResolveType.NeedReveal:
-          this.revealMatch(resolve.matchAddress)
+          this.reveal(resolve.matchAddress)
           break
         case MatchResolveType.NeedReimbursed:
           this.applyReimbursed(resolve.matchAddress)

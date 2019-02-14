@@ -89,15 +89,24 @@
     </div>
   </a>
 
+  <!-- join -->
   <a [routerLink]="['match', match.address]" class="top-overlay" [hidden]="!startIsShown">
     <div class="top-overlay__inner">
       <button class="button is-primary" [translate]="'CARD.START'">Start Match</button>
     </div>
   </a>
 
+  <!-- cashback -->
   <div class="top-overlay top-overlay--revoke" *ngIf="match.reimbursed === 1">
     <div class="top-overlay__inner">
-      <button class="button is-warning" [translate]="'CARD.REIMBURSED'">Revoke Bet</button>
+      <button class="button is-warning" [translate]="'CARD.REIMBURSED'" (click)="revoke()">Revoke Bet</button>
+    </div>
+  </div>
+
+  <!-- payout -->
+  <div class="top-overlay top-overlay--payout" *ngIf="match.status === 5">
+    <div class="top-overlay__inner">
+      <button class="button is-success" [translate]="'CARD.PAYOUT'" (click)="payout()">Collect Waves</button>
     </div>
   </div>
 

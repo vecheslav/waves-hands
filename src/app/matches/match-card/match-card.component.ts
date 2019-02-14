@@ -43,6 +43,14 @@ export class MatchCardComponent implements OnInit {
     this.startIsShown = false
   }
 
+  async revoke() {
+    await this.matchesService.revokeBet(this.match.address)
+  }
+
+  async payout() {
+    await this.matchesService.payout(this.match.address)
+  }
+
   private _initLeftPercent() {
     if ((
       this.match.status === MatchStatus.WaitingBothToReveal ||
