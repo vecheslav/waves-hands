@@ -1,5 +1,5 @@
 import { IUser } from '../../user/user.interface'
-import { environment } from 'src/environments/environment'
+import { environment } from '../../../../src/environments/environment'
 
 export enum HandSign {
   Rock = 0,

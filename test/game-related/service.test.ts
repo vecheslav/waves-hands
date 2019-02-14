@@ -45,8 +45,6 @@ const playFullMatch = async (p1Moves: number[], p2Moves: number[]) => {
 
   await s.reveal(match, p1Move)
 
-  await s.payout(match)
-
   const [p1Balance, p2Balance] = await Promise.all([api.getBalance(player1Address), api.getBalance(player2Address)])
 
   return { p1Balance, p2Balance, player1Seed, player2Seed }
@@ -61,11 +59,10 @@ const createMatch = async (p1Moves: number[]) => {
   return { player1Seed, p1Move, p1MoveHash, match }
 }
 
-
 xit('get match', async () => {
   const s = service(api, keeperMock([]))
-  const m = Match.create({ ...Match.toPlain(EmptyMatch), status: MatchStatus.WaitingP2ToReveal })
-  await s.reveal(m, Uint8Array.from([1, 2, 1]))
+  const m = await s.matches()
+  console.log(m)
 })
 
 it('create match and get it back', async () => {
@@ -75,30 +72,40 @@ it('create match and get it back', async () => {
 
   const { player1Address, player2Address, player1Seed, player2Seed } = await createPlayers()
 
-  const s = service(api, keeperMock([player1Seed, player2Seed]))
+  const s = service(api, keeperMock([player1Seed, player2Seed, player2Seed]))
 
   const { match, move: p1Move } = await s.create(p1Moves)
 
-  let m: Match
+  let mremote: Match = await s.match(match.address)
+  let mlocal: Match = match
 
-  m = await s.match(match.address)
-  expect(m.status).toBe(MatchStatus.WaitingForP2)
+  expect(mlocal.status).toBe(MatchStatus.WaitingForP2)
+  expect(mremote.status).toBe(MatchStatus.WaitingForP2)
 
-  await s.join(match, p2Moves)
+  mlocal = await s.join(mlocal, p2Moves)
+  mremote = await s.match(match.address)
+  expect(mlocal.status).toBe(MatchStatus.WaitingP1ToReveal)
+  expect(mremote.status).toBe(MatchStatus.WaitingP1ToReveal)
 
-  m = await s.match(match.address)
-  expect(m.status).toBe(MatchStatus.WaitingP1ToReveal)
+  mlocal = await s.reveal(mlocal, p1Move)
+  mremote = await s.match(match.address)
+  expect(mlocal.result).toBe(MatchResult.Opponent)
+  expect(mlocal.result).toBe(MatchResult.Opponent)
+  expect(mlocal.status).toBe(MatchStatus.WaitingForDeclare)
+  expect(mremote.status).toBe(MatchStatus.WaitingForDeclare)
 
-  await s.reveal(match, p1Move)
+  const { match: m1, payout } = await s.declarePayout(mlocal)
+  mlocal = m1
+  mremote = await s.match(match.address)
 
-  m = await s.match(match.address)
-  expect(m.status).toBe(MatchStatus.WaitingForPayout)
+  expect(mlocal.status).toBe(MatchStatus.WaitingForDeclare)
+  expect(mremote.status).toBe(MatchStatus.WaitingForDeclare)
 
-  await s.payout(match)
+  mlocal = await s.payout(mlocal, payout)
+  mremote = await s.match(match.address)
 
-  m = await s.match(match.address)
-  expect(m.status).toBe(MatchStatus.Done)
-  expect(m.result).toBe(MatchResult.Opponent)
+  expect(mremote.status).toBe(MatchStatus.Done)
+  expect(mlocal.status).toBe(MatchStatus.Done)
 
   const [p1Balance, p2Balance] = await Promise.all([api.getBalance(player1Address), api.getBalance(player2Address)])
 
@@ -111,14 +118,6 @@ xit('match sunny day', async () => {
 
   expect(p1Balance).toBe(0)
   expect(p2Balance).toBeGreaterThan(gameBet)
-})
-
-xit('early payout', async () => {
-  const { match } = await createMatch([1, 1, 1])
-
-  const s = service(api, keeperMock([]))
-
-  expect(s.payout(match)).rejects.toThrow()
 })
 
 xit('matches benchmark', async () => {
