@@ -98,8 +98,8 @@ it('create match and get it back', async () => {
   mlocal = m1
   mremote = await s.match(match.address)
 
-  expect(mlocal.status).toBe(MatchStatus.WaitingForDeclare)
-  expect(mremote.status).toBe(MatchStatus.WaitingForDeclare)
+  expect(mlocal.status).toBe(MatchStatus.WaitingForPayout)
+  expect(mremote.status).toBe(MatchStatus.WaitingForPayout)
 
   mlocal = await s.payout(mlocal, payout)
   mremote = await s.match(match.address)

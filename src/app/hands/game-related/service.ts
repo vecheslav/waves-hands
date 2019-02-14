@@ -143,11 +143,8 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       if (declares[a]) {
         const { w } = declares[a]
         match.winner = w
+      }
 
-      }
-      else {
-        console.log('NO DECLARES!')
-      }
       const m = Match.create(match)
 
       m.height(h)
@@ -289,21 +286,23 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       const winner = match.result == MatchResult.Opponent ? match.opponent!.address : match.creator.address
       const looser = match.result == MatchResult.Opponent ? match.creator.address : match.opponent!.address
 
-      const matchBalance = (await api.getBalance(match.address)) - serviceCommission - 700000
+      const matchBalance = (await api.getBalance(match.address)) - serviceCommission - 700000 - 500000
       const payout = prepareMassTransferWaves({ publicKey: match.publicKey }, {
         [serviceAddress]: serviceCommission,
         [winner]: match.result == MatchResult.Draw ? matchBalance / 2 : matchBalance,
         [looser]: match.result == MatchResult.Draw ? matchBalance / 2 : 0,
       }, { fee: 700000 })
 
+
       const tx = await keeper.prepareDataTransaction({
         'w': from58(w),
         [payout.id]: true,
       }, match.publicKey)
 
+
       await api.broadcastAndWait(tx)
 
-      return { match, payout }
+      return { match: Match.create({ ...Match.toPlain(match), winner: w }), payout }
     },
 
     payout: async (match: Match, payout: IMassTransferTransaction): Promise<Match> => {
