@@ -43,11 +43,18 @@ export enum MatchResolveType {
   Nothing,
   Accepted,
   NeedReveal,
+  NeedReimbursed,
   NeedPayout,
   CreatorMissed,
   Won,
   Lost,
   Draw,
+}
+
+export enum ReimbursedStatus {
+  None = 0,
+  Need = 1,
+  Done = 2,
 }
 
 export interface IMatchResolve {
@@ -58,6 +65,7 @@ export interface IMatchResolve {
 export interface IMatchView {
   revealed?: boolean
   owns?: boolean
+  reimbursed?: ReimbursedStatus
 }
 
 export interface IMatchTransient {
@@ -83,6 +91,7 @@ export interface IBaseMatch extends IMatchParams {
 export class Match implements IBaseMatch, IMatchView, IMatchTransient {
   revealed?: boolean
   owns?: boolean
+  reimbursed?: ReimbursedStatus
   isRevealing?: boolean
   isPayout?: boolean
 
@@ -97,6 +106,7 @@ export class Match implements IBaseMatch, IMatchView, IMatchTransient {
       match.winner)
 
     m.owns = match.owns
+    m.reimbursed = match.reimbursed
     m.revealed = match.revealed
     m.isPayout = match.isPayout
     m.isRevealing = match.isRevealing
@@ -202,7 +212,6 @@ export const EmptyMatch: Match = Match.create({ publicKey: '', address: '', time
 
 export enum MatchStage {
   SelectHands,
-  CompareHands,
   CreatedMatch,
   JoinedMatch,
   ReservedMatch,

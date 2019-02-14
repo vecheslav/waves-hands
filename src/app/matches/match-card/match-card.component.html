@@ -89,11 +89,17 @@
     </div>
   </a>
 
-  <a [routerLink]="['match', match.address]" class="start-overlay" [hidden]="!startIsShown">
-    <div class="start-overlay__inner">
+  <a [routerLink]="['match', match.address]" class="top-overlay" [hidden]="!startIsShown">
+    <div class="top-overlay__inner">
       <button class="button is-primary" [translate]="'CARD.START'">Start Match</button>
     </div>
   </a>
+
+  <div class="top-overlay" [hidden]="!reimbursedIsShown">
+    <div class="top-overlay__inner">
+      <button class="button is-warning" [translate]="'CARD.REIMBURSED'">Revoke Bet</button>
+    </div>
+  </div>
 
   <div class="level match-meta">
     <div class="level-left">

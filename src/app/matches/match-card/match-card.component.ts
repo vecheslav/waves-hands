@@ -1,5 +1,5 @@
 import { Component, HostListener, Input, OnInit } from '@angular/core'
-import { Match, MatchStatus } from '../shared/match.interface'
+import { Match, MatchStatus, ReimbursedStatus } from '../shared/match.interface'
 import { environment } from 'src/environments/environment'
 import { MatchesService } from '../matches.service'
 
@@ -17,6 +17,7 @@ export class MatchCardComponent implements OnInit {
   } as Match
 
   startIsShown = false
+  reimbursedIsShown = false
   shareUrl: string
   pendingLeftPercent = 100
 
@@ -36,11 +37,16 @@ export class MatchCardComponent implements OnInit {
     if (this.match.status === MatchStatus.WaitingForP2 && !this.match.owns && !this.match.opponent) {
       this.startIsShown = true
     }
+
+    if (this.match.reimbursed === ReimbursedStatus.Need) {
+      this.reimbursedIsShown = true
+    }
   }
 
   @HostListener('mouseleave')
   onMouseLeave(): void {
     this.startIsShown = false
+    this.reimbursedIsShown = false
   }
 
   private _initLeftPercent() {

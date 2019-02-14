@@ -1,5 +1,5 @@
 import { Injectable, NgZone } from '@angular/core'
-import { HandSign, Match, IMatchResolve, MatchResolveType, MatchResult, MatchStatus } from './shared/match.interface'
+import { HandSign, IMatchResolve, Match, MatchResolveType, MatchResult, MatchStatus, ReimbursedStatus } from './shared/match.interface'
 import { environment } from '../../environments/environment'
 import { MatchesHelper } from './shared/matches.helper'
 import { BehaviorSubject, Observable, SubscriptionLike, timer } from 'rxjs'
@@ -167,6 +167,16 @@ export class MatchesService {
     }
   }
 
+  applyReimbursed(address: string) {
+    const match = this._transientMatches[address]
+    if (!match || match.reimbursed === ReimbursedStatus.Done || !this._user) {
+      return
+    }
+
+    match.reimbursed = ReimbursedStatus.Need
+    this._setMyMatch(this._ignoreTransient(match))
+  }
+
   private _updateMatches(newMatches: Record<string, Match>): void {
     const updates: Record<string, Match> = {}
     const openMatch = this.openMatch$.getValue()
@@ -244,11 +254,8 @@ export class MatchesService {
         case MatchResolveType.NeedReveal:
           this.revealMatch(resolve.matchAddress)
           break
-        case MatchResolveType.NeedPayout:
-          this.payoutMatch(resolve.matchAddress)
-          break
-        case MatchResolveType.CreatorMissed:
-          // ...
+        case MatchResolveType.NeedReimbursed:
+          this.applyReimbursed(resolve.matchAddress)
           break
         case MatchResolveType.Won:
           this.notificationsService.add({ type: NotificationType.Action, params: [ActionType.Won, resolve.matchAddress] })
@@ -329,18 +336,10 @@ export class MatchesService {
       return MatchResolveType.NeedReveal
     }
 
-    if ((newMatch.status === MatchStatus.WaitingBothToReveal ||
-      newMatch.status === MatchStatus.WaitingP1ToReveal ||
-      newMatch.status === MatchStatus.WaitingP2ToReveal ||
-      newMatch.status === MatchStatus.WaitingForPayout) &&
-      newMatch.reservationHeight - this.height$.getValue() < -environment.creatorRevealBlocksCount &&
-      isOpponent) {
-      return MatchResolveType.CreatorMissed
-    }
-
-    if (newMatch.status === MatchStatus.WaitingForPayout &&
-      typeof newMatch.result !== 'undefined') {
-      return MatchResolveType.NeedPayout
+    if (!match.reimbursed &&
+        isOpponent &&
+        (newMatch.opponent && this._user.address !== newMatch.opponent.address)) {
+      return MatchResolveType.NeedReimbursed
     }
 
     if (match.status !== MatchStatus.Done && newMatch.status === MatchStatus.Done) {

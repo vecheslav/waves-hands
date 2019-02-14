@@ -129,16 +129,19 @@ $card-padding: 1.5rem;
     &:before { background-color: $green; }
   }
 
-  &.status-1 {
+  &.status-1,
+  &.status-2,
+  &.status-3,
+  &.status-4 {
     &:before { background-color: $yellow; }
   }
 
-  &.status-2 {
+  &.status-5 {
     &:before { background-color: $grey; }
   }
 }
 
-.start-overlay {
+.top-overlay {
   position: absolute;
   top: 0;
   left: 0;
