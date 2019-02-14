@@ -36,6 +36,7 @@ export interface IWavesApi {
   getDataTxsByKey(params: GetDataTxsByKeyParams): Promise<DataTransaction[]>
   getMassTransfers(params: GetMassTransferTxsByKeyParams): Promise<MassTransferTransaction[]>
   getTxsByAddress(address: string, limit?: number): Promise<TTx[]>
+  getUtx(): Promise<TTx[]>
   getSetScriptTxsByScript(script: string, limit?: number): Promise<SetScriptTransaction[]>
   getBalance(address: string): Promise<number>
   config(): IApiConfig
@@ -152,6 +153,9 @@ export const api = (config: IApiConfig, h: IHttp): IWavesApi => {
     return r
   }
 
+  const getUtx = (): Promise<TTx[]> =>
+    get<TTx[]>('transactions/unconfirmed')
+
   const getBalance = (address: string): Promise<number> =>
     get<{ available: number }>(`addresses/balance/details/${address}`).then(x => x.available)
 
@@ -171,6 +175,7 @@ export const api = (config: IApiConfig, h: IHttp): IWavesApi => {
     broadcastAndWait,
     getMassTransfers,
     getBalance,
+    getUtx,
     getSetScriptTxsByScript,
     config: () => config,
   }

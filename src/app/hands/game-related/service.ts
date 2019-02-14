@@ -212,10 +212,18 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       const p2p = await keeper.prepareWavesTransfer(matchAddress, gameBet)
       progress(.15)
 
+      const utx = await api.getUtx()
+      if (utx.filter(x => x.type === TRANSACTION_TYPE.TRANSFER).map(x => x as ITransferTransaction)
+        .filter(x => x.recipient === match.address).length > 0) {
+        throw new Error('Match is already taken')
+      }
+
+      progress(.3)
+
       const { id: p2PaymentId, senderPublicKey: player2Key } = await api.broadcastAndWait(p2p)
       const { move, moveHash } = hideMoves(hands)
 
-      progress(.4)
+      progress(.5)
       //#STEP5# P2 => move
       const h = await api.getHeight()
       await setKeysAndValues({ publicKey: matchKey }, { 'p2k': from58(player2Key), 'p2mh': moveHash, 'h': h, 'p2p': from58(p2PaymentId) })

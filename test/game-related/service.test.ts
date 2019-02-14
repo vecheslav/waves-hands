@@ -59,17 +59,23 @@ const createMatch = async (p1Moves: number[]) => {
   return { player1Seed, p1Move, p1MoveHash, match }
 }
 
-it('get match', async () => {
+xit('get match', async () => {
   const s = service(api, keeperMock([]))
   const m = await s.matches()
   const all = m.map(x => ({ address: x.address, status: x.status }))
   console.log(all)
 })
 
-xit('create match and get it back', async () => {
+it('extra payment', async () => {
+  
+})
+
+it('create match and get it back', async () => {
 
   const p1Moves = [1, 1, 1]
-  const p2Moves = [2, 2, 2]
+  const p2Moves = [1, 1, 1]
+
+  const r = MatchResult.Draw
 
   const { player1Address, player2Address, player1Seed, player2Seed } = await createPlayers()
 
@@ -90,8 +96,8 @@ xit('create match and get it back', async () => {
 
   mlocal = await s.reveal(mlocal, p1Move)
   mremote = await s.match(match.address)
-  expect(mlocal.result).toBe(MatchResult.Opponent)
-  expect(mlocal.result).toBe(MatchResult.Opponent)
+  expect(mlocal.result).toBe(r)
+  expect(mlocal.result).toBe(r)
   expect(mlocal.status).toBe(MatchStatus.WaitingForDeclare)
   expect(mremote.status).toBe(MatchStatus.WaitingForDeclare)
 
@@ -110,8 +116,9 @@ xit('create match and get it back', async () => {
 
   const [p1Balance, p2Balance] = await Promise.all([api.getBalance(player1Address), api.getBalance(player2Address)])
 
-  expect(p1Balance).toBe(0)
-  expect(p2Balance).toBeGreaterThan(gameBet)
+  console.log(p1Balance)
+  //expect(p1Balance).toBe(0)
+  //expect(p2Balance).toBeGreaterThan(gameBet)
 })
 
 xit('match sunny day', async () => {
