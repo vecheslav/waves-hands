@@ -2,12 +2,11 @@ import { IWavesApi } from '../api'
 import { apiHelpers } from '../helpers'
 import { gameBet, hideMoves, serviceCommission, serviceAddress } from './game'
 import { randomAccount } from './core'
-import { base58decode as from58, address, base58encode, publicKey } from '@waves/waves-crypto'
+import { base58decode as from58, address, base58encode } from '@waves/waves-crypto'
 import { compiledScript } from './contract'
 import '../extensions'
 import { toKeysAndValuesExact, binary, num } from '../dataTxs'
-import { Match, MatchStatus, MatchResult, HandSign, IBaseMatch, IMatchParams } from '../../matches/shared/match.interface'
-import { environment } from '../../../environments/environment'
+import { Match, MatchStatus, MatchResult, HandSign, IMatchParams } from '../../matches/shared/match.interface'
 import { IKeeper } from '../../../../src/app/auth/shared/keeper.interface'
 import { MassTransferTransaction, TransferTransaction } from '../tx-interfaces'
 import { IMassTransferTransaction, ITransferTransaction } from '@waves/waves-transactions'
@@ -19,9 +18,20 @@ export interface CreateMatchResult {
   match: Match
 }
 
+export interface IService {
+  matches(): Promise<Match[]>
+  match(address: string): Promise<Match>
+  create(hands: number[], progress: MatchProgress): Promise<CreateMatchResult>
+  join(match: Match, hands: number[], progress: MatchProgress): Promise<Match>
+  reveal(match: Match, move: Uint8Array): Promise<Match>
+  declareCashback(match: Match, paymentId: string): Promise<{ match: Match, cashback: ITransferTransaction }>
+  declarePayout(match: Match): Promise<{ match: Match, payout: IMassTransferTransaction }>
+  payout(match: Match, payout: MassTransferTransaction): Promise<Match>
+}
+
 export type MatchProgress = (zeroToOne: number, message?: string) => void
 
-export const service = (api: IWavesApi, keeper: IKeeper) => {
+export const service = (api: IWavesApi, keeper: IKeeper): IService => {
   const config = api.config()
   const { setKeysAndValues, setScript, prepareMassTransferWaves, prepareTransferWaves } = apiHelpers(api)
 
@@ -111,7 +121,7 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
       }
 
       if (p2Inits[a]) {
-        const { h, p2k, p2mh } = p2Inits[a]
+        const { h, p2k } = p2Inits[a]
         match.opponent = {
           address: address({ public: p2k }, config.chainId),
           publicKey: p2k,
@@ -164,7 +174,7 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
       const p1p = await keeper.prepareWavesTransfer(matchAddress, gameBet)
       progress(.15)
 
-      const { id: p1PaymentId, senderPublicKey: player1Key } = await api.broadcastAndWait(p1p)
+      const { senderPublicKey: player1Key } = await api.broadcastAndWait(p1p)
       const { move, moveHash } = hideMoves(hands)
 
       progress(.4)
@@ -296,7 +306,6 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
       if (!match.opponent)
         throw new Error('Match opponent is empty')
 
-      const h = await api.getHeight()
 
       //#STEP9# payout
       await api.broadcastAndWait(payout)
