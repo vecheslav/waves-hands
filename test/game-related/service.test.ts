@@ -59,13 +59,14 @@ const createMatch = async (p1Moves: number[]) => {
   return { player1Seed, p1Move, p1MoveHash, match }
 }
 
-xit('get match', async () => {
+it('get match', async () => {
   const s = service(api, keeperMock([]))
   const m = await s.matches()
-  console.log(m)
+  const all = m.map(x => ({ address: x.address, status: x.status }))
+  console.log(all)
 })
 
-it('create match and get it back', async () => {
+xit('create match and get it back', async () => {
 
   const p1Moves = [1, 1, 1]
   const p2Moves = [2, 2, 2]

@@ -145,13 +145,12 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
         match.winner = w
       }
 
-      const m = Match.create(match)
-
-      m.height(h)
-
       if (payouts[a]) {
-        m.done()
+        match.payout = true
       }
+
+      const m = Match.create(match)
+      m.height(h)
 
       return m
     }).filter(x => x !== undefined) as Match[]
@@ -318,9 +317,7 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       //#STEP9# payout
       await api.broadcastAndWait(payout)
 
-      match.done()
-
-      return match
+      return Match.create({ ...Match.toPlain(match), payout: true })
     },
   }
 }
