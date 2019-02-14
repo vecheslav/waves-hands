@@ -66,7 +66,7 @@
     </div>
 
     <div class="level match-card__details">
-      <div class="match-pending" *ngIf="match.status === 1 && pendingLeftPercent > 0"
+      <div class="match-pending" *ngIf="pendingLeftPercent > 0"
         [ngStyle]="{'width': pendingLeftPercent + '%'}"></div>
       <div class="level-left">
         <div class="level-item">

@@ -218,7 +218,7 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
       //update match
 
       const m = Match.create({
-        ...Match.toParams(match),
+        ...Match.toPlain(match),
         reservationHeight: h,
         opponent: {
           publicKey: player2Key,

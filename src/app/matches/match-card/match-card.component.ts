@@ -19,7 +19,7 @@ export class MatchCardComponent implements OnInit {
   startIsShown = false
   reimbursedIsShown = false
   shareUrl: string
-  pendingLeftPercent = 100
+  pendingLeftPercent = 0
 
   private _pendingLeftHeight = 0
 

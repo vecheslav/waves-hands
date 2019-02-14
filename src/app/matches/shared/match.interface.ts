@@ -85,11 +85,13 @@ export interface IMatchParams {
 }
 
 export interface IBaseMatch extends IMatchParams {
-  status: MatchStatus
+  status?: MatchStatus
   result?: MatchResult
 }
 
-export class Match implements IBaseMatch, IMatchView, IMatchTransient {
+export type TMatch = IBaseMatch & IMatchView & IMatchTransient
+
+export class Match implements TMatch {
   revealed?: boolean
   owns?: boolean
   reimbursed?: ReimbursedStatus
@@ -115,7 +117,7 @@ export class Match implements IBaseMatch, IMatchView, IMatchTransient {
     return m
   }
 
-  static toParams(match: Match): IMatchParams {
+  static toPlain(match: Match): TMatch {
 
     if (!match)
       return undefined
