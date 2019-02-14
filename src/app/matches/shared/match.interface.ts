@@ -65,35 +65,82 @@ export interface IMatchTransient {
   isPayout?: boolean
 }
 
-export interface IBaseMatch {
+export interface IMatchParams {
   address: string
   publicKey: string
   creator: IPlayer
   opponent?: IPlayer
   winner?: string | 'draw'
   reservationHeight?: number
+  timestamp: number
+}
+
+export interface IBaseMatch extends IMatchParams {
   status: MatchStatus
   result?: MatchResult
-  timestamp?: number | string
 }
 
 export class Match implements IBaseMatch, IMatchView, IMatchTransient {
-  opponent?: IPlayer
-  reservationHeight?: number
-  winner?: string
-  result?: MatchResult
   revealed?: boolean
   owns?: boolean
   isRevealing?: boolean
   isPayout?: boolean
 
+  static create(match: (IMatchParams & IMatchView & IMatchTransient) | Match) {
+    const m = new Match(
+      match.publicKey,
+      match.address,
+      match.timestamp,
+      match.creator,
+      match.opponent,
+      match.reservationHeight,
+      match.winner)
 
-  constructor(
+    m.owns = match.owns
+    m.revealed = match.revealed
+    m.isPayout = match.isPayout
+    m.isRevealing = match.isRevealing
+
+    return m
+  }
+
+  static toParams(match: Match): IMatchParams {
+
+    if (!match)
+      return undefined
+
+    return {
+      address: match.address,
+      publicKey: match.publicKey,
+      creator: match.creator,
+      opponent: match.opponent,
+      winner: match.winner,
+      reservationHeight: match.reservationHeight,
+      timestamp: match.timestamp,
+    }
+  }
+
+  private constructor(
     private _publicKey: string,
     private _address: string,
     private _timestamp: number,
-    private _creator: IPlayer
+    private _creator: IPlayer,
+    private _opponent?: IPlayer,
+    private _reservationHeight?: number,
+    private _winner?: string
   ) { }
+
+  get winner() {
+    return this._winner
+  }
+
+  get reservationHeight() {
+    return this._reservationHeight
+  }
+
+  get opponent() {
+    return this._opponent
+  }
 
   get creator() {
     return this._creator
@@ -113,6 +160,26 @@ export class Match implements IBaseMatch, IMatchView, IMatchTransient {
   private _done: boolean = false
   done() { this._done = true }
 
+  private _compareMoves = (m1: number, m2: number) =>
+    ((m1 === 0 && m2 === 2) ||
+      (m1 === 1 && m2 === 0) ||
+      (m1 === 2 && m2 === 1)) ? 1 : (m1 === m2 ? 0 : -1)
+
+  private _whoHasWon(p1: number[], p2: number[]) {
+    if (!p1 || !p2) {
+      return
+    }
+    const score = p2.slice(0, 3).reduce((s, p2move, i) => s + this._compareMoves(p1[i], p2move), 0)
+    return score > 0 ? MatchResult.Creator : (score === 0 ? MatchResult.Draw : MatchResult.Opponent)
+  }
+
+  get result(): MatchResult {
+    if (this.status < MatchStatus.WaitingForDeclare)
+      return undefined
+
+    return this._whoHasWon(this.creator.moves, this.opponent.moves)
+  }
+
   get status(): MatchStatus {
     if (this._done)
       return MatchStatus.Done
@@ -131,7 +198,7 @@ export class Match implements IBaseMatch, IMatchView, IMatchTransient {
   }
 }
 
-export const EmptyMatch: Match = new Match('', '', 0, null)
+export const EmptyMatch: Match = Match.create({ publicKey: '', address: '', timestamp: 0, creator: null })
 
 export enum MatchStage {
   SelectHands,

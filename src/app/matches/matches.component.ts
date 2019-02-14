@@ -25,6 +25,7 @@ export class MatchesComponent implements OnInit, OnDestroy {
     }
 
     this._matchesSubscriber = this.matchesService.updates$.subscribe((updates: Record<string, Match>) => {
+
       if (!updates) {
         return
       }

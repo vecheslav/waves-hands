@@ -36,7 +36,6 @@
     "identity-img": "^1.0.0",
     "rxjs": "~6.3.3",
     "tslib": "^1.9.0",
-    "winston": "^3.2.1",
     "zone.js": "~0.8.26"
   },
   "devDependencies": {
@@ -46,8 +45,6 @@
     "@angular/language-service": "~7.1.0",
     "@types/axios": "^0.14.0",
     "@types/cli-progress": "^1.8.0",
-    "@types/jasmine": "~2.8.8",
-    "@types/jasminewd2": "~2.0.3",
     "@types/jest": "^24.0.3",
     "@types/node": "~8.9.4",
     "axios": "^0.18.0",

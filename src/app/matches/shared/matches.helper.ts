@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core'
 import { KeeperService } from '../../auth/keeper.service'
 import { CoreService } from '../../core/core.service'
 import { HttpClient } from '@angular/common/http'
-import { Match, EmptyMatch, HandSign } from './match.interface'
-import './extensions'
+import { Match, HandSign } from './match.interface'
+import '../../hands/extensions'
 import { fromAngular } from '../../hands/api-angular'
 import { api, IWavesApi } from '../../hands/api'
 import { CreateMatchResult, MatchProgress, service } from '../../hands/game-related/service'
@@ -26,7 +26,8 @@ export class MatchesHelper {
 
   async getMatchList(): Promise<{ matches: Record<string, Match>, currentHeight: number }> {
     const currentHeight = await this._api.getHeight()
-    return { matches: (await this._gameService.matches()).toRecord(x => x.address), currentHeight }
+    const a = await this._gameService.matches()
+    return { matches: (a).toRecord(x => x.address), currentHeight }
   }
 
   async create(hands: HandSign[], progress: MatchProgress = () => {}): Promise<CreateMatchResult> {

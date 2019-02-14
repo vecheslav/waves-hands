@@ -33,6 +33,6 @@ import { TranslateModule } from '@ngx-translate/core'
   exports: [
     MatchesComponent,
     MatchComponent,
-  ]
+  ],
 })
 export class MatchesModule { }

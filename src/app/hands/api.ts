@@ -1,7 +1,6 @@
 import { TTx as Tx, WithId } from '@waves/waves-transactions'
 import { IApiConfig } from './config'
 import { DataTransaction, MassTransferTransaction, SetScriptTransaction } from './tx-interfaces'
-import { logger } from './logger'
 type TTx = Tx & WithId
 
 
@@ -106,11 +105,9 @@ export const api = (config: IApiConfig, h: IHttp): IWavesApi => {
 
   const http = {
     get: <T>(url: string): Promise<T> => {
-      logger.verbose(url)
       return h.get(url)
     },
     post: <T>(url: string, data: any): Promise<T> => {
-      logger.verbose(url)
       return h.post(url, data)
     },
   }

@@ -62,12 +62,13 @@ const createMatch = async (p1Moves: number[]) => {
 }
 
 
-it('get match', async () => {
+xit('get match', async () => {
   const s = service(api, keeperMock([]))
-  await s.reveal({...EmptyMatch, status: MatchStatus.WaitingP2ToReveal}, Uint8Array.from([1,2,1]))
+  const m = Match.create({ ...Match.toParams(EmptyMatch), status: MatchStatus.WaitingP2ToReveal })
+  await s.reveal(m, Uint8Array.from([1, 2, 1]))
 })
 
-xit('create match and get it back', async () => {
+it('create match and get it back', async () => {
 
   const p1Moves = [1, 1, 1]
   const p2Moves = [2, 2, 2]

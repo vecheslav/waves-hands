@@ -176,6 +176,7 @@ export class MatchesService {
 
     // Find changes
     for (const match of Object.values(newMatches)) {
+
       if (!equal(this._receivedMatches[match.address], match)) {
         // Build match
         const actualMatch = this._buildMatch(match)
@@ -205,11 +206,13 @@ export class MatchesService {
   }
 
   private _buildMatch(match: IBaseMatch): Match {
-    const mergedMatch: Match = {
-      ...this._receivedMatches[match.address],
-      ...(this._transientMatches[match.address] || {}),
-      ...match,
-    }
+
+    const mergedMatch: Match = Match.create({
+      ...Match.toParams(this._receivedMatches[match.address] as Match),
+      ...Match.toParams((this._transientMatches[match.address] || {}) as Match),
+      ...Match.toParams(match as Match),
+    })
+
     if (this._user) {
       mergedMatch.owns = match.creator.address === this._user.address
     }
@@ -218,10 +221,9 @@ export class MatchesService {
   }
 
   private _ignoreTransient(match: Match): Match {
-    const newMatch = { ...match }
+    const newMatch = Match.create(match)
     delete newMatch.isRevealing
     delete newMatch.isPayout
-
     return newMatch
   }
 
@@ -300,7 +302,7 @@ export class MatchesService {
    * @param newMatch
    * @private
    */
-  private _resolveMatch(match: Match, newMatch: Match): MatchResolveType {
+  private _resolveMatch(match: Match, newMatch: IBaseMatch): MatchResolveType {
     const isCreator = match.creator && this._user.address === match.creator.address
     const isOpponent = match.opponent && this._user.address === match.opponent.address
 

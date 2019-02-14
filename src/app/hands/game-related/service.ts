@@ -1,13 +1,13 @@
 import { IWavesApi } from '../api'
 import { IKeeper } from '../keeper/interfaces'
 import { apiHelpers } from '../helpers'
-import { gameBet, hideMoves, whoHasWon, serviceCommission, serviceAddress } from './game'
+import { gameBet, hideMoves, serviceCommission, serviceAddress } from './game'
 import { randomAccount } from './core'
-import { base58decode as from58, address, base58encode } from '@waves/waves-crypto'
+import { base58decode as from58, address, base58encode, publicKey } from '@waves/waves-crypto'
 import { compiledScript } from './contract'
 import '../extensions'
 import { toKeysAndValuesExact, binary, num } from '../dataTxs'
-import { Match, MatchStatus, MatchResult, HandSign } from '../../matches/shared/match.interface'
+import { Match, MatchStatus, MatchResult, HandSign, IBaseMatch, IMatchParams } from '../../matches/shared/match.interface'
 import { environment } from '../../../environments/environment'
 
 export interface CreateMatchResult {
@@ -87,10 +87,15 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
       if (!p1Inits[a])
         return undefined
 
-      const match = new Match(matchScripts[a].senderPublicKey, a, matchScripts[a].timestamp, {
-        address: address({ public: p1Inits[a].p1k }, config.chainId),
-        publicKey: p1Inits[a].p1k,
-      })
+      const match: IMatchParams = {
+        publicKey: matchScripts[a].senderPublicKey,
+        address: a,
+        timestamp: matchScripts[a].timestamp,
+        creator: {
+          address: address({ public: p1Inits[a].p1k }, config.chainId),
+          publicKey: p1Inits[a].p1k,
+        },
+      }
 
       if (p2Inits[a]) {
         const { h, p2k, p2mh } = p2Inits[a]
@@ -111,11 +116,13 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
         match.creator.moves = [p1m[0], p1m[1], p1m[2]] as [HandSign, HandSign, HandSign]
       }
 
+      const m = Match.create(match)
+
       if (payouts[a]) {
-        match.done()
+        m.done()
       }
 
-      return match
+      return m
     }).filter(x => x !== undefined) as Match[]
   }
 
@@ -154,9 +161,11 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
       return {
         move,
         moveHash,
-        match: new Match(matchKey, matchAddress, s.timestamp, {
-          address: address({ public: player1Key }, config.chainId),
-          publicKey: player1Key,
+        match: Match.create({
+          publicKey: matchKey, address: matchAddress, timestamp: s.timestamp, creator: {
+            address: address({ public: player1Key }, config.chainId),
+            publicKey: player1Key,
+          },
         }),
       }
     },
@@ -189,14 +198,17 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
 
       //update match
 
-      match.reservationHeight = h
-      match.opponent = {
-        publicKey: player2Key,
-        address: address({ public: player2Key }, config.chainId),
-        moves: [move[0], move[1], move[2]] as [HandSign, HandSign, HandSign],
-      }
+      const m = Match.create({
+        ...Match.toParams(match),
+        reservationHeight: h,
+        opponent: {
+          publicKey: player2Key,
+          address: address({ public: player2Key }, config.chainId),
+          moves: [move[0], move[1], move[2]] as [HandSign, HandSign, HandSign],
+        },
+      })
 
-      return match
+      return m
     },
 
     reveal: async (match: Match, move: Uint8Array): Promise<Match> => {
@@ -241,6 +253,8 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
         [winner]: match.result == MatchResult.Draw ? matchBalance / 2 : matchBalance,
         [looser]: match.result == MatchResult.Draw ? matchBalance / 2 : 0,
       }, { fee: 700000 })
+
+      match.done()
 
       return match
     },
