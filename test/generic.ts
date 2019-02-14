@@ -1,11 +1,12 @@
 import { defaultFee } from './fees'
 import { gameBet } from '../src/app/hands/game-related/game'
-import { IKeeper, KeeperAuth, KeeperPublicState } from '../src/app/hands/keeper/interfaces'
-import { transfer, TTx, ITransferTransaction } from '@waves/waves-transactions'
+import { KeeperAuth, KeeperPublicState } from '../src/app/hands/keeper/interfaces'
+import { transfer, TTx, ITransferTransaction, data } from '@waves/waves-transactions'
 import { conf, testingHostSeed } from './settings'
 import { axiosHttp } from '../src/app/hands/api-axios'
 import { tests } from '../test'
 import { api as apiCtor } from '../src/app/hands/api'
+import { IKeeper } from '../src/app/auth/shared/keeper.interface'
 
 
 const api = apiCtor(conf, axiosHttp)
@@ -23,6 +24,9 @@ export const keeperMock = (seeds: string[]): IKeeper => {
       publicKey: '',
       signature: 'string',
     }),
+    prepareDataTransaction: (map: Record<string, string | number | boolean | Buffer | Uint8Array | number[]>, senderPublicKey?: string) =>
+      Promise.resolve(data({ senderPublicKey: senderPublicKey, additionalFee: 400000, data: Object.keys(map).map(key => ({ key, value: map[key] })) }, seeds[i++])),
+
     signTransaction: (): Promise<TTx> => Promise.resolve(transfer({ recipient: '', amount: 1 }, '')),
     prepareWavesTransfer: (recipient: string, amount: number): Promise<ITransferTransaction> => Promise.resolve(transfer({ recipient, amount }, seeds[i++])),
     publicState: (): Promise<KeeperPublicState> => Promise.resolve<KeeperPublicState>({

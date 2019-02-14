@@ -62,26 +62,10 @@ match (tx) {
       !isDefined(getBinary(me, "p2m")) &&
       size(data.data) == 1 &&
       sha256(extract(getBinary(data.data, "p2m"))) == extract(getBinary(me, "p2mh"))
-    else if isDefined(getBoolean(me, data.data[0].key)) then
-      !isDefined(getBoolean(me, data.data[0].key)) &&
-      !isDefined(getBoolean(me, data.data[1].key)) &&
-      !isDefined(getBoolean(me, data.data[2].key)) &&
-      sigVerify(data.bodyBytes, data.proofs[0], fromBase58String(data.data[2].key)) &&
-      size(data.data) == 3 && 
-      
-    match(transactionById(extract(fromBase58String(data.data[0].key)))) {
-      case p2payment:TransferTransaction =>            
-            p2payment.amount == 1 * wave &&
-            p2payment.recipient == me &&
-            p2payment.senderPublicKey != extract(getBinary(data.data, "p2k")) &&
-            p2payment.senderPublicKey != p1k &&
-            p2payment.senderPublicKey == fromBase58String(data.data[2].key) &&
-            !isDefined(p2payment.assetId)
-      case _ => none
-    }
+    
     else if isDefined(getBinary(data.data, "w")) then
 
-    let p1moves = take(extract(getBinary(me, "p1m")), 3)
+    let p1moves = take(extract(getBinary(me, "p1m")), 3) 
     let p2moves = take(extract(getBinary(me, "p2m")), 3)
     let p1m1 = take(p1moves, 1)
     let p2m1 = take(p2moves, 1)
@@ -98,6 +82,7 @@ match (tx) {
     let p2k = extract(getBinary(me, "p2k"))
     let w = if height - extract(getInteger(me, "h")) > timeout then
     if !isDefined(getBinary(me, "p1m")) && !isDefined(getBinary(me, "p1m")) then base58'1' else if !isDefined(getBinary(me, "p1m")) then extract(getBinary(me, "p2k")) else p1k
+    
     else (if score > 0 then p1k else if score == 0 then base58'1' else p2k)
 
       w == getBinary(data.data, "w") &&
@@ -106,8 +91,24 @@ match (tx) {
       (sigVerify(data.bodyBytes, data.proofs[0],(if size(w) == 1 then p1k else w)) ||
       sigVerify(data.bodyBytes, data.proofs[0],(if size(w) == 1 then p2k else w))) &&
       size(data.data) == 2
-    else
-    none
+      
+    else 
+      !isDefined(getBoolean(me, data.data[0].key)) &&
+      !isDefined(getBoolean(me, data.data[1].key)) &&
+      !isDefined(getBoolean(me, data.data[2].key)) &&
+      sigVerify(data.bodyBytes, data.proofs[0], fromBase58String(data.data[2].key)) &&
+      size(data.data) == 3 && 
+      
+    match(transactionById(extract(fromBase58String(data.data[0].key)))) {
+      case p2payment:TransferTransaction =>            
+            p2payment.amount == 1 * wave &&
+            p2payment.recipient == me &&
+            p2payment.senderPublicKey != extract(getBinary(data.data, "p2k")) &&
+            p2payment.senderPublicKey != p1k &&
+            p2payment.senderPublicKey == fromBase58String(data.data[2].key) &&
+            !isDefined(p2payment.assetId)
+      case _ => none
+    }
 
     data.fee == 500000 && dataValid
 
@@ -131,6 +132,7 @@ match (tx) {
     && isDefined(getBoolean(me, toBase58String(payout.id)))
     case _ => false
   }
+
 
 `
 export const compiledScript = Buffer.from(compile(scriptCode).result!).toString('base64')

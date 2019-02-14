@@ -105,9 +105,13 @@ export const api = (config: IApiConfig, h: IHttp): IWavesApi => {
 
   const http = {
     get: <T>(url: string): Promise<T> => {
+      console.log(url)
       return h.get(url)
     },
     post: <T>(url: string, data: any): Promise<T> => {
+      console.log(url)
+      console.log(data)
+
       return h.post(url, data)
     },
   }

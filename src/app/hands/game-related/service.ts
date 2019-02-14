@@ -21,13 +21,13 @@ export interface CreateMatchResult {
 export interface IService {
   matches(): Promise<Match[]>
   match(address: string): Promise<Match>
-  create(hands: number[], progress: MatchProgress): Promise<CreateMatchResult>
-  join(match: Match, hands: number[], progress: MatchProgress): Promise<Match>
+  create(hands: number[], progress?: MatchProgress): Promise<CreateMatchResult>
+  join(match: Match, hands: number[], progress?: MatchProgress): Promise<Match>
   reveal(match: Match, move: Uint8Array): Promise<Match>
   declareCashback(match: Match, paymentId: string): Promise<{ match: Match, cashback: ITransferTransaction }>
   cashback(cashback: ITransferTransaction): Promise<ITransferTransaction>
   declarePayout(match: Match): Promise<{ match: Match, payout: IMassTransferTransaction }>
-  payout(match: Match, payout: MassTransferTransaction): Promise<Match>
+  payout(match: Match, payout: IMassTransferTransaction): Promise<Match>
 }
 
 export type MatchProgress = (zeroToOne: number, message?: string) => void
@@ -143,6 +143,10 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       if (declares[a]) {
         const { w } = declares[a]
         match.winner = w
+
+      }
+      else {
+        console.log('NO DECLARES!')
       }
       const m = Match.create(match)
 
