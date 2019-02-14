@@ -290,6 +290,7 @@ export class MatchComponent implements OnInit, OnDestroy {
       case MatchStatus.WaitingBothToReveal:
       case MatchStatus.WaitingP1ToReveal:
       case MatchStatus.WaitingP2ToReveal:
+      case MatchStatus.WaitingForDeclare:
       case MatchStatus.WaitingForPayout:
         if (this._isAsCreator()) {
           this.stage = MatchStage.ReservedMatch
@@ -372,6 +373,7 @@ export class MatchComponent implements OnInit, OnDestroy {
       this.match.status === MatchStatus.WaitingBothToReveal ||
       this.match.status === MatchStatus.WaitingP1ToReveal ||
       this.match.status === MatchStatus.WaitingP2ToReveal ||
+      this.match.status === MatchStatus.WaitingForDeclare ||
       this.match.status === MatchStatus.WaitingForPayout
       && this.match.reservationHeight) {
       const heightPassed = this._currentHeight - this.match.reservationHeight

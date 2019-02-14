@@ -48,7 +48,7 @@ export class MatchesHelper {
   }
 
   async payout(match: Match) {
-    const { payout: payoutTx } = await this._gameService.declarePayout(match)
-    return await this._gameService.payout(match, payoutTx)
+    const { match: m, payout: payoutTx } = await this._gameService.declarePayout(match)
+    return await this._gameService.payout(m, payoutTx)
   }
 }

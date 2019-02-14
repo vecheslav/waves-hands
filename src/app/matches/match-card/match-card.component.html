@@ -1,6 +1,6 @@
 <div class="match-card">
   <a [routerLink]="['match', match.address]" class="match-card__inner">
-    <div class="match-card__overview" *ngIf="match.status === 0">
+    <div class="match-card__overview" *ngIf="match.status === matchStatus.WaitingForP2">
       <div class="level has-text-centered match-players">
         <div class="level-item">
           <app-match-player [player]="match.creator"></app-match-player>
@@ -10,8 +10,10 @@
         Waiting players...
       </div>
     </div>
-
-    <div class="match-card__overview" *ngIf="(match.status === 1 || match.status === 2 || match.status === 3)">
+    <div class="match-card__overview"
+         *ngIf="(match.status === matchStatus.WaitingBothToReveal ||
+                 match.status === matchStatus.WaitingP1ToReveal ||
+                 match.status === matchStatus.WaitingP2ToReveal)">
       <div class="level has-text-centered match-players">
         <div class="level-item">
           <app-match-player [player]="match.creator"></app-match-player>
@@ -26,22 +28,25 @@
       </div>
     </div>
 
-    <div class="match-card__overview" *ngIf="match.status === 4">
-      <div class="level has-text-centered match-players">
-        <div class="level-item">
-          <app-match-player [player]="match.creator"></app-match-player>
-        </div>
-        <div class="level-item">vs</div>
-        <div class="level-item">
-          <app-match-player [player]="match.opponent"></app-match-player>
-        </div>
-      </div>
-      <div class="match-text" [translate]="'CARD.WAITING_PAYOUT'">
-        Waiting for payout...
-      </div>
-    </div>
+    <!--<div class="match-card__overview" *ngIf="match.status === matchStatus.WaitingForDeclare">-->
+      <!--<div class="level has-text-centered match-players">-->
+        <!--<div class="level-item">-->
+          <!--<app-match-player [player]="match.creator"></app-match-player>-->
+        <!--</div>-->
+        <!--<div class="level-item">vs</div>-->
+        <!--<div class="level-item">-->
+          <!--<app-match-player [player]="match.opponent"></app-match-player>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="match-text" [translate]="'CARD.WAITING_PAYOUT'">-->
+        <!--Waiting for payout...-->
+      <!--</div>-->
+    <!--</div>-->
 
-    <div class="match-card__overview" *ngIf="match.status === 5">
+    <div class="match-card__overview"
+         *ngIf="match.status === matchStatus.WaitingForDeclare ||
+                match.status === matchStatus.WaitingForPayout ||
+                match.status === matchStatus.Done">
       <div class="level has-text-centered match-players match-players--result">
         <div class="level-item">
           <app-match-player [player]="match.creator"></app-match-player>
@@ -83,21 +88,31 @@
             <span *ngSwitchCase="3" [translate]="'CARD.STATUS_PENDING'">Pending</span>
             <span *ngSwitchCase="4" [translate]="'CARD.STATUS_PENDING'">Pending</span>
             <span *ngSwitchCase="5" [translate]="'CARD.STATUS_CLOSED'">Closed</span>
+            <span *ngSwitchCase="6" [translate]="'CARD.STATUS_CLOSED'">Closed</span>
           </div>
         </div>
       </div>
     </div>
   </a>
 
+  <!-- join -->
   <a [routerLink]="['match', match.address]" class="top-overlay" [hidden]="!startIsShown">
     <div class="top-overlay__inner">
       <button class="button is-primary" [translate]="'CARD.START'">Start Match</button>
     </div>
   </a>
 
+  <!-- cashback -->
   <div class="top-overlay top-overlay--revoke" *ngIf="match.reimbursed === 1">
     <div class="top-overlay__inner">
-      <button class="button is-warning" [translate]="'CARD.REIMBURSED'">Revoke Bet</button>
+      <button class="button is-warning" [translate]="'CARD.REIMBURSED'" (click)="revoke()">Revoke Bet</button>
+    </div>
+  </div>
+
+  <!-- payout -->
+  <div class="top-overlay top-overlay--payout" *ngIf="match.canDeclare">
+    <div class="top-overlay__inner">
+      <button class="button is-success" [translate]="'CARD.PAYOUT'" (click)="payout()">Collect Waves</button>
     </div>
   </div>
 

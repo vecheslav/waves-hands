@@ -26,6 +26,7 @@
     "BET": "Bet:",
     "START": "Start Match",
     "REIMBURSED": "Revoke Bet",
+    "PAYOUT": "Collect Waves",
     "STATUS_OPEN": "Open",
     "STATUS_PENDING": "Pending",
     "STATUS_CLOSED": "Closed",
