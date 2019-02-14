@@ -1,5 +1,5 @@
 import { Injectable, NgZone } from '@angular/core'
-import { HandSign, IMatchResolve, Match, MatchResolveType, MatchResult, MatchStatus, ReimbursedStatus } from './shared/match.interface'
+import { HandSign, IMatchResolve, Match, MatchResolveType, MatchResult, MatchStatus, ReimbursedStatus, TMatch } from './shared/match.interface'
 import { environment } from '../../environments/environment'
 import { MatchesHelper } from './shared/matches.helper'
 import { BehaviorSubject, Observable, SubscriptionLike, timer } from 'rxjs'
@@ -48,7 +48,9 @@ export class MatchesService {
       this._user = user
 
       if (this._user) {
-        this._transientMatches = this.storage.getMatches(this._user.address)
+        this._transientMatches = Object.values(this.storage.getMatches(this._user.address))
+          .map((m: TMatch) => Match.create(m))
+          .toRecord((m: Match) => m.address)
       }
     })
   }
@@ -218,9 +220,9 @@ export class MatchesService {
   private _buildMatch(match: Match): Match {
 
     const mergedMatch: Match = Match.create({
-      ...Match.toParams(this._receivedMatches[match.address]),
-      ...Match.toParams((this._transientMatches[match.address] || {}) as Match),
-      ...Match.toParams(match),
+      ...Match.toPlain(this._receivedMatches[match.address]),
+      ...Match.toPlain((this._transientMatches[match.address] || {}) as Match),
+      ...Match.toPlain(match),
     })
 
     if (this._user) {
@@ -274,15 +276,15 @@ export class MatchesService {
 
   /**
    * Get two match list and return resolve list
-   * @param matches
+   * @param localMatches
    * @param newMatches
    * @private
    */
-  private _compareMatches(matches: Record<string, Match>, newMatches: Record<string, Match>): IMatchResolve[] {
+  private _compareMatches(localMatches: Record<string, TMatch>, newMatches: Record<string, Match>): IMatchResolve[] {
     const matchResolves = []
 
-    for (const matchAddress of Object.keys(matches)) {
-      const match = matches[matchAddress]
+    for (const matchAddress of Object.keys(localMatches)) {
+      const match = Match.create(localMatches[matchAddress])
       const newMatch = newMatches[matchAddress]
 
       if (!newMatch) {
@@ -371,7 +373,7 @@ export class MatchesService {
     }
 
     // Update my match on local storage
-    this.storage.setMatch(this._user.address, match)
+    this.storage.setMatch(this._user.address, Match.toPlain(match))
   }
 
   private _setMyMove(matchAddress: string, move: Uint8Array): void {

@@ -25,6 +25,7 @@
     "WAITING_PAYOUT": "Waiting for payout...",
     "BET": "Bet:",
     "START": "Start Match",
+    "REIMBURSED": "Revoke Bet",
     "STATUS_OPEN": "Open",
     "STATUS_PENDING": "Pending",
     "STATUS_CLOSED": "Closed",

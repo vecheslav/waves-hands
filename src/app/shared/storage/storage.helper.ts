@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { Match } from '../../matches/shared/match.interface'
+import { TMatch } from '../../matches/shared/match.interface'
 import { base58decode, base58encode } from '@waves/waves-crypto'
 
 @Injectable()
@@ -15,13 +15,13 @@ export class StorageHelper {
     localStorage.setItem('user', JSON.stringify(user))
   }
 
-  getMatches(userAddress: string): Record<string, Match> {
+  getMatches(userAddress: string): Record<string, TMatch> {
     const allMatches = JSON.parse(localStorage.getItem('matches')) || {}
 
     return allMatches[userAddress] || {}
   }
 
-  setMatch(userAddress: string, match: Match): Match {
+  setMatch(userAddress: string, match: TMatch): TMatch {
     const allMatches = JSON.parse(localStorage.getItem('matches')) || {}
     allMatches[userAddress] = allMatches[userAddress] || {}
     allMatches[userAddress][match.address] = match
