@@ -25,6 +25,7 @@ export interface IService {
   join(match: Match, hands: number[], progress: MatchProgress): Promise<Match>
   reveal(match: Match, move: Uint8Array): Promise<Match>
   declareCashback(match: Match, paymentId: string): Promise<{ match: Match, cashback: ITransferTransaction }>
+  cashback(cashback: ITransferTransaction): Promise<ITransferTransaction>
   declarePayout(match: Match): Promise<{ match: Match, payout: IMassTransferTransaction }>
   payout(match: Match, payout: MassTransferTransaction): Promise<Match>
 }
@@ -268,6 +269,10 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       await api.broadcastAndWait(tx)
 
       return { match, cashback }
+    },
+
+    cashback: async (cb: ITransferTransaction): Promise<ITransferTransaction> => {
+      return await api.broadcastAndWait(cb) as ITransferTransaction
     },
 
     declarePayout: async (match: Match): Promise<{ match: Match, payout: IMassTransferTransaction }> => {
