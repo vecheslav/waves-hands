@@ -306,7 +306,7 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       return { match, payout }
     },
 
-    payout: async (match: Match, payout: MassTransferTransaction): Promise<Match> => {
+    payout: async (match: Match, payout: IMassTransferTransaction): Promise<Match> => {
       ensureStatus(match, MatchStatus.WaitingForPayout)
 
       if (!match.reservationHeight)
