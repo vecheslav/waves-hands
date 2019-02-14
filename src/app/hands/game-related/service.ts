@@ -9,8 +9,9 @@ import { toKeysAndValuesExact, binary, num } from '../dataTxs'
 import { Match, MatchStatus, MatchResult, HandSign, IBaseMatch, IMatchParams } from '../../matches/shared/match.interface'
 import { environment } from '../../../environments/environment'
 import { IKeeper } from '../../../../src/app/auth/shared/keeper.interface'
-import { MassTransferTransaction } from '../tx-interfaces'
-import { IMassTransferTransaction } from '@waves/waves-transactions'
+import { MassTransferTransaction, TransferTransaction } from '../tx-interfaces'
+import { IMassTransferTransaction, ITransferTransaction } from '@waves/waves-transactions'
+import { TRANSACTION_TYPE } from '@waves/marshall/dist/schemas'
 
 export interface CreateMatchResult {
   move: Uint8Array
@@ -18,12 +19,11 @@ export interface CreateMatchResult {
   match: Match
 }
 
-
 export type MatchProgress = (zeroToOne: number, message?: string) => void
 
 export const service = (api: IWavesApi, keeper: IKeeper) => {
   const config = api.config()
-  const { setKeysAndValues, setScript, prepareMassTransferWaves } = apiHelpers(api)
+  const { setKeysAndValues, setScript, prepareMassTransferWaves, prepareTransferWaves } = apiHelpers(api)
 
   const timeGap = 1000 * 60 * 5
 
@@ -242,7 +242,25 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
       return match
     },
 
-    declare: async (match: Match): Promise<{ match: Match, payout: IMassTransferTransaction }> => {
+    declareCashback: async (match: Match, paymentId: string): Promise<{ match: Match, cashback: ITransferTransaction }> => {
+      const payment = await api.getTxById(paymentId) as TransferTransaction
+      if (payment.type !== TRANSACTION_TYPE.TRANSFER)
+        throw new Error('Invalid payment')
+
+      const cashback = prepareTransferWaves({ publicKey: match.publicKey }, { address: payment.sender }, gameBet)
+
+      const tx = await keeper.prepareDataTransaction({
+        [payment.id]: true,
+        [cashback.id]: true,
+        [payment.senderPublicKey]: true,
+      }, match.publicKey)
+
+      await api.broadcastAndWait(tx)
+
+      return { match, cashback }
+    },
+
+    declarePayout: async (match: Match): Promise<{ match: Match, payout: IMassTransferTransaction }> => {
       ensureStatus(match, MatchStatus.WaitingForDeclare)
 
       const w = match.result == MatchResult.Draw ? '1' : match.result == MatchResult.Creator ? match.creator.publicKey : match.opponent.publicKey
@@ -253,7 +271,7 @@ export const service = (api: IWavesApi, keeper: IKeeper) => {
       const looser = match.result == MatchResult.Opponent ? match.creator.address : match.opponent!.address
 
       const matchBalance = (await api.getBalance(match.address)) - serviceCommission - 700000
-      const payout = await prepareMassTransferWaves({ publicKey: match.publicKey }, {
+      const payout = prepareMassTransferWaves({ publicKey: match.publicKey }, {
         [serviceAddress]: serviceCommission,
         [winner]: match.result == MatchResult.Draw ? matchBalance / 2 : matchBalance,
         [looser]: match.result == MatchResult.Draw ? matchBalance / 2 : 0,
