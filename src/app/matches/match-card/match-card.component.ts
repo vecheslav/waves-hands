@@ -17,7 +17,6 @@ export class MatchCardComponent implements OnInit {
   } as Match
 
   startIsShown = false
-  reimbursedIsShown = false
   shareUrl: string
   pendingLeftPercent = 0
 
@@ -37,16 +36,11 @@ export class MatchCardComponent implements OnInit {
     if (this.match.status === MatchStatus.WaitingForP2 && !this.match.owns && !this.match.opponent) {
       this.startIsShown = true
     }
-
-    if (this.match.reimbursed === ReimbursedStatus.Need) {
-      this.reimbursedIsShown = true
-    }
   }
 
   @HostListener('mouseleave')
   onMouseLeave(): void {
     this.startIsShown = false
-    this.reimbursedIsShown = false
   }
 
   private _initLeftPercent() {

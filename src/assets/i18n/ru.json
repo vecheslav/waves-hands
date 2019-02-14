@@ -25,6 +25,7 @@
     "WAITING_PAYOUT": "Ждем выплат...",
     "BET": "Ставка:",
     "START": "Начать игру",
+    "REIMBURSED": "Вернуть ставку",
     "STATUS_OPEN": "Открыт",
     "STATUS_PENDING": "Ожидание",
     "STATUS_CLOSED": "Закрыт",
