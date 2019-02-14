@@ -82,6 +82,7 @@ export interface IMatchParams {
   winner?: string | 'draw'
   reservationHeight?: number
   timestamp: number
+  payout?: boolean
 }
 
 export interface IBaseMatch extends IMatchParams {
@@ -106,7 +107,8 @@ export class Match implements TMatch {
       match.creator,
       match.opponent,
       match.reservationHeight,
-      match.winner)
+      match.winner,
+      match.payout)
 
     m.owns = match.owns
     m.reimbursed = match.reimbursed
@@ -130,6 +132,7 @@ export class Match implements TMatch {
       winner: match.winner,
       reservationHeight: match.reservationHeight,
       timestamp: match.timestamp,
+      payout: match.payout,
     }
   }
 
@@ -140,8 +143,13 @@ export class Match implements TMatch {
     private _creator: IPlayer,
     private _opponent?: IPlayer,
     private _reservationHeight?: number,
-    private _winner?: string
+    private _winner?: string,
+    private _payout?: boolean
   ) { }
+
+  get payout() {
+    return this._payout
+  }
 
   get winner() {
     return this._winner
@@ -169,9 +177,6 @@ export class Match implements TMatch {
   get publicKey() {
     return this._publicKey
   }
-
-  private _done: boolean = false
-  done() { this._done = true }
 
   get timeout() {
     return this._timeout
@@ -203,7 +208,7 @@ export class Match implements TMatch {
   }
 
   get status(): MatchStatus {
-    if (this._done)
+    if (this._payout)
       return MatchStatus.Done
     if (this._timeout)
       return MatchStatus.WaitingForPayout
