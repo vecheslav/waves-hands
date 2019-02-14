@@ -1,4 +1,5 @@
 import { IUser } from '../../user/user.interface'
+import { environment } from 'src/environments/environment'
 
 export enum HandSign {
   Rock = 0,
@@ -170,6 +171,15 @@ export class Match implements IBaseMatch, IMatchView, IMatchTransient {
   private _done: boolean = false
   done() { this._done = true }
 
+  get timeout() {
+    return this._timeout
+  }
+
+  private _timeout: boolean = false
+  height(h: number) {
+    this._timeout = h - this._reservationHeight > environment.creatorRevealBlocksCount
+  }
+
   private _compareMoves = (m1: number, m2: number) =>
     ((m1 === 0 && m2 === 2) ||
       (m1 === 1 && m2 === 0) ||
@@ -193,6 +203,8 @@ export class Match implements IBaseMatch, IMatchView, IMatchTransient {
   get status(): MatchStatus {
     if (this._done)
       return MatchStatus.Done
+    if (this._timeout)
+      return MatchStatus.WaitingForPayout
     if (!this.opponent)
       return MatchStatus.WaitingForP2
     if (!this.opponent.moves && !this.creator.moves)

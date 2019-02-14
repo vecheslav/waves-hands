@@ -1,4 +1,5 @@
-import { TTx, ITransferTransaction } from '@waves/waves-transactions'
+import { TTx, ITransferTransaction, IDataTransaction } from '@waves/waves-transactions'
+import { Seed, PublicKey } from '../helpers'
 
 export interface KeeperAuth {
   address: string
@@ -27,13 +28,11 @@ export interface KeeperPublicState {
   }
 }
 
-export interface IKeeper {
-  on(event: string, cb: (state: any) => void): void
-  auth(param?: { data: string }): Promise<KeeperAuth>
-  signTransaction(p: { type: number, data: any }): Promise<TTx>
-  prepareWavesTransfer(recipient: string, amount: number): Promise<ITransferTransaction>
-  publicState(): Promise<KeeperPublicState>
+interface prepareDataTransactionParams {
+
 }
+
+
 
 export interface KeeperStatus {
   isExist: boolean
