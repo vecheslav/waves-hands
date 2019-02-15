@@ -22,7 +22,7 @@ export interface IService {
   matches(): Promise<Match[]>
   match(address: string): Promise<Match>
   create(hands: number[], progress?: MatchProgress): Promise<CreateMatchResult>
-  join(match: Match, hands: number[], progress?: MatchProgress): Promise<Match>
+  join(match: Match, hands: number[], progress?: MatchProgress): Promise<{ match: Match, error: any }>
   reveal(match: Match, move: Uint8Array): Promise<Match>
   declareCashback(match: Match, paymentId: string): Promise<{ match: Match, cashback: ITransferTransaction }>
   cashback(cashback: ITransferTransaction): Promise<ITransferTransaction>
@@ -204,7 +204,7 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       }
     },
 
-    join: async (match: Match, hands: number[], progress: MatchProgress = () => { }): Promise<Match> => {
+    join: async (match: Match, hands: number[], progress: MatchProgress = () => { }): Promise<{ match: Match, error: any }> => {
       ensureStatus(match, MatchStatus.WaitingForP2)
 
       progress(0)
@@ -217,15 +217,38 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       progress(.15)
 
       const utx = await api.getUtx()
-      if (utx.filter(x => x.type === TRANSACTION_TYPE.TRANSFER).map(x => x as ITransferTransaction)
-        .filter(x => x.recipient === match.address).length > 0) {
-        throw new Error('Match is already taken')
+      const utxTransfers = utx.filter(x => x.type === TRANSACTION_TYPE.TRANSFER).map(x => x as ITransferTransaction)
+        .filter(x => x.recipient === match.address)
+      if (utxTransfers.length > 0) {
+
+        const p2k = utxTransfers[0].senderPublicKey
+
+        const m = Match.create({
+          ...Match.toPlain(match),
+          opponent: {
+            address: address({ public: p2k }, config.chainId),
+            publicKey: p2k,
+          },
+        })
+
+        return { match: m, error: { code: 1 } }
       }
 
-      const transfers = await api.getTransfers({ recipient: match.address })
-      if (transfers.filter(x => x.senderPublicKey != match.creator.publicKey).length > 0) {
-        
-        throw new Error('Match is already taken')
+      const transfers = (await api.getTransfers({ recipient: match.address }))
+        .filter(x => x.senderPublicKey != match.creator.publicKey)
+      if (transfers.length > 0) {
+
+        const p2k = transfers[0].senderPublicKey
+
+        const m = Match.create({
+          ...Match.toPlain(match),
+          opponent: {
+            address: address({ public: p2k }, config.chainId),
+            publicKey: p2k,
+          },
+        })
+
+        return { match: m, error: { code: 1 } }
       }
 
       progress(.3)
@@ -249,11 +272,12 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
           ...Match.toPlain(match),
         })
         api.end(session)
-        return m
+
+        return { match: m, error }
       }
       progress(.8)
       //#STEP6# P2 => reveal
-      await setKeysAndValues({ publicKey: matchKey }, { 'p2m': move })
+      await retry(() => setKeysAndValues({ publicKey: matchKey }, { 'p2m': move }), 10, 2000)
 
       progress(1)
 
@@ -271,7 +295,7 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
 
       api.end(session)
 
-      return m
+      return { match: m, error: undefined }
     },
 
     reveal: async (match: Match, move: Uint8Array): Promise<Match> => {
