@@ -177,16 +177,16 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
 
       const session = api.start()
 
-      const { senderPublicKey: player1Key } = await api.broadcastAndWait(p1p)
+      const { senderPublicKey: player1Key } = await api.broadcastAndWait(p1p, session)
       const { move, moveHash } = hideMoves(hands)
 
       progress(.4)
       // #STEP2# C => data
-      await setKeysAndValues({ seed: matchSeed }, { 'p1k': from58(player1Key), 'p1mh': moveHash, 'mk': from58(matchKey), })
+      await setKeysAndValues({ seed: matchSeed }, { 'p1k': from58(player1Key), 'p1mh': moveHash, 'mk': from58(matchKey), }, session)
 
       progress(.8)
       // #STEP3# C => script
-      const s = await setScript(matchSeed, compiledScript)
+      const s = await setScript(matchSeed, compiledScript, session)
 
       progress(1)
 
@@ -255,7 +255,7 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
 
       const session = api.start()
 
-      const { id: p2PaymentId, senderPublicKey: player2Key } = await api.broadcastAndWait(p2p)
+      const { id: p2PaymentId, senderPublicKey: player2Key } = await api.broadcastAndWait(p2p, session)
       const { move, moveHash } = hideMoves(hands)
 
       match.payments = match.payments || []
@@ -263,9 +263,14 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
 
       progress(.5)
       //#STEP5# P2 => move
-      const h = await api.getHeight()
+      let h
       try {
-        await retry(() => setKeysAndValues({ publicKey: matchKey }, { 'p2k': from58(player2Key), 'p2mh': moveHash, 'h': h, 'p2p': from58(p2PaymentId) }), 5, 3000)
+        const x = await retry(async () => {
+          const h = await api.getHeight()
+          const tx = setKeysAndValues({ publicKey: matchKey }, { 'p2k': from58(player2Key), 'p2mh': moveHash, 'h': h, 'p2p': from58(p2PaymentId) }, session)
+          return { h, tx }
+        }, 5, 3000)
+        h = x.h
       } catch (error) {
         progress(1)
         const m = Match.create({
@@ -277,7 +282,7 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       }
       progress(.8)
       //#STEP6# P2 => reveal
-      await retry(() => setKeysAndValues({ publicKey: matchKey }, { 'p2m': move }), 10, 2000)
+      await retry(() => setKeysAndValues({ publicKey: matchKey }, { 'p2m': move }, session), 10, 2000)
 
       progress(1)
 

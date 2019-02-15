@@ -69,7 +69,7 @@ xit('half match', async () => {
   await playMatchUntilDeclare([1, 1, 1], [2, 2, 2])
 })
 
-it('extra payment', async () => {
+xit('extra payment', async () => {
 
   const p1Moves = [1, 1, 1]
   const p2Moves = [2, 2, 2]
@@ -91,8 +91,6 @@ it('extra payment', async () => {
 
   expect(mlocal.status).toBe(MatchStatus.WaitingForP2)
   expect(mremote.status).toBe(MatchStatus.WaitingForP2)
-
-  
 
   let paymentId
   try {
@@ -134,7 +132,7 @@ it('extra payment', async () => {
   expect(p2Balance).toBeGreaterThan(gameBet)
 })
 
-xit('create match and get it back', async () => {
+it('create match and get it back', async () => {
 
   const p1Moves = [1, 1, 1]
   const p2Moves = [2, 2, 2]
@@ -155,7 +153,7 @@ xit('create match and get it back', async () => {
   expect(mlocal.status).toBe(MatchStatus.WaitingForP2)
   expect(mremote.status).toBe(MatchStatus.WaitingForP2)
 
-  mlocal = await s.join(mlocal, p2Moves)
+  mlocal = (await s.join(mlocal, p2Moves)).match
   mremote = await s.match(match.address)
   expect(mlocal.status).toBe(MatchStatus.WaitingP1ToReveal)
   expect(mremote.status).toBe(MatchStatus.WaitingP1ToReveal)

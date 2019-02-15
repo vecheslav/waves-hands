@@ -39,7 +39,7 @@ export interface IWavesApi {
   getHeight(): Promise<number>
   getTxById(txId: string): Promise<TTx>
   broadcast(tx: TTx): Promise<TTx>
-  broadcastAndWait(tx: Tx): Promise<TTx>
+  broadcastAndWait(tx: Tx, session?: string): Promise<TTx>
   waitForTx(txId: string): Promise<TTx>
   getDataTxsByKey(params: GetDataTxsByKeyParams): Promise<DataTransaction[]>
   getMassTransfers(params: GetMassTransferTxsParams): Promise<MassTransferTransaction[]>
