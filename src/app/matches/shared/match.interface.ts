@@ -201,9 +201,16 @@ export class Match implements IMatch {
       (m1 === 2 && m2 === 1)) ? 1 : (m1 === m2 ? 0 : -1)
 
   private _whoHasWon(p1: number[], p2: number[]) {
-    if (!p1 || !p2) {
-      return
+    if (!p1 && !p2) {
+      return MatchResult.Draw
     }
+    else if (!p1) {
+      return MatchResult.Opponent
+    }
+    else if (!p2) {
+      return MatchResult.Creator
+    }
+
     const score = p2.slice(0, 3).reduce((s, p2move, i) => s + this._compareMoves(p1[i], p2move), 0)
     return score > 0 ? MatchResult.Creator : (score === 0 ? MatchResult.Draw : MatchResult.Opponent)
   }
