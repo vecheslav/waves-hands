@@ -84,6 +84,7 @@ export interface IMatchParams {
   reservationHeight?: number
   timestamp: number
   payout?: boolean
+  timeout?: boolean
 }
 
 export interface IBaseMatch extends IMatchParams {
@@ -120,6 +121,7 @@ export class Match implements IMatch {
     m.revealed = match.revealed
     m.isPayout = match.isPayout
     m.isRevealing = match.isRevealing
+    m._timeout = match.timeout
 
     return m
   }
@@ -145,6 +147,7 @@ export class Match implements IMatch {
       payments: match.payments,
       status: match.status,
       result: match.result,
+      timeout: match._timeout,
     }
   }
 
