@@ -219,7 +219,13 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       const utx = await api.getUtx()
       if (utx.filter(x => x.type === TRANSACTION_TYPE.TRANSFER).map(x => x as ITransferTransaction)
         .filter(x => x.recipient === match.address).length > 0) {
-        throw { ...new Error('Match is already taken') }
+        throw new Error('Match is already taken')
+      }
+
+      const transfers = await api.getTransfers({ recipient: match.address })
+      if (transfers.filter(x => x.senderPublicKey != match.creator.publicKey).length > 0) {
+        
+        throw new Error('Match is already taken')
       }
 
       progress(.3)

@@ -1,6 +1,6 @@
 import { TTx as Tx, WithId } from '@waves/waves-transactions'
 import { IApiConfig } from './config'
-import { DataTransaction, MassTransferTransaction, SetScriptTransaction } from './tx-interfaces'
+import { DataTransaction, MassTransferTransaction, SetScriptTransaction, TransferTransaction } from './tx-interfaces'
 import { randomBytes } from 'crypto'
 type TTx = Tx & WithId
 
@@ -11,7 +11,15 @@ export interface IHttp {
 
 export type DataType = 'binary' | 'integer' | 'boolean' | 'string'
 
-export interface GetMassTransferTxsByKeyParams {
+export interface GetMassTransferTxsParams {
+  sender?: string
+  recipient?: string
+  limit?: number
+  timeStart?: number
+  timeEnd?: number
+}
+
+export interface GetTransferTxsParams {
   sender?: string
   recipient?: string
   limit?: number
@@ -34,7 +42,8 @@ export interface IWavesApi {
   broadcastAndWait(tx: Tx): Promise<TTx>
   waitForTx(txId: string): Promise<TTx>
   getDataTxsByKey(params: GetDataTxsByKeyParams): Promise<DataTransaction[]>
-  getMassTransfers(params: GetMassTransferTxsByKeyParams): Promise<MassTransferTransaction[]>
+  getMassTransfers(params: GetMassTransferTxsParams): Promise<MassTransferTransaction[]>
+  getTransfers(params: GetTransferTxsParams): Promise<TransferTransaction[]>
   getTxsByAddress(address: string, limit?: number): Promise<TTx[]>
   getUtx(): Promise<TTx[]>
   getSetScriptTxsByScript(script: string, limit?: number): Promise<SetScriptTransaction[]>
@@ -206,8 +215,11 @@ export const api = (config: IApiConfig, h: IHttp): IWavesApi => {
   const getDataTxsByKey = async ({ key, limit, type, timeStart, timeEnd }: GetDataTxsByKeyParams): Promise<DataTransaction[]> =>
     getApi<{ data: { data: DataTransaction }[] }>(`transactions/data?key=${key}&sort=desc${p({ type, timeStart, timeEnd })}&limit=${limit || 100}`).then(x => x.data.map(y => y.data))
 
-  const getMassTransfers = ({ sender, limit, recipient, timeStart, timeEnd }: GetMassTransferTxsByKeyParams): Promise<MassTransferTransaction[]> =>
+  const getMassTransfers = ({ sender, limit, recipient, timeStart, timeEnd }: GetMassTransferTxsParams): Promise<MassTransferTransaction[]> =>
     getApi<{ data: { data: MassTransferTransaction }[] }>(`transactions/mass-transfer?&sort=desc${p({ sender, recipient, timeStart, timeEnd })}&limit=${limit || 100}`).then(x => x.data.map(y => y.data))
+
+  const getTransfers = ({ sender, limit, recipient, timeStart, timeEnd }: GetTransferTxsParams): Promise<TransferTransaction[]> =>
+    getApi<{ data: { data: TransferTransaction }[] }>(`transactions/transfer?&sort=desc${p({ sender, recipient, timeStart, timeEnd })}&limit=${limit || 100}`).then(x => x.data.map(y => y.data))
 
   const getTxsByAddress = async (address: string, limit: number = 100): Promise<TTx[]> =>
     (await get<TTx[][]>(`transactions/address/${address}/limit/${limit}`))[0]
@@ -239,6 +251,7 @@ export const api = (config: IApiConfig, h: IHttp): IWavesApi => {
     getTxsByAddress,
     broadcastAndWait,
     getMassTransfers,
+    getTransfers,
     getBalance,
     getUtx,
     getSetScriptTxsByScript,

@@ -69,7 +69,72 @@ xit('half match', async () => {
   await playMatchUntilDeclare([1, 1, 1], [2, 2, 2])
 })
 
-it('create match and get it back', async () => {
+it('extra payment', async () => {
+
+  const p1Moves = [1, 1, 1]
+  const p2Moves = [2, 2, 2]
+  const p3Moves = [0, 0, 0]
+
+  const r = MatchResult.Opponent
+
+  const { player1Address, player2Address, player1Seed, player2Seed } = await createPlayers()
+  const { seed: player3Seed, address: player3Address } = await randomAccountWithBalance(gameBet + defaultFee.transfer)
+
+  const s = service(api, keeperMock([player1Seed, player2Seed, player2Seed]))
+
+  const { match, move: p1Move } = await s.create(p1Moves)
+
+  console.log(match.address)
+
+  let mremote: Match = await s.match(match.address)
+  let mlocal: Match = match
+
+  expect(mlocal.status).toBe(MatchStatus.WaitingForP2)
+  expect(mremote.status).toBe(MatchStatus.WaitingForP2)
+
+  
+
+  let paymentId
+  try {
+    const [m1x, m2x] = await Promise.all([s.join(mlocal, p2Moves), s.join(mremote, p3Moves)])
+  } catch (error) {
+    if (error.paymentId) {
+      paymentId = error.paymentId
+    }
+  }
+
+  mremote = await s.match(match.address)
+  expect(mlocal.status).toBe(MatchStatus.WaitingP1ToReveal)
+  expect(mremote.status).toBe(MatchStatus.WaitingP1ToReveal)
+
+  mlocal = await s.reveal(mlocal, p1Move)
+  mremote = await s.match(match.address)
+  expect(mlocal.result).toBe(r)
+  expect(mlocal.result).toBe(r)
+  expect(mlocal.status).toBe(MatchStatus.WaitingForDeclare)
+  expect(mremote.status).toBe(MatchStatus.WaitingForDeclare)
+
+  const { match: m1, payout } = await s.declarePayout(mlocal)
+  mlocal = m1
+  mremote = await s.match(match.address)
+
+  expect(mlocal.status).toBe(MatchStatus.WaitingForPayout)
+  expect(mremote.status).toBe(MatchStatus.WaitingForPayout)
+
+  mlocal = await s.payout(mlocal, payout)
+  mremote = await s.match(match.address)
+
+  expect(mremote.status).toBe(MatchStatus.Done)
+  expect(mlocal.status).toBe(MatchStatus.Done)
+
+  const [p1Balance, p2Balance] = await Promise.all([api.getBalance(player1Address), api.getBalance(player2Address)])
+
+  console.log(p1Balance)
+  expect(p1Balance).toBe(0)
+  expect(p2Balance).toBeGreaterThan(gameBet)
+})
+
+xit('create match and get it back', async () => {
 
   const p1Moves = [1, 1, 1]
   const p2Moves = [2, 2, 2]
