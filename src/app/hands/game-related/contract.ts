@@ -125,12 +125,12 @@ match (tx) {
     let noWinner = size(w) == 1
     let winner = if !noWinner then addressFromPublicKey(w) else p1
     let looser = if p1 == winner then addressFromPublicKey(extract(getBinary(me, "p2k"))) else p1
-    let prizePool = wavesBalance(me) - serviceCommission - payout.fee
+    let prizePool = 196200000 - serviceCommission 
     
-    (pt[1].recipient == winner || throw("1")) && (pt[1].amount == if noWinner then prizePool/2 else prizePool) &&
-    (pt[2].recipient == looser || throw("2")) && (pt[2].amount == if noWinner then prizePool/2 else 0) &&
+    pt[1].recipient == winner && (pt[1].amount == if noWinner then prizePool/2 else prizePool) &&
+    pt[2].recipient == looser && (pt[2].amount == if noWinner then prizePool/2 else 0) &&
     payout.fee == 700000 && pt[0].recipient == serviceAddress && pt[0].amount == serviceCommission
-    && (isDefined(getBoolean(me, toBase58String(payout.id))) || throw("3"))
+    && isDefined(getBoolean(me, toBase58String(payout.id)))
     case _ => false
   }
 

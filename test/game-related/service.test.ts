@@ -34,7 +34,7 @@ const benchmark = async (times: number, a: () => Promise<any>) => {
   console.log('avg: ' + avg + 'mills')
 }
 
-const playFullMatch = async (p1Moves: number[], p2Moves: number[]) => {
+const playMatchUntilDeclare = async (p1Moves: number[], p2Moves: number[]) => {
 
   const { player1Address, player2Address, player1Seed, player2Seed } = await createPlayers()
   const s = service(api, keeperMock([player1Seed, player2Seed]))
@@ -45,9 +45,8 @@ const playFullMatch = async (p1Moves: number[], p2Moves: number[]) => {
 
   await s.reveal(match, p1Move)
 
-  const [p1Balance, p2Balance] = await Promise.all([api.getBalance(player1Address), api.getBalance(player2Address)])
-
-  return { p1Balance, p2Balance, player1Seed, player2Seed }
+  console.log(player1Seed)
+  console.log(player2Seed)
 }
 
 const createMatch = async (p1Moves: number[]) => {
@@ -66,16 +65,16 @@ xit('get match', async () => {
   console.log(all)
 })
 
-it('extra payment', async () => {
-  
+xit('half match', async () => {
+  await playMatchUntilDeclare([1, 1, 1], [2, 2, 2])
 })
 
 it('create match and get it back', async () => {
 
   const p1Moves = [1, 1, 1]
-  const p2Moves = [1, 1, 1]
+  const p2Moves = [2, 2, 2]
 
-  const r = MatchResult.Draw
+  const r = MatchResult.Opponent
 
   const { player1Address, player2Address, player1Seed, player2Seed } = await createPlayers()
 
@@ -117,15 +116,15 @@ it('create match and get it back', async () => {
   const [p1Balance, p2Balance] = await Promise.all([api.getBalance(player1Address), api.getBalance(player2Address)])
 
   console.log(p1Balance)
-  //expect(p1Balance).toBe(0)
-  //expect(p2Balance).toBeGreaterThan(gameBet)
+  expect(p1Balance).toBe(0)
+  expect(p2Balance).toBeGreaterThan(gameBet)
 })
 
 xit('match sunny day', async () => {
-  const { p1Balance, p2Balance } = await playFullMatch([1, 1, 1], [2, 2, 2])
+  // const { p1Balance, p2Balance } = await playFullMatch([1, 1, 1], [2, 2, 2])
 
-  expect(p1Balance).toBe(0)
-  expect(p2Balance).toBeGreaterThan(gameBet)
+  // expect(p1Balance).toBe(0)
+  // expect(p2Balance).toBeGreaterThan(gameBet)
 })
 
 xit('matches benchmark', async () => {
