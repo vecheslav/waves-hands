@@ -82,6 +82,8 @@ it('create match and get it back', async () => {
 
   const { match, move: p1Move } = await s.create(p1Moves)
 
+  console.log(match.address)
+
   let mremote: Match = await s.match(match.address)
   let mlocal: Match = match
 

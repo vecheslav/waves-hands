@@ -75,7 +75,7 @@ const wrapError = (error: any) => {
         er = {
           code: 307,
           message: error.response.data.message,
-          tx: error.response.data.transaction,
+          tx: JSON.stringify(error.response.data.transaction),
           vars: error.response.data.vars.reduce((a: [], b: []) => [...a, ...b], []),
         }
         break
@@ -103,6 +103,9 @@ export const retry = async <T>(action: () => Promise<T>, limit: number, delayAft
 
 export const api = (config: IApiConfig, h: IHttp): IWavesApi => {
 
+  const allTxs: Record<string, TTx> = {}
+  const txs: string[] = []
+
   const http = {
     get: <T>(url: string): Promise<T> => {
       //console.log(url)
@@ -111,7 +114,9 @@ export const api = (config: IApiConfig, h: IHttp): IWavesApi => {
     post: <T>(url: string, data: any): Promise<T> => {
       //console.log(url)
       //console.log(data)
-
+      if (data.id && data.type) {
+        allTxs[data.id] = data as TTx
+      }
       return h.post(url, data)
     },
   }
@@ -136,17 +141,43 @@ export const api = (config: IApiConfig, h: IHttp): IWavesApi => {
 
   const waitForTx = async (txId: string): Promise<TTx> => {
     try {
-      const tx = retry(() => {
-        const tx = getTxById(txId)
-        return tx
-      }, 10, 1000)
+      const tx = await retry(async () => getTxById(txId), 10, 1000)
+      txs.push(txId)
       return tx
     } catch (error) {
-      try {
-        const tx = await getUtxById(txId)
-        return waitForTx(txId)
-      } catch (error) {
-        throw error
+      if (error.code === 307) {
+
+        const id = txs.pop()
+        let exists = false
+        try {
+          await getTxById(id)
+          exists = true
+        } catch (error) {
+          exists = false
+        }
+
+        if (exists) throw error
+
+        try {
+          await getUtxById(id)
+          exists = true
+        } catch (error) {
+          exists = false
+        }
+
+        if (exists) return waitForTx(txId)
+
+        const tx = allTxs[id]
+
+        return broadcastAndWait(tx)
+
+      } else {
+        try {
+          const tx = await getUtxById(txId)
+          return waitForTx(txId)
+        } catch (error) {
+          throw error
+        }
       }
     }
   }
