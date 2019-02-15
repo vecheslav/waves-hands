@@ -1,4 +1,4 @@
-import { IWavesApi } from '../api'
+import { IWavesApi, retry } from '../api'
 import { apiHelpers } from '../helpers'
 import { gameBet, hideMoves, serviceCommission, serviceAddress } from './game'
 import { randomAccount } from './core'
@@ -175,6 +175,8 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       const p1p = await keeper.prepareWavesTransfer(matchAddress, gameBet)
       progress(.15)
 
+      const session = api.start()
+
       const { senderPublicKey: player1Key } = await api.broadcastAndWait(p1p)
       const { move, moveHash } = hideMoves(hands)
 
@@ -187,6 +189,8 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       const s = await setScript(matchSeed, compiledScript)
 
       progress(1)
+
+      api.end(session)
 
       return {
         move,
@@ -220,6 +224,8 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
 
       progress(.3)
 
+      const session = api.start()
+
       const { id: p2PaymentId, senderPublicKey: player2Key } = await api.broadcastAndWait(p2p)
       const { move, moveHash } = hideMoves(hands)
 
@@ -227,8 +233,9 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       //#STEP5# P2 => move
       const h = await api.getHeight()
       try {
-        await setKeysAndValues({ publicKey: matchKey }, { 'p2k': from58(player2Key), 'p2mh': moveHash, 'h': h, 'p2p': from58(p2PaymentId) })
+        await retry(() => setKeysAndValues({ publicKey: matchKey }, { 'p2k': from58(player2Key), 'p2mh': moveHash, 'h': h, 'p2p': from58(p2PaymentId) }), 5, 3000)
       } catch (error) {
+        api.end(session)
         throw { ...new Error('Oh, your money stuck!'), paymentId: p2PaymentId }
       }
       progress(.8)
@@ -248,6 +255,8 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
           moves: [move[0], move[1], move[2]] as [HandSign, HandSign, HandSign],
         },
       })
+
+      api.end(session)
 
       return m
     },
