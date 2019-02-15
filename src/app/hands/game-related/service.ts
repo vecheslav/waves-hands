@@ -6,7 +6,7 @@ import { base58decode as from58, address, base58encode } from '@waves/waves-cryp
 import { compiledScript } from './contract'
 import '../extensions'
 import { toKeysAndValuesExact, binary, num } from '../dataTxs'
-import { Match, MatchStatus, MatchResult, HandSign, IMatchParams } from '../../matches/shared/match.interface'
+import { Match, MatchStatus, MatchResult, HandSign, IMatchParams, IMatch } from '../../matches/shared/match.interface'
 import { IKeeper } from '../../../../src/app/auth/shared/keeper.interface'
 import { MassTransferTransaction, TransferTransaction } from '../tx-interfaces'
 import { IMassTransferTransaction, ITransferTransaction } from '@waves/waves-transactions'

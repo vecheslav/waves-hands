@@ -11,7 +11,6 @@ import { KeeperService } from '../auth/keeper.service'
   styleUrls: ['./game.component.scss'],
 })
 export class GameComponent implements OnInit {
-  currentMatch: Match
 
   constructor(private route: ActivatedRoute, private core: CoreService, private keeper: KeeperService) {
 

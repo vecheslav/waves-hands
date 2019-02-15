@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core'
-import { EmptyMatch, HandSign, Match, IPlayer, MatchResult, MatchStage, MatchStatus, PlayerMoves, PlayerStatus } from '../shared/match.interface'
+import { EmptyMatch, HandSign, IPlayer, MatchResult, MatchStage, MatchStatus, PlayerMoves, PlayerStatus, IMatch } from '../shared/match.interface'
 import { ActivatedRoute, Router } from '@angular/router'
 import { MatchesService } from '../matches.service'
 import { KeeperService } from '../../auth/keeper.service'
@@ -23,7 +23,7 @@ const BLOCK_AS_MS = 60 * 1000
   styleUrls: ['./match.component.scss'],
 })
 export class MatchComponent implements OnInit, OnDestroy {
-  match: Match = EmptyMatch
+  match: IMatch = EmptyMatch
 
   stage: MatchStage = MatchStage.SelectHands
   matchStage = MatchStage
@@ -64,7 +64,7 @@ export class MatchComponent implements OnInit, OnDestroy {
     if (this.matchAddress) {
       // Existing match
       from(this.matchesService.getMatch(this.matchAddress))
-        .subscribe((match: Match) => {
+        .subscribe((match: IMatch) => {
           this.match = match
 
           this._init()
@@ -184,7 +184,7 @@ export class MatchComponent implements OnInit, OnDestroy {
       }
     })
 
-    this._matchSubscriber = this.matchesService.openMatch$.subscribe((match: Match) => {
+    this._matchSubscriber = this.matchesService.openMatch$.subscribe((match: IMatch) => {
       if (!match) {
         return
       }

@@ -90,9 +90,9 @@ export interface IBaseMatch extends IMatchParams {
   result?: MatchResult
 }
 
-export type TMatch = IBaseMatch & IMatchView & IMatchTransient
+export type IMatch = IBaseMatch & IMatchView & IMatchTransient
 
-export class Match implements TMatch {
+export class Match implements IMatch {
   revealed?: boolean
   owns?: boolean
   canDeclare?: boolean
@@ -121,7 +121,7 @@ export class Match implements TMatch {
     return m
   }
 
-  static toPlain(match: Match): TMatch {
+  static toPlain(match: Match): IMatch {
 
     if (!match)
       return undefined
@@ -135,6 +135,12 @@ export class Match implements TMatch {
       reservationHeight: match.reservationHeight,
       timestamp: match.timestamp,
       payout: match.payout,
+      isRevealing: match.isRevealing,
+      isPayout: match.isPayout,
+      revealed: match.revealed,
+      revoked: match.revoked,
+      status: match.status,
+      result: match.result,
     }
   }
 

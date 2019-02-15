@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core'
 import { MatchesService } from './matches.service'
-import { Match } from './shared/match.interface'
+import { IMatch } from './shared/match.interface'
 import { ActivatedRoute } from '@angular/router'
 import { SubscriptionLike } from 'rxjs'
 
@@ -10,7 +10,7 @@ import { SubscriptionLike } from 'rxjs'
   styleUrls: ['./matches.component.scss'],
 })
 export class MatchesComponent implements OnInit, OnDestroy {
-  matches: Match[] = []
+  matches: IMatch[] = []
 
   isLoading = true
   isDisabled = false
@@ -24,7 +24,7 @@ export class MatchesComponent implements OnInit, OnDestroy {
       return
     }
 
-    this._matchesSubscriber = this.matchesService.updates$.subscribe((updates: Record<string, Match>) => {
+    this._matchesSubscriber = this.matchesService.updates$.subscribe((updates: Record<string, IMatch>) => {
 
       if (!updates) {
         return
@@ -40,7 +40,7 @@ export class MatchesComponent implements OnInit, OnDestroy {
         }
       }
 
-      this.matches.sort((a: Match, b: Match) => {
+      this.matches.sort((a: IMatch, b: IMatch) => {
         return (a.timestamp > b.timestamp) ? -1 : 1
       })
       this.isLoading = false

@@ -2,13 +2,19 @@ import { Injectable } from '@angular/core'
 import { KeeperService } from '../../auth/keeper.service'
 import { CoreService } from '../../core/core.service'
 import { HttpClient } from '@angular/common/http'
-import { Match, HandSign } from './match.interface'
+import { Match, HandSign, IMatch } from './match.interface'
 import '../../hands/extensions'
 import { fromAngular } from '../../hands/api-angular'
 import { api, IWavesApi } from '../../hands/api'
 import { CreateMatchResult, IService, MatchProgress, service } from '../../hands/game-related/service'
 import { environment } from 'src/environments/environment'
 import { IKeeper } from '../../../../src/app/auth/shared/keeper.interface'
+
+export interface CreateMatchPlainResult {
+  move: Uint8Array
+  moveHash: Uint8Array
+  match: IMatch
+}
 
 @Injectable()
 export class MatchesHelper {
@@ -20,35 +26,45 @@ export class MatchesHelper {
     this._gameService = service(this._api, this.keeperService as IKeeper)
   }
 
-  async getMatch(addr: string): Promise<Match> {
-    return await this._gameService.match(addr)
+  async getMatch(addr: string): Promise<IMatch> {
+    const match = await this._gameService.match(addr)
+    return Match.toPlain(match)
   }
 
-  async getMatchList(): Promise<{ matches: Record<string, Match>, currentHeight: number }> {
+  async getMatchList(): Promise<{ matches: Record<string, IMatch>, currentHeight: number }> {
     const currentHeight = await this._api.getHeight()
     const a = await this._gameService.matches()
-    return { matches: (a).toRecord(x => x.address), currentHeight }
+    return {
+      matches: (a)
+        .map(m => Match.toPlain(m))
+        .toRecord(x => x.address),
+      currentHeight,
+    }
   }
 
-  async create(hands: HandSign[], progress: MatchProgress = () => { }): Promise<CreateMatchResult> {
-    return await this._gameService.create(hands, progress)
+  async create(hands: HandSign[], progress: MatchProgress = () => { }): Promise<CreateMatchPlainResult> {
+    const res = await this._gameService.create(hands, progress)
+    return {
+      ...res,
+      match: Match.toPlain(res.match),
+    }
   }
 
-  async join(match: Match, hands: HandSign[], progress: MatchProgress = () => { }): Promise<Match> {
-    return await this._gameService.join(match, hands, progress)
+  async join(match: IMatch, hands: HandSign[], progress: MatchProgress = () => { }): Promise<IMatch> {
+    return await this._gameService.join(Match.create(match), hands, progress)
   }
 
-  async reveal(match: Match, move: Uint8Array) {
-    return await this._gameService.reveal(match, move)
+  async reveal(match: IMatch, move: Uint8Array) {
+    return await this._gameService.reveal(Match.create(match), move)
   }
 
-  async cashback(match: Match, paymentId: string) {
-    const { cashback: cashbackTx } = await this._gameService.declareCashback(match, paymentId)
+  async cashback(match: IMatch, paymentId: string) {
+    const { cashback: cashbackTx } = await this._gameService.declareCashback(Match.create(match), paymentId)
     return await this._gameService.cashback(cashbackTx)
   }
 
-  async payout(match: Match) {
-    const { match: m, payout: payoutTx } = await this._gameService.declarePayout(match)
+  async payout(match: IMatch) {
+    const { match: m, payout: payoutTx } = await this._gameService.declarePayout(Match.create(match))
     return await this._gameService.payout(m, payoutTx)
   }
 }

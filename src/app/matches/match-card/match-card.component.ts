@@ -1,7 +1,8 @@
 import { Component, HostListener, Input, OnChanges } from '@angular/core'
-import { Match, MatchStatus } from '../shared/match.interface'
+import { IMatch, MatchStatus } from '../shared/match.interface'
 import { environment } from 'src/environments/environment'
 import { MatchesService } from '../matches.service'
+import { SubscriptionLike } from 'rxjs'
 
 const REVEAL_HEIGHT = environment.creatorRevealBlocksCount + 1
 
@@ -11,10 +12,10 @@ const REVEAL_HEIGHT = environment.creatorRevealBlocksCount + 1
   styleUrls: ['./match-card.component.scss'],
 })
 export class MatchCardComponent implements OnChanges {
-  @Input() match: Match = {
+  @Input() match: IMatch = {
     address: 'address',
     status: MatchStatus.WaitingForP2,
-  } as Match
+  } as IMatch
 
   matchStatus = MatchStatus
 
@@ -23,8 +24,15 @@ export class MatchCardComponent implements OnChanges {
   pendingLeftPercent = 0
 
   private _pendingLeftHeight = 0
+  private _heightSubscriber: SubscriptionLike
 
   constructor(private matchesService: MatchesService) {
+    this._heightSubscriber = this.matchesService.height$.subscribe(height => {
+      if (height) {
+        this._initLeftPercent()
+      }
+    })
+
   }
 
   ngOnChanges() {
