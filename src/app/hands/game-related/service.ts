@@ -1,4 +1,4 @@
-import { IWavesApi } from '../api'
+import { IWavesApi, retry } from '../api'
 import { apiHelpers } from '../helpers'
 import { gameBet, hideMoves, serviceCommission, serviceAddress } from './game'
 import { randomAccount } from './core'
@@ -8,7 +8,7 @@ import '../extensions'
 import { toKeysAndValuesExact, binary, num } from '../dataTxs'
 import { Match, MatchStatus, MatchResult, HandSign, IMatchParams, IMatch } from '../../matches/shared/match.interface'
 import { IKeeper } from '../../../../src/app/auth/shared/keeper.interface'
-import { MassTransferTransaction, TransferTransaction } from '../tx-interfaces'
+import { TransferTransaction } from '../tx-interfaces'
 import { IMassTransferTransaction, ITransferTransaction } from '@waves/waves-transactions'
 import { TRANSACTION_TYPE } from '@waves/marshall/dist/schemas'
 
@@ -175,6 +175,8 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       const p1p = await keeper.prepareWavesTransfer(matchAddress, gameBet)
       progress(.15)
 
+      const session = api.start()
+
       const { senderPublicKey: player1Key } = await api.broadcastAndWait(p1p)
       const { move, moveHash } = hideMoves(hands)
 
@@ -187,6 +189,8 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       const s = await setScript(matchSeed, compiledScript)
 
       progress(1)
+
+      api.end(session)
 
       return {
         move,
@@ -215,10 +219,12 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       const utx = await api.getUtx()
       if (utx.filter(x => x.type === TRANSACTION_TYPE.TRANSFER).map(x => x as ITransferTransaction)
         .filter(x => x.recipient === match.address).length > 0) {
-        throw new Error('Match is already taken')
+        throw { ...new Error('Match is already taken') }
       }
 
       progress(.3)
+
+      const session = api.start()
 
       const { id: p2PaymentId, senderPublicKey: player2Key } = await api.broadcastAndWait(p2p)
       const { move, moveHash } = hideMoves(hands)
@@ -226,8 +232,12 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       progress(.5)
       //#STEP5# P2 => move
       const h = await api.getHeight()
-      await setKeysAndValues({ publicKey: matchKey }, { 'p2k': from58(player2Key), 'p2mh': moveHash, 'h': h, 'p2p': from58(p2PaymentId) })
-
+      try {
+        await retry(() => setKeysAndValues({ publicKey: matchKey }, { 'p2k': from58(player2Key), 'p2mh': moveHash, 'h': h, 'p2p': from58(p2PaymentId) }), 5, 3000)
+      } catch (error) {
+        api.end(session)
+        throw { ...new Error('Oh, your money stuck!'), paymentId: p2PaymentId }
+      }
       progress(.8)
       //#STEP6# P2 => reveal
       await setKeysAndValues({ publicKey: matchKey }, { 'p2m': move })
@@ -245,6 +255,8 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
           moves: [move[0], move[1], move[2]] as [HandSign, HandSign, HandSign],
         },
       })
+
+      api.end(session)
 
       return m
     },

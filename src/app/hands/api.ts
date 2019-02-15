@@ -1,8 +1,8 @@
 import { TTx as Tx, WithId } from '@waves/waves-transactions'
 import { IApiConfig } from './config'
 import { DataTransaction, MassTransferTransaction, SetScriptTransaction } from './tx-interfaces'
+import { randomBytes } from 'crypto'
 type TTx = Tx & WithId
-
 
 export interface IHttp {
   get: <T>(url: string) => Promise<T>
@@ -40,6 +40,8 @@ export interface IWavesApi {
   getSetScriptTxsByScript(script: string, limit?: number): Promise<SetScriptTransaction[]>
   getBalance(address: string): Promise<number>
   config(): IApiConfig
+  start(): string
+  end(id: string)
 }
 
 export const delay = (millis: number): Promise<{}> =>
@@ -76,7 +78,7 @@ const wrapError = (error: any) => {
         er = {
           code: 307,
           message: error.response.data.message,
-          tx: error.response.data.transaction,
+          tx: JSON.stringify(error.response.data.transaction),
           vars: error.response.data.vars.reduce((a: [], b: []) => [...a, ...b], []),
         }
         break
@@ -104,6 +106,9 @@ export const retry = async <T>(action: () => Promise<T>, limit: number, delayAft
 
 export const api = (config: IApiConfig, h: IHttp): IWavesApi => {
 
+  const allTxs: Record<string, TTx> = {}
+  const sessions: Record<string, string[]> = {}
+
   const http = {
     get: <T>(url: string): Promise<T> => {
       //console.log(url)
@@ -112,10 +117,23 @@ export const api = (config: IApiConfig, h: IHttp): IWavesApi => {
     post: <T>(url: string, data: any): Promise<T> => {
       //console.log(url)
       //console.log(data)
-
+      if (data.id && data.type) {
+        allTxs[data.id] = data as TTx
+      }
       return h.post(url, data)
     },
   }
+
+  const start = (): string => {
+    const id = randomBytes(32).toString('hex')
+    sessions[id] = []
+    return id
+  }
+
+  const end = (id: string) => {
+    delete sessions[id]
+  }
+
 
   const get = <T>(endpoint: string): Promise<T> => retry(() => http.get<T>(config.base + endpoint), 5, 1000)
   const getApi = <T>(endpoint: string): Promise<T> => retry(() => http.get<T>(config.tx + endpoint), 5, 1000)
@@ -129,14 +147,61 @@ export const api = (config: IApiConfig, h: IHttp): IWavesApi => {
   const getTxById = async (txId: string): Promise<TTx> =>
     get<TTx>(`transactions/info/${txId}`)
 
+  const getUtxById = async (txId: string): Promise<TTx> =>
+    get<TTx>(`transactions/unconfirmed/info/${txId}`)
+
   const broadcast = async (tx: Tx): Promise<TTx & WithId> =>
     post<TTx>('transactions/broadcast', tx)
 
-  const waitForTx = async (txId: string): Promise<TTx> =>
-    retry(() => {
-      const tx = getTxById(txId)
+  const waitForTx = async (txId: string, sessionId: string = undefined): Promise<TTx> => {
+    try {
+      const tx = await retry(async () => getTxById(txId), 10, 1000)
+      if (sessionId)
+        sessions[sessionId].push(txId)
       return tx
-    }, 500, 1000)
+    } catch (error) {
+      if (error.code === 307 && sessionId) {
+        const id = sessions[sessionId].pop()
+        let exists = false
+        try {
+          await getTxById(id)
+          exists = true
+        } catch (error) {
+          exists = false
+        }
+
+        if (exists) {
+          if (sessionId)
+            end(sessionId)
+          throw error
+        }
+
+        try {
+          await getUtxById(id)
+          exists = true
+        } catch (error) {
+
+          exists = false
+        }
+
+        if (exists) return waitForTx(txId, sessionId)
+
+        const tx = allTxs[id]
+
+        return broadcastAndWait(tx, sessionId)
+
+      } else {
+        try {
+          const tx = await getUtxById(txId)
+          return waitForTx(txId, sessionId)
+        } catch (error) {
+          if (sessionId)
+            end(sessionId)
+          throw error
+        }
+      }
+    }
+  }
 
   const getDataTxsByKey = async ({ key, limit, type, timeStart, timeEnd }: GetDataTxsByKeyParams): Promise<DataTransaction[]> =>
     getApi<{ data: { data: DataTransaction }[] }>(`transactions/data?key=${key}&sort=desc${p({ type, timeStart, timeEnd })}&limit=${limit || 100}`).then(x => x.data.map(y => y.data))
@@ -147,9 +212,9 @@ export const api = (config: IApiConfig, h: IHttp): IWavesApi => {
   const getTxsByAddress = async (address: string, limit: number = 100): Promise<TTx[]> =>
     (await get<TTx[][]>(`transactions/address/${address}/limit/${limit}`))[0]
 
-  const broadcastAndWait = async (tx: Tx): Promise<TTx> => {
+  const broadcastAndWait = async (tx: Tx, sessionId: string = undefined): Promise<TTx> => {
     const r = await broadcast(tx)
-    await waitForTx(r.id)
+    await waitForTx(r.id, sessionId)
     return r
   }
 
@@ -178,5 +243,7 @@ export const api = (config: IApiConfig, h: IHttp): IWavesApi => {
     getUtx,
     getSetScriptTxsByScript,
     config: () => config,
+    start,
+    end,
   }
 }
