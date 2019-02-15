@@ -80,14 +80,14 @@ match (tx) {
     + (if (p1m3 == rock && p2m3 == scissors) || (p1m3 == paper && p2m3 == rock) || (p1m3 == scissors && p2m3 == paper) then +1 else if p1m3 == p2m3 then 0 else -1)
   
     let p2k = extract(getBinary(me, "p2k"))
-    let w = if height - extract(getInteger(me, "h")) > timeout then
-    if !isDefined(getBinary(me, "p1m")) && !isDefined(getBinary(me, "p1m")) then base58'1' else if !isDefined(getBinary(me, "p1m")) then extract(getBinary(me, "p2k")) else p1k
-    
-    else (if score > 0 then p1k else if score == 0 then base58'1' else p2k)
+    let p1d = isDefined(getBinary(me, "p1m"))
+    let p2d = isDefined(getBinary(me, "p2m"))
+    let w = if height - extract(getInteger(me, "h")) <= timeout || (p1d && p2d) then
+    (if score > 0 then p1k else if score == 0 then base58'1' else p2k)
+    else if !p1d then if !p2d then base58'1' else p2k else p1k 
 
       w == getBinary(data.data, "w") &&
       !isDefined(getBinary(me, "w")) &&
-      !isDefined(getBoolean(me, data.data[1].key)) &&
       (sigVerify(data.bodyBytes, data.proofs[0],(if size(w) == 1 then p1k else w)) ||
       sigVerify(data.bodyBytes, data.proofs[0],(if size(w) == 1 then p2k else w))) &&
       size(data.data) == 2
@@ -115,6 +115,7 @@ match (tx) {
     case cashback:TransferTransaction =>
       isDefined(getBoolean(me, toBase58String(cashback.id))) &&
       cashback.amount <= 1 * wave - cashback.fee - 500000
+
     case payout:MassTransferTransaction => 
     let pt = payout.transfers
     
@@ -126,10 +127,10 @@ match (tx) {
     let looser = if p1 == winner then addressFromPublicKey(extract(getBinary(me, "p2k"))) else p1
     let prizePool = wavesBalance(me) - serviceCommission - payout.fee
     
-    pt[1].recipient == winner && (pt[1].amount == if noWinner then prizePool/2 else prizePool) &&
-    pt[2].recipient == looser && (pt[2].amount == if noWinner then prizePool/2 else 0) &&
+    (pt[1].recipient == winner || throw("1")) && (pt[1].amount == if noWinner then prizePool/2 else prizePool) &&
+    (pt[2].recipient == looser || throw("2")) && (pt[2].amount == if noWinner then prizePool/2 else 0) &&
     payout.fee == 700000 && pt[0].recipient == serviceAddress && pt[0].amount == serviceCommission
-    && isDefined(getBoolean(me, toBase58String(payout.id)))
+    && (isDefined(getBoolean(me, toBase58String(payout.id))) || throw("3"))
     case _ => false
   }
 
