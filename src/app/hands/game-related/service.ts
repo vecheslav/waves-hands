@@ -8,7 +8,7 @@ import '../extensions'
 import { toKeysAndValuesExact, binary, num } from '../dataTxs'
 import { Match, MatchStatus, MatchResult, HandSign, IMatchParams } from '../../matches/shared/match.interface'
 import { IKeeper } from '../../../../src/app/auth/shared/keeper.interface'
-import { MassTransferTransaction, TransferTransaction } from '../tx-interfaces'
+import { TransferTransaction } from '../tx-interfaces'
 import { IMassTransferTransaction, ITransferTransaction } from '@waves/waves-transactions'
 import { TRANSACTION_TYPE } from '@waves/marshall/dist/schemas'
 
@@ -215,7 +215,7 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       const utx = await api.getUtx()
       if (utx.filter(x => x.type === TRANSACTION_TYPE.TRANSFER).map(x => x as ITransferTransaction)
         .filter(x => x.recipient === match.address).length > 0) {
-        throw new Error('Match is already taken')
+        throw { ...new Error('Match is already taken') }
       }
 
       progress(.3)
@@ -226,8 +226,11 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       progress(.5)
       //#STEP5# P2 => move
       const h = await api.getHeight()
-      await setKeysAndValues({ publicKey: matchKey }, { 'p2k': from58(player2Key), 'p2mh': moveHash, 'h': h, 'p2p': from58(p2PaymentId) })
-
+      try {
+        await setKeysAndValues({ publicKey: matchKey }, { 'p2k': from58(player2Key), 'p2mh': moveHash, 'h': h, 'p2p': from58(p2PaymentId) })
+      } catch (error) {
+        throw { ...new Error('Oh, your money stuck!'), paymentId: p2PaymentId }
+      }
       progress(.8)
       //#STEP6# P2 => reveal
       await setKeysAndValues({ publicKey: matchKey }, { 'p2m': move })

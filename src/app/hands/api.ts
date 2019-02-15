@@ -3,7 +3,6 @@ import { IApiConfig } from './config'
 import { DataTransaction, MassTransferTransaction, SetScriptTransaction } from './tx-interfaces'
 type TTx = Tx & WithId
 
-
 export interface IHttp {
   get: <T>(url: string) => Promise<T>
   post: <T>(url: string, data: any) => Promise<T>
@@ -129,14 +128,28 @@ export const api = (config: IApiConfig, h: IHttp): IWavesApi => {
   const getTxById = async (txId: string): Promise<TTx> =>
     get<TTx>(`transactions/info/${txId}`)
 
+  const getUtxById = async (txId: string): Promise<TTx> =>
+    get<TTx>(`transactions/unconfirmed/info/${txId}`)
+
   const broadcast = async (tx: Tx): Promise<TTx & WithId> =>
     post<TTx>('transactions/broadcast', tx)
 
-  const waitForTx = async (txId: string): Promise<TTx> =>
-    retry(() => {
-      const tx = getTxById(txId)
+  const waitForTx = async (txId: string): Promise<TTx> => {
+    try {
+      const tx = retry(() => {
+        const tx = getTxById(txId)
+        return tx
+      }, 10, 1000)
       return tx
-    }, 500, 1000)
+    } catch (error) {
+      try {
+        const tx = await getUtxById(txId)
+        return waitForTx(txId)
+      } catch (error) {
+        throw error
+      }
+    }
+  }
 
   const getDataTxsByKey = async ({ key, limit, type, timeStart, timeEnd }: GetDataTxsByKeyParams): Promise<DataTransaction[]> =>
     getApi<{ data: { data: DataTransaction }[] }>(`transactions/data?key=${key}&sort=desc${p({ type, timeStart, timeEnd })}&limit=${limit || 100}`).then(x => x.data.map(y => y.data))
