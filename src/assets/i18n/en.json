@@ -82,6 +82,7 @@
     "ERROR_WRONG_MATCH": "Something went wrong",
     "ERROR_REVEAL_MATCH": "Incorrect revealing",
     "ERROR_PAYOUT_MATCH": "Incorrect payouts",
+    "ERROR_MATCH_RESERVED": "Match already reserved",
     "ERROR_TRANSFER_STUCK": "Someone made a bet first",
     "ERROR_WRONG_ADDRESS": "Wrong address, check Keeper settings",
     "PROCESS_REVEAL_MATCH": "Your match is finishing. Please, wait...",

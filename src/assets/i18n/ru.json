@@ -82,6 +82,7 @@
     "ERROR_WRONG_MATCH": "Что-то пошло не так",
     "ERROR_REVEAL_MATCH": "Некорректное раскрытие ходов",
     "ERROR_PAYOUT_MATCH": "Некорректное выплаты",
+    "ERROR_MATCH_RESERVED": "Игра уже занята",
     "ERROR_TRANSFER_STUCK": "Кто-то сделал ставку первее",
     "ERROR_WRONG_ADDRESS": "Неверный адрес, проверь настройки Keeper",
     "ACTION_RECEIVE": "Ты получил {1} Waves за игру #{2}",

@@ -93,7 +93,11 @@ export class MatchesService {
   }
 
   async joinMatch(match: IMatch, hands: number[], progress?: (zeroToOne: number) => void): Promise<IMatch> {
-    const joinedMatch = await this.matchesHelper.join(match, hands, progress)
+    const { match: joinedMatch, error } = await this.matchesHelper.join(match, hands, progress)
+
+    if (error && error.code === 1) {
+      this.notificationsService.add({type: NotificationType.Error, message: 'ERROR_MATCH_RESERVED'})
+    }
 
     if (!joinedMatch.opponent) {
       this.notificationsService.add({type: NotificationType.Error, message: 'ERROR_TRANSFER_STUCK'})
