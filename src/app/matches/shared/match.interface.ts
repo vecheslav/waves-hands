@@ -67,6 +67,7 @@ export interface IMatchView {
   owns?: boolean
   canDeclare?: boolean
   revoked?: RevokedStatus
+  payments?: string[]
 }
 
 export interface IMatchTransient {
@@ -97,6 +98,7 @@ export class Match implements IMatch {
   owns?: boolean
   canDeclare?: boolean
   revoked?: RevokedStatus
+  payments?: string[]
   isRevealing?: boolean
   isPayout?: boolean
 
@@ -114,6 +116,7 @@ export class Match implements IMatch {
     m.owns = match.owns
     m.canDeclare = match.canDeclare
     m.revoked = match.revoked
+    m.payments = match.payments
     m.revealed = match.revealed
     m.isPayout = match.isPayout
     m.isRevealing = match.isRevealing
@@ -139,6 +142,7 @@ export class Match implements IMatch {
       isPayout: match.isPayout,
       revealed: match.revealed,
       revoked: match.revoked,
+      payments: match.payments,
       status: match.status,
       result: match.result,
     }

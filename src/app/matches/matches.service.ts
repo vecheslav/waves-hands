@@ -93,10 +93,15 @@ export class MatchesService {
   }
 
   async joinMatch(match: IMatch, hands: number[], progress?: (zeroToOne: number) => void): Promise<IMatch> {
-    await this.matchesHelper.join(match, hands, progress)
+    const joinedMatch = await this.matchesHelper.join(match, hands, progress)
+
+    if (!joinedMatch.opponent) {
+      this.notificationsService.add({type: NotificationType.Error, message: 'ERROR_TRANSFER_STUCK'})
+    }
+
     const {move} = hideMoves(hands)
 
-    this._setMyMatch(match)
+    this._setMyMatch(joinedMatch)
     this._setMyMove(match.address, move)
 
     this.notificationsService.add({
@@ -143,7 +148,7 @@ export class MatchesService {
   async revokeBet(matchAddress: string) {
     const match = this._myTransientMatches[matchAddress]
 
-    if (!match || !match.revoked || !this._user) {
+    if (!match || !match.revoked || !this._user || !(match.payments && match.payments.length)) {
       return
     }
 
@@ -153,7 +158,7 @@ export class MatchesService {
     })
 
     try {
-      await this.matchesHelper.cashback(match, '')
+      await this.matchesHelper.cashback(match, match.payments[0])
       match.revoked = RevokedStatus.Done
 
       this._setMyMatch(match)
@@ -225,8 +230,7 @@ export class MatchesService {
         // Update my matches
         if (localMatchAddresses && localMatchAddresses.indexOf(match.address) > -1) {
           // console.log('actualMatch', actualMatch)
-          this._myTransientMatches[match.address] = actualMatch
-          this._setMyMatch(this._ignoreTransient(actualMatch))
+          this._setMyMatch(actualMatch)
         }
       }
     }
@@ -419,6 +423,8 @@ export class MatchesService {
     if (!this._user) {
       return
     }
+
+    this._myTransientMatches[match.address] = match
 
     // Update my match on local storage
     this.storage.setMatch(this._user.address, this._ignoreTransient(match))
