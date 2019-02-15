@@ -69,6 +69,7 @@ export class KeeperService implements IKeeper {
     const d = {
       type: 12,
       data: {
+        senderPublicKey,
         data: tx.data,
         fee: {
           'tokens': '0.005',
@@ -77,15 +78,18 @@ export class KeeperService implements IKeeper {
       },
     }
 
-    return await handleErrors(async () => {
+    const c = await handleErrors(async () => {
       const r = await this.keeper.signTransaction(d).then((x: any) => {
         const res = JSON.parse(x)
         res.fee = parseInt(res.fee.toString(), undefined)
-        res.senderPublicKey = senderPublicKey
         return res
       })
       return r
     })
+
+    console.log(c)
+
+    return c
   }
 
   async prepareWavesTransfer(recipient: string, amount: number, attachment?: string): Promise<any> {
