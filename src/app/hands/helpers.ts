@@ -23,8 +23,8 @@ export interface IApiHelpers {
   transferWaves: (from: Seed, to: Account, amount: number) => Promise<TransferTransaction>,
   prepareMassTransferWaves: (from: Seed | PublicKey, to: Record<string, number>, options?: { fee: number }) => IMassTransferTransaction & WithId,
   massTransferWaves: (from: Seed | PublicKey, to: Record<string, number>, options?: { fee: number }) => Promise<MassTransferTransaction>,
-  setKeysAndValues: (account: PublicKey | Seed, map: Record<string, string | number | boolean | Buffer | Uint8Array | number[]>, session?: string) => Promise<DataTransaction>
-  setScript: (seed: string, script: string, session?: string) => Promise<SetScriptTransaction>
+  setKeysAndValues: (account: PublicKey | Seed, map: Record<string, string | number | boolean | Buffer | Uint8Array | number[]>) => Promise<DataTransaction>
+  setScript: (seed: string, script: string) => Promise<SetScriptTransaction>
 }
 
 const isSeed = (account: Account): account is Seed => (<any>account).seed !== undefined
@@ -58,20 +58,20 @@ export const apiHelpers = (api: IWavesApi): IApiHelpers => {
   const massTransferWaves = async (from: Seed | PublicKey, to: Record<string, number>, options?: { fee: number }): Promise<MassTransferTransaction> =>
     (await api.broadcastAndWait(prepareMassTransferWaves(from, to, options))) as MassTransferTransaction
 
-  const setKeysAndValues = async (account: PublicKey | Seed, map: Record<string, string | number | boolean | Buffer | Uint8Array | number[]>, session: string = undefined): Promise<DataTransaction> => {
+  const setKeysAndValues = async (account: PublicKey | Seed, map: Record<string, string | number | boolean | Buffer | Uint8Array | number[]>): Promise<DataTransaction> => {
     if (isSeed(account)) {
       const tx = data({ data: Object.keys(map).map(key => ({ key, value: map[key] })) }, account.seed)
-      return await api.broadcastAndWait(tx, session) as DataTransaction
+      return await api.broadcastAndWait(tx) as DataTransaction
     }
     else {
       const tx = data({ additionalFee: 400000, senderPublicKey: account.publicKey, data: Object.keys(map).map(key => ({ key, value: map[key] })) })
-      return await api.broadcastAndWait(tx, session) as DataTransaction
+      return await api.broadcastAndWait(tx) as DataTransaction
     }
   }
 
-  const setScript = async (seed: string, script: string, session: string = undefined): Promise<SetScriptTransaction> => {
+  const setScript = async (seed: string, script: string): Promise<SetScriptTransaction> => {
     const tx = setScriptTx({ script, chainId: config.chainId }, seed)
-    return await api.broadcastAndWait(tx, session) as SetScriptTransaction
+    return await api.broadcastAndWait(tx) as SetScriptTransaction
   }
 
   return {
