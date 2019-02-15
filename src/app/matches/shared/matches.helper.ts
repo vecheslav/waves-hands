@@ -51,7 +51,8 @@ export class MatchesHelper {
   }
 
   async join(match: IMatch, hands: HandSign[], progress: MatchProgress = () => { }): Promise<IMatch> {
-    return await this._gameService.join(Match.create(match), hands, progress)
+    const m = await this._gameService.join(Match.create(match), hands, progress)
+    return Match.toPlain(m)
   }
 
   async reveal(match: IMatch, move: Uint8Array) {

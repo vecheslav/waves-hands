@@ -290,8 +290,6 @@ export class MatchComponent implements OnInit, OnDestroy {
       case MatchStatus.WaitingBothToReveal:
       case MatchStatus.WaitingP1ToReveal:
       case MatchStatus.WaitingP2ToReveal:
-      case MatchStatus.WaitingForDeclare:
-      case MatchStatus.WaitingForPayout:
         if (this._isAsCreator()) {
           this.stage = MatchStage.ReservedMatch
         } else if (this._isAsOpponent()) {
@@ -300,6 +298,8 @@ export class MatchComponent implements OnInit, OnDestroy {
           this.stage = MatchStage.ReservedMatch
         }
         break
+      case MatchStatus.WaitingForDeclare:
+      case MatchStatus.WaitingForPayout:
       case MatchStatus.Done:
         if (this._isAsCreator()) {
           this.stage = (this.match.result === 0) ? MatchStage.WonMatch : MatchStage.LostMatch
@@ -370,12 +370,13 @@ export class MatchComponent implements OnInit, OnDestroy {
 
   private _initLeftPercent() {
     if (
-      this.match.status === MatchStatus.WaitingBothToReveal ||
-      this.match.status === MatchStatus.WaitingP1ToReveal ||
-      this.match.status === MatchStatus.WaitingP2ToReveal ||
-      this.match.status === MatchStatus.WaitingForDeclare ||
-      this.match.status === MatchStatus.WaitingForPayout
-      && this.match.reservationHeight) {
+      (
+        this.match.status === MatchStatus.WaitingBothToReveal ||
+        this.match.status === MatchStatus.WaitingP1ToReveal ||
+        this.match.status === MatchStatus.WaitingP2ToReveal
+      ) &&
+      this.match.reservationHeight
+    ) {
       const heightPassed = this._currentHeight - this.match.reservationHeight
       const leftHeight = Math.max(REVEAL_HEIGHT - heightPassed, 0)
       this.pendingLeftPercent = leftHeight * 100 / REVEAL_HEIGHT

@@ -235,14 +235,21 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       const { id: p2PaymentId, senderPublicKey: player2Key } = await api.broadcastAndWait(p2p)
       const { move, moveHash } = hideMoves(hands)
 
+      match.payments = match.payments || []
+      match.payments.push(p2PaymentId)
+
       progress(.5)
       //#STEP5# P2 => move
       const h = await api.getHeight()
       try {
         await retry(() => setKeysAndValues({ publicKey: matchKey }, { 'p2k': from58(player2Key), 'p2mh': moveHash, 'h': h, 'p2p': from58(p2PaymentId) }), 5, 3000)
       } catch (error) {
+        progress(1)
+        const m = Match.create({
+          ...Match.toPlain(match),
+        })
         api.end(session)
-        throw { ...new Error('Oh, your money stuck!'), paymentId: p2PaymentId }
+        return m
       }
       progress(.8)
       //#STEP6# P2 => reveal

@@ -64,13 +64,14 @@ export class MatchCardComponent implements OnChanges {
   private _initLeftPercent() {
     this.pendingLeftPercent = 0
 
-    if ((
-      this.match.status === MatchStatus.WaitingBothToReveal ||
-      this.match.status === MatchStatus.WaitingP1ToReveal ||
-      this.match.status === MatchStatus.WaitingP2ToReveal ||
-      this.match.status === MatchStatus.WaitingForDeclare ||
-      this.match.status === MatchStatus.WaitingForPayout
-    ) && this.match.reservationHeight) {
+    if (
+      (
+        this.match.status === MatchStatus.WaitingBothToReveal ||
+        this.match.status === MatchStatus.WaitingP1ToReveal ||
+        this.match.status === MatchStatus.WaitingP2ToReveal
+      ) &&
+      this.match.reservationHeight
+    ) {
       const heightPassed = this.matchesService.height$.getValue() - this.match.reservationHeight
       this._pendingLeftHeight = Math.max(REVEAL_HEIGHT - heightPassed, 0)
       this.pendingLeftPercent = this._pendingLeftHeight * 100 / REVEAL_HEIGHT
