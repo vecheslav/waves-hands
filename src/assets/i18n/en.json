@@ -25,7 +25,7 @@
     "WAITING_PAYOUT": "Waiting for payout...",
     "BET": "Bet:",
     "START": "Start Match",
-    "REIMBURSED": "Revoke Bet",
+    "REVOKED": "Revoke Bet",
     "PAYOUT": "Collect Waves",
     "STATUS_OPEN": "Open",
     "STATUS_PENDING": "Pending",

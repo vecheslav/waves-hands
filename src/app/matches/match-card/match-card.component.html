@@ -103,9 +103,9 @@
   </a>
 
   <!-- cashback -->
-  <div class="top-overlay top-overlay--revoke" *ngIf="match.reimbursed === 1">
+  <div class="top-overlay top-overlay--revoke" *ngIf="match.revoked === 1">
     <div class="top-overlay__inner">
-      <button class="button is-warning" [translate]="'CARD.REIMBURSED'" (click)="revoke()">Revoke Bet</button>
+      <button class="button is-warning" [translate]="'CARD.REVOKED'" (click)="revoke()">Revoke Bet</button>
     </div>
   </div>
 

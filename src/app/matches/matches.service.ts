@@ -1,5 +1,5 @@
 import { Injectable, NgZone } from '@angular/core'
-import { HandSign, IMatchResolve, Match, MatchResolveType, MatchResult, MatchStatus, ReimbursedStatus, TMatch } from './shared/match.interface'
+import { HandSign, IMatchResolve, Match, MatchResolveType, MatchResult, MatchStatus, RevokedStatus, TMatch } from './shared/match.interface'
 import { environment } from '../../environments/environment'
 import { MatchesHelper } from './shared/matches.helper'
 import { BehaviorSubject, Observable, SubscriptionLike, timer } from 'rxjs'
@@ -27,17 +27,17 @@ export class MatchesService {
   private _receivedMatches: Record<string, Match> = {}
 
   // All transient matches
-  private _transientMatches: Record<string, Match> = {}
+  private _myTransientMatches: Record<string, Match> = {}
 
   private _user: IUser
   private _polling: Observable<any>
   private _pollingSubscriber: SubscriptionLike
 
   constructor(private matchesHelper: MatchesHelper,
-    private ngZone: NgZone,
-    private userService: UserService,
-    private notificationsService: NotificationsService,
-    private storage: StorageHelper) {
+              private ngZone: NgZone,
+              private userService: UserService,
+              private notificationsService: NotificationsService,
+              private storage: StorageHelper) {
     this._polling = timer(0, environment.matchesPollingDelay).pipe(
       concatMap(_ => {
         return this.matchesHelper.getMatchList()
@@ -48,7 +48,7 @@ export class MatchesService {
       this._user = user
 
       if (this._user) {
-        this._transientMatches = Object.values(this.storage.getMatches(this._user.address))
+        this._myTransientMatches = Object.values(this.storage.getMatches(this._user.address))
           .map((m: TMatch) => Match.create(m))
           .toRecord((m: Match) => m.address)
       }
@@ -83,7 +83,7 @@ export class MatchesService {
   }
 
   async createMatch(hands: HandSign[], progress?: (zeroToOne: number) => void): Promise<Match> {
-    const { move, match } = await this.matchesHelper.create(hands, progress)
+    const {move, match} = await this.matchesHelper.create(hands, progress)
 
     this._setMyMatch(match)
     this._setMyMove(match.address, move)
@@ -98,7 +98,7 @@ export class MatchesService {
 
   async joinMatch(match: Match, hands: number[], progress?: (zeroToOne: number) => void): Promise<Match> {
     await this.matchesHelper.join(match, hands, progress)
-    const { move } = hideMoves(hands)
+    const {move} = hideMoves(hands)
 
     this._setMyMatch(match)
     this._setMyMove(match.address, move)
@@ -112,7 +112,7 @@ export class MatchesService {
   }
 
   async reveal(matchAddress: string) {
-    const match = this._transientMatches[matchAddress]
+    const match = this._myTransientMatches[matchAddress]
     if (!match || match.isRevealing || !this._user) {
       return
     }
@@ -139,15 +139,15 @@ export class MatchesService {
       this.notificationsService.remove(nId)
     } catch (err) {
       this.notificationsService.remove(nId)
-      this.notificationsService.add({ type: NotificationType.Error, message: 'ERROR_REVEAL_MATCH' })
+      this.notificationsService.add({type: NotificationType.Error, message: 'ERROR_REVEAL_MATCH'})
       throw err
     }
   }
 
   async revokeBet(matchAddress: string) {
-    const match = this._transientMatches[matchAddress]
+    const match = this._myTransientMatches[matchAddress]
 
-    if (!match || !match.reimbursed || !this._user) {
+    if (!match || !match.revoked || !this._user) {
       return
     }
 
@@ -158,20 +158,20 @@ export class MatchesService {
 
     try {
       await this.matchesHelper.cashback(match, '')
-      match.reimbursed = ReimbursedStatus.Done
+      match.revoked = RevokedStatus.Done
 
       this._setMyMatch(this._ignoreTransient(match))
 
       this.notificationsService.remove(nId)
     } catch (err) {
       this.notificationsService.remove(nId)
-      this.notificationsService.add({ type: NotificationType.Error, message: 'ERROR_PAYOUT_MATCH' })
+      this.notificationsService.add({type: NotificationType.Error, message: 'ERROR_PAYOUT_MATCH'})
       throw err
     }
   }
 
   async payout(matchAddress: string) {
-    const match = this._transientMatches[matchAddress]
+    const match = this._myTransientMatches[matchAddress]
     if (!match || match.isPayout || !this._user) {
       return
     }
@@ -190,18 +190,18 @@ export class MatchesService {
       this.notificationsService.remove(nId)
     } catch (err) {
       this.notificationsService.remove(nId)
-      this.notificationsService.add({ type: NotificationType.Error, message: 'ERROR_PAYOUT_MATCH' })
+      this.notificationsService.add({type: NotificationType.Error, message: 'ERROR_PAYOUT_MATCH'})
       throw err
     }
   }
 
   applyRevoke(address: string) {
-    const match = this._transientMatches[address]
-    if (!match || match.reimbursed === ReimbursedStatus.Done || !this._user) {
+    const match = this._myTransientMatches[address]
+    if (!match || match.revoked === RevokedStatus.Done || !this._user) {
       return
     }
 
-    match.reimbursed = ReimbursedStatus.Need
+    match.revoked = RevokedStatus.Need
     this._setMyMatch(this._ignoreTransient(match))
   }
 
@@ -210,7 +210,7 @@ export class MatchesService {
     const openMatch = this.openMatch$.getValue()
 
     // Resolve changes with local matches
-    const resolvedMatchAddresses = this._resolveMatches(newMatches)
+    const localMatchAddresses = this._resolveMatches(newMatches)
 
     // Find changes
     for (const match of Object.values(newMatches)) {
@@ -228,9 +228,8 @@ export class MatchesService {
         }
 
         // Update my matches
-        if (resolvedMatchAddresses && resolvedMatchAddresses.indexOf(match.address) > -1) {
-          this._transientMatches[match.address] = actualMatch
-          console.log(actualMatch)
+        if (localMatchAddresses && localMatchAddresses.indexOf(match.address) > -1) {
+          this._myTransientMatches[match.address] = actualMatch
           this._setMyMatch(this._ignoreTransient(actualMatch))
         }
       }
@@ -248,7 +247,7 @@ export class MatchesService {
 
     const mergedMatch: Match = Match.create({
       ...Match.toPlain(this._receivedMatches[match.address]),
-      ...Match.toPlain((this._transientMatches[match.address] || {}) as Match),
+      ...Match.toPlain((this._myTransientMatches[match.address] || {}) as Match),
       ...Match.toPlain(match),
     })
 
@@ -287,28 +286,31 @@ export class MatchesService {
     for (const resolve of resolves) {
       switch (resolve.type) {
         case MatchResolveType.Accepted:
-          this.notificationsService.add({ type: NotificationType.Action, params: [ActionType.OpponentJoined, resolve.matchAddress] })
+          this.notificationsService.add({type: NotificationType.Action, params: [ActionType.OpponentJoined, resolve.matchAddress]})
           this.reveal(resolve.matchAddress)
           break
         case MatchResolveType.NeedReveal:
           this.reveal(resolve.matchAddress)
           break
-        case MatchResolveType.NeedReimbursed:
+        case MatchResolveType.NeedPayout:
+          break
+        case MatchResolveType.NeedRevoke:
           this.applyRevoke(resolve.matchAddress)
           break
         case MatchResolveType.Won:
-          this.notificationsService.add({ type: NotificationType.Action, params: [ActionType.Won, resolve.matchAddress] })
+          this.notificationsService.add({type: NotificationType.Action, params: [ActionType.Won, resolve.matchAddress]})
           break
         case MatchResolveType.Lost:
-          this.notificationsService.add({ type: NotificationType.Action, params: [ActionType.Lost, resolve.matchAddress] })
+          this.notificationsService.add({type: NotificationType.Action, params: [ActionType.Lost, resolve.matchAddress]})
           break
         case MatchResolveType.Draw:
-          this.notificationsService.add({ type: NotificationType.Action, params: [ActionType.Draw, resolve.matchAddress] })
+          this.notificationsService.add({type: NotificationType.Action, params: [ActionType.Draw, resolve.matchAddress]})
           break
       }
     }
 
-    return resolves.map(resolve => resolve.matchAddress)
+    // All addresses of local matches
+    return Object.keys(localMatches)
   }
 
   /**
@@ -349,6 +351,7 @@ export class MatchesService {
    * @private
    */
   private _resolveMatch(match: Match, newMatch: Match): MatchResolveType {
+    // It's for local matches
     const isCreator = match.creator && this._user.address === match.creator.address
     const isOpponent = match.opponent && this._user.address === match.opponent.address
 
@@ -356,35 +359,45 @@ export class MatchesService {
       return MatchResolveType.Nothing
     }
 
-    if (match.status === MatchStatus.WaitingForP2 &&
-      (newMatch.status === MatchStatus.WaitingBothToReveal ||
+    if (
+      isCreator &&
+      match.status === MatchStatus.WaitingForP2 &&
+      (
+        newMatch.status === MatchStatus.WaitingBothToReveal ||
         newMatch.status === MatchStatus.WaitingP1ToReveal ||
-        newMatch.status === MatchStatus.WaitingP2ToReveal ||
-        newMatch.status === MatchStatus.WaitingForDeclare ||
-        newMatch.status === MatchStatus.WaitingForPayout) &&
-      isCreator) {
+        newMatch.status === MatchStatus.WaitingP2ToReveal
+      )
+    ) {
       return MatchResolveType.Accepted
     }
 
-    if (!match.revealed &&
-      (newMatch.status === MatchStatus.WaitingBothToReveal ||
+    if (
+      isCreator &&
+      !match.revealed &&
+      (
+        newMatch.status === MatchStatus.WaitingBothToReveal ||
         newMatch.status === MatchStatus.WaitingP1ToReveal ||
-        newMatch.status === MatchStatus.WaitingP2ToReveal ||
-        newMatch.status === MatchStatus.WaitingForDeclare ||
-        newMatch.status === MatchStatus.WaitingForPayout) &&
-      typeof newMatch.result === 'undefined' &&
-      isCreator) {
+        newMatch.status === MatchStatus.WaitingP2ToReveal
+      )
+    ) {
       return MatchResolveType.NeedReveal
     }
 
-    if (!match.reimbursed &&
-        isOpponent &&
-        (newMatch.opponent && this._user.address !== newMatch.opponent.address)) {
-      return MatchResolveType.NeedReimbursed
+    if (
+      isOpponent &&
+      !match.revoked &&
+      (
+        newMatch.opponent &&
+        this._user.address !== newMatch.opponent.address
+      )
+    ) {
+      return MatchResolveType.NeedRevoke
     }
 
-    if (match.status !== MatchStatus.Done && newMatch.status === MatchStatus.Done) {
-
+    if (
+      match.status !== MatchStatus.Done &&
+      newMatch.status === MatchStatus.Done
+    ) {
       if (newMatch.result === MatchResult.Opponent) {
         if (isOpponent) {
           return MatchResolveType.Won

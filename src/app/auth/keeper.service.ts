@@ -81,6 +81,7 @@ export class KeeperService implements IKeeper {
       const r = await this.keeper.signTransaction(d).then((x: any) => {
         const res = JSON.parse(x)
         res.fee = parseInt(res.fee.toString(), undefined)
+        res.senderPublicKey = senderPublicKey
         return res
       })
       return r

@@ -300,12 +300,10 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
         [looser]: match.result == MatchResult.Draw ? matchBalance / 2 : 0,
       }, { fee: 700000 })
 
-
       const tx = await keeper.prepareDataTransaction({
         'w': from58(w),
         [payout.id]: true,
       }, match.publicKey)
-
 
       await api.broadcastAndWait(tx)
 

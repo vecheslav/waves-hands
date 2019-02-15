@@ -44,15 +44,14 @@ export enum MatchResolveType {
   Nothing,
   Accepted,
   NeedReveal,
-  NeedReimbursed,
+  NeedRevoke,
   NeedPayout,
-  CreatorMissed,
   Won,
   Lost,
   Draw,
 }
 
-export enum ReimbursedStatus {
+export enum RevokedStatus {
   None = 0,
   Need = 1,
   Done = 2,
@@ -67,7 +66,7 @@ export interface IMatchView {
   revealed?: boolean
   owns?: boolean
   canDeclare?: boolean
-  reimbursed?: ReimbursedStatus
+  revoked?: RevokedStatus
 }
 
 export interface IMatchTransient {
@@ -97,7 +96,7 @@ export class Match implements TMatch {
   revealed?: boolean
   owns?: boolean
   canDeclare?: boolean
-  reimbursed?: ReimbursedStatus
+  revoked?: RevokedStatus
   isRevealing?: boolean
   isPayout?: boolean
 
@@ -114,7 +113,7 @@ export class Match implements TMatch {
 
     m.owns = match.owns
     m.canDeclare = match.canDeclare
-    m.reimbursed = match.reimbursed
+    m.revoked = match.revoked
     m.revealed = match.revealed
     m.isPayout = match.isPayout
     m.isRevealing = match.isRevealing
