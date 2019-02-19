@@ -30,6 +30,8 @@ export class MatchesComponent implements OnInit, OnDestroy {
         return
       }
 
+      console.log(updates)
+
       for (const update of Object.values(updates)) {
         let match = this.matches.find(m => m.address === update.address)
 

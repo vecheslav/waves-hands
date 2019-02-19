@@ -51,14 +51,14 @@ export class MatchComponent implements OnInit, OnDestroy {
   private _currentHeight
 
   constructor(private router: Router,
-    private route: ActivatedRoute,
-    private keeperService: KeeperService,
-    private matchesService: MatchesService,
-    private userServices: UserService,
-    private notificationsService: NotificationsService,
-    private translate: TranslateService,
-    private tourService: TourService,
-    private storage: StorageHelper) {
+              private route: ActivatedRoute,
+              private keeperService: KeeperService,
+              private matchesService: MatchesService,
+              private userServices: UserService,
+              private notificationsService: NotificationsService,
+              private translate: TranslateService,
+              private tourService: TourService,
+              private storage: StorageHelper) {
     this.matchAddress = this.route.snapshot.paramMap.get('address')
 
     if (this.matchAddress) {
@@ -75,8 +75,8 @@ export class MatchComponent implements OnInit, OnDestroy {
     }
 
     this._userSubscriber = this.userServices.user$.subscribe((user: IUser) => {
-      this.user = user
       this._updateParticipants()
+      this.user = user
     })
   }
 
@@ -287,9 +287,7 @@ export class MatchComponent implements OnInit, OnDestroy {
           this.stage = MatchStage.CreatedMatch
         }
         break
-      case MatchStatus.WaitingBothToReveal:
-      case MatchStatus.WaitingP1ToReveal:
-      case MatchStatus.WaitingP2ToReveal:
+      case MatchStatus.WaitingToReveal:
         if (this._isAsCreator()) {
           this.stage = MatchStage.ReservedMatch
         } else if (this._isAsOpponent()) {
@@ -370,11 +368,7 @@ export class MatchComponent implements OnInit, OnDestroy {
 
   private _initLeftPercent() {
     if (
-      (
-        this.match.status === MatchStatus.WaitingBothToReveal ||
-        this.match.status === MatchStatus.WaitingP1ToReveal ||
-        this.match.status === MatchStatus.WaitingP2ToReveal
-      ) &&
+      this.match.status === MatchStatus.WaitingToReveal &&
       this.match.reservationHeight
     ) {
       const heightPassed = this._currentHeight - this.match.reservationHeight

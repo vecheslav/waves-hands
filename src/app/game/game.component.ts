@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
-import { Match } from '../matches/shared/match.interface'
 import { CoreService } from '../core/core.service'
-import { address, randomUint8Array } from '@waves/waves-crypto'
 import { KeeperService } from '../auth/keeper.service'
 
 @Component({

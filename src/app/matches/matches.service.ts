@@ -71,15 +71,15 @@ export class MatchesService {
     }
   }
 
-  async getMatch(address: string): Promise<IMatch> {
-    const match = await this.matchesHelper.getMatch(address)
+  async getMatch(matchAddress: string): Promise<IMatch> {
+    const match = await this.matchesHelper.getMatch(matchAddress)
     this.openMatch$.next(match)
 
     return match
   }
 
   async createMatch(hands: HandSign[], progress?: (zeroToOne: number) => void): Promise<IMatch> {
-    const {move, match} = await this.matchesHelper.create(hands, progress)
+    const { move, match } = await this.matchesHelper.create(hands, progress)
 
     this._setMyMatch(match)
     this._setMyMove(match.address, move)
@@ -95,18 +95,18 @@ export class MatchesService {
   async joinMatch(match: IMatch, hands: number[], progress?: (zeroToOne: number) => void): Promise<IMatch> {
     const { match: joinedMatch, error: err } = await this.matchesHelper.join(match, hands, progress)
 
-    const {move} = hideMoves(hands)
+    const { move } = hideMoves(hands)
 
     this._setMyMatch(joinedMatch)
     this._setMyMove(match.address, move)
 
     if (err && err.code === 1) {
-      this.notificationsService.add({type: NotificationType.Error, message: 'ERROR_MATCH_RESERVED'})
+      this.notificationsService.add({ type: NotificationType.Error, message: 'ERROR_MATCH_RESERVED' })
       throw err
     }
 
     if (!joinedMatch.opponent) {
-      this.notificationsService.add({type: NotificationType.Error, message: 'ERROR_TRANSFER_STUCK'})
+      this.notificationsService.add({ type: NotificationType.Error, message: 'ERROR_TRANSFER_STUCK' })
       throw new Error('Transfer stuck')
     }
 
@@ -146,7 +146,7 @@ export class MatchesService {
       this.notificationsService.remove(nId)
     } catch (err) {
       this.notificationsService.remove(nId)
-      this.notificationsService.add({type: NotificationType.Error, message: 'ERROR_REVEAL_MATCH'})
+      this.notificationsService.add({ type: NotificationType.Error, message: 'ERROR_REVEAL_MATCH' })
       throw err
     }
   }
@@ -172,7 +172,7 @@ export class MatchesService {
       this.notificationsService.remove(nId)
     } catch (err) {
       this.notificationsService.remove(nId)
-      this.notificationsService.add({type: NotificationType.Error, message: 'ERROR_PAYOUT_MATCH'})
+      this.notificationsService.add({ type: NotificationType.Error, message: 'ERROR_PAYOUT_MATCH' })
       throw err
     }
   }
@@ -197,7 +197,7 @@ export class MatchesService {
       this.notificationsService.remove(nId)
     } catch (err) {
       this.notificationsService.remove(nId)
-      this.notificationsService.add({type: NotificationType.Error, message: 'ERROR_PAYOUT_MATCH'})
+      this.notificationsService.add({ type: NotificationType.Error, message: 'ERROR_PAYOUT_MATCH' })
       throw err
     }
   }
@@ -292,7 +292,7 @@ export class MatchesService {
     for (const resolve of resolves) {
       switch (resolve.type) {
         case MatchResolveType.Accepted:
-          this.notificationsService.add({type: NotificationType.Action, params: [ActionType.OpponentJoined, resolve.matchAddress]})
+          this.notificationsService.add({ type: NotificationType.Action, params: [ActionType.OpponentJoined, resolve.matchAddress] })
           this.reveal(resolve.matchAddress)
           break
         case MatchResolveType.NeedReveal:
@@ -304,13 +304,13 @@ export class MatchesService {
           this.applyRevoke(resolve.matchAddress)
           break
         case MatchResolveType.Won:
-          this.notificationsService.add({type: NotificationType.Action, params: [ActionType.Won, resolve.matchAddress]})
+          this.notificationsService.add({ type: NotificationType.Action, params: [ActionType.Won, resolve.matchAddress] })
           break
         case MatchResolveType.Lost:
-          this.notificationsService.add({type: NotificationType.Action, params: [ActionType.Lost, resolve.matchAddress]})
+          this.notificationsService.add({ type: NotificationType.Action, params: [ActionType.Lost, resolve.matchAddress] })
           break
         case MatchResolveType.Draw:
-          this.notificationsService.add({type: NotificationType.Action, params: [ActionType.Draw, resolve.matchAddress]})
+          this.notificationsService.add({ type: NotificationType.Action, params: [ActionType.Draw, resolve.matchAddress] })
           break
       }
     }
@@ -368,11 +368,7 @@ export class MatchesService {
     if (
       isCreator &&
       match.status === MatchStatus.WaitingForP2 &&
-      (
-        newMatch.status === MatchStatus.WaitingBothToReveal ||
-        newMatch.status === MatchStatus.WaitingP1ToReveal ||
-        newMatch.status === MatchStatus.WaitingP2ToReveal
-      )
+      newMatch.status === MatchStatus.WaitingToReveal
     ) {
       return MatchResolveType.Accepted
     }
@@ -380,11 +376,7 @@ export class MatchesService {
     if (
       isCreator &&
       !match.revealed &&
-      (
-        newMatch.status === MatchStatus.WaitingBothToReveal ||
-        newMatch.status === MatchStatus.WaitingP1ToReveal ||
-        newMatch.status === MatchStatus.WaitingP2ToReveal
-      )
+      newMatch.status === MatchStatus.WaitingToReveal
     ) {
       return MatchResolveType.NeedReveal
     }
@@ -401,8 +393,8 @@ export class MatchesService {
     }
 
     if (
-      match.status !== MatchStatus.Done &&
-      newMatch.status === MatchStatus.Done
+      match.status < MatchStatus.WaitingForDeclare &&
+      newMatch.status >= MatchStatus.WaitingForDeclare
     ) {
       if (newMatch.result === MatchResult.Opponent) {
         if (isOpponent) {

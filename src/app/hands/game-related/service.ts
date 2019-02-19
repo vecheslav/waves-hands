@@ -1,12 +1,12 @@
 import { IWavesApi, retry } from '../api'
 import { apiHelpers } from '../helpers'
-import { gameBet, hideMoves, serviceCommission, serviceAddress } from './game'
+import { computeMatchStatus, gameBet, hideMoves, serviceAddress, serviceCommission, whoHasWon } from './game'
 import { randomAccount } from './core'
-import { base58decode as from58, address, base58encode } from '@waves/waves-crypto'
+import { address, base58decode as from58, base58encode } from '@waves/waves-crypto'
 import { compiledScript } from './contract'
 import '../extensions'
-import { toKeysAndValuesExact, binary, num } from '../dataTxs'
-import { Match, MatchStatus, MatchResult, HandSign, IMatchParams, IMatch } from '../../matches/shared/match.interface'
+import { binary, num, toKeysAndValuesExact } from '../dataTxs'
+import { EmptyMatch, HandSign, IMatch, MatchResult, MatchStatus } from '../../matches/shared/match.interface'
 import { IKeeper } from '../../../../src/app/auth/shared/keeper.interface'
 import { TransferTransaction } from '../tx-interfaces'
 import { IMassTransferTransaction, ITransferTransaction } from '@waves/waves-transactions'
@@ -15,19 +15,24 @@ import { TRANSACTION_TYPE } from '@waves/marshall/dist/schemas'
 export interface CreateMatchResult {
   move: Uint8Array
   moveHash: Uint8Array
-  match: Match
+  match: IMatch
+}
+
+export interface MatchesResult {
+  matches: Record<string, IMatch>
+  currentHeight: number
 }
 
 export interface IService {
-  matches(): Promise<Match[]>
-  match(address: string): Promise<Match>
+  matches(): Promise<MatchesResult>
+  match(address: string): Promise<IMatch>
   create(hands: number[], progress?: MatchProgress): Promise<CreateMatchResult>
-  join(match: Match, hands: number[], progress?: MatchProgress): Promise<{ match: Match, error: any }>
-  reveal(match: Match, move: Uint8Array): Promise<Match>
-  declareCashback(match: Match, paymentId: string): Promise<{ match: Match, cashback: ITransferTransaction }>
+  join(match: IMatch, hands: number[], progress?: MatchProgress): Promise<{ match: IMatch, error: any }>
+  reveal(match: IMatch, move: Uint8Array): Promise<IMatch>
+  declareCashback(match: IMatch, paymentId: string): Promise<{ match: IMatch, cashback: ITransferTransaction }>
   cashback(cashback: ITransferTransaction): Promise<ITransferTransaction>
-  declarePayout(match: Match): Promise<{ match: Match, payout: IMassTransferTransaction }>
-  payout(match: Match, payout: IMassTransferTransaction): Promise<Match>
+  declarePayout(match: IMatch): Promise<{ match: IMatch, payout: IMassTransferTransaction }>
+  payout(match: IMatch, payout: IMassTransferTransaction): Promise<IMatch>
 }
 
 export type MatchProgress = (zeroToOne: number, message?: string) => void
@@ -39,17 +44,23 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
   const timeGap = 1000 * 60 * 5
 
 
-  const ensureStatus = (match: Match, expectedStatus: MatchStatus, ...or: MatchStatus[]) => {
+  const ensureStatus = (match: IMatch, expectedStatus: MatchStatus, ...or: MatchStatus[]) => {
     if (match.status !== expectedStatus && or.filter(x => x === match.status).length == 0) {
       throw new Error(`Match status error, expected: ${MatchStatus[expectedStatus]}${or ? ' or ' + or.map(x => MatchStatus[x]).join('or ') : ''} actual: ${MatchStatus[match.status]}`)
     }
   }
 
-  const matches = async (): Promise<Match[]> => {
+  const matches = async (): Promise<MatchesResult> => {
+    const currentHeight = await api.getHeight()
+
     const matchScripts = await api.getSetScriptTxsByScript(compiledScript).then(s => s.map(x => ({ ...x, timestamp: Date.parse(x.timestamp.toString()) })).toRecord(x => x.sender))
 
-    if (Object.keys(matchScripts).length == 0)
-      return []
+    if (Object.keys(matchScripts).length == 0) {
+      return {
+        currentHeight,
+        matches: {},
+      }
+    }
 
     const minMax = Object.values(matchScripts).minMax(x => x.timestamp)
 
@@ -105,66 +116,73 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
 
     const payouts = (await api.getMassTransfers({ recipient: serviceAddress, timeStart: minMax.min.timestamp })).toRecord(x => x.sender)
 
-    const h = await api.getHeight()
+    return {
+      currentHeight,
+      matches: Object.keys(matchScripts).map(a => {
+        if (!p1Inits[a])
+          return undefined
 
-    return Object.keys(matchScripts).map(a => {
-      if (!p1Inits[a])
-        return undefined
-
-      const match: IMatchParams = {
-        publicKey: matchScripts[a].senderPublicKey,
-        address: a,
-        timestamp: matchScripts[a].timestamp,
-        creator: {
-          address: address({ public: p1Inits[a].p1k }, config.chainId),
-          publicKey: p1Inits[a].p1k,
-        },
-      }
-
-      if (p2Inits[a]) {
-        const { h, p2k } = p2Inits[a]
-        match.opponent = {
-          address: address({ public: p2k }, config.chainId),
-          publicKey: p2k,
+        const match: IMatch = {
+          address: a,
+          publicKey: matchScripts[a].senderPublicKey,
+          timestamp: matchScripts[a].timestamp,
+          creator: {
+            address: address({ public: p1Inits[a].p1k }, config.chainId),
+            publicKey: p1Inits[a].p1k,
+          },
         }
-        match.reservationHeight = h
-      }
 
-      if (p2Reveals[a]) {
-        const { p2m } = p2Reveals[a]
-        match.opponent!.moves = [p2m[0], p2m[1], p2m[2]] as [HandSign, HandSign, HandSign]
-      }
+        if (p2Inits[a]) {
+          const { h, p2k } = p2Inits[a]
+          match.opponent = {
+            address: address({ public: p2k }, config.chainId),
+            publicKey: p2k,
+          }
+          match.reservationHeight = h
+        }
 
-      if (p1Reveals[a]) {
-        const { p1m } = p1Reveals[a]
-        match.creator.moves = [p1m[0], p1m[1], p1m[2]] as [HandSign, HandSign, HandSign]
-      }
+        if (p2Reveals[a]) {
+          const { p2m } = p2Reveals[a]
+          match.opponent!.moves = [p2m[0], p2m[1], p2m[2]] as [HandSign, HandSign, HandSign]
+        }
 
-      if (declares[a]) {
-        const { w } = declares[a]
-        match.winner = w
-      }
+        if (p1Reveals[a]) {
+          const { p1m } = p1Reveals[a]
+          match.creator.moves = [p1m[0], p1m[1], p1m[2]] as [HandSign, HandSign, HandSign]
+        }
 
-      if (payouts[a]) {
-        match.payout = true
-      }
+        if (declares[a]) {
+          const { w } = declares[a]
+          match.winner = w
+        }
 
-      const m = Match.create(match)
-      m.height(h)
+        match.status = computeMatchStatus(match, currentHeight)
 
-      return m
-    }).filter(x => x !== undefined) as Match[]
+        // Already finished matches
+        if (payouts[a]) {
+          match.status = MatchStatus.Done
+        }
+
+        if (match.status >= MatchStatus.WaitingForDeclare) {
+          match.result = whoHasWon(match.creator.moves, match.opponent.moves)
+        }
+
+        return match
+      })
+        .filter(x => x !== undefined)
+        .toRecord(x => x.address),
+    }
   }
 
   return {
-
     matches,
 
-    match: async (address: string): Promise<Match> => {
-      const m = (await matches()).filter(m => m.address == address)
-      if (m.length == 1)
-        return m[0]
-      else throw new Error('Match not found')
+    match: async (address: string): Promise<IMatch> => {
+      return EmptyMatch
+      // const m = (await matches()).filter(m => m.address == address)
+      // if (m.length == 1)
+      //   return m[0]
+      // else throw new Error('Match not found')
     },
 
     create: async (hands: number[], progress: MatchProgress = () => { }): Promise<CreateMatchResult> => {
@@ -193,16 +211,19 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       return {
         move,
         moveHash,
-        match: Match.create({
-          publicKey: matchKey, address: matchAddress, timestamp: s.timestamp, creator: {
+        match: {
+          publicKey: matchKey,
+          address: matchAddress,
+          timestamp: s.timestamp,
+          creator: {
             address: address({ public: player1Key }, config.chainId),
             publicKey: player1Key,
           },
-        }),
+        },
       }
     },
 
-    join: async (match: Match, hands: number[], progress: MatchProgress = () => { }): Promise<{ match: Match, error: any }> => {
+    join: async (match: IMatch, hands: number[], progress: MatchProgress = () => { }): Promise<{ match: IMatch, error: any }> => {
       ensureStatus(match, MatchStatus.WaitingForP2)
 
       progress(0)
@@ -221,13 +242,13 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
 
         const p2k = utxTransfers[0].senderPublicKey
 
-        const m = Match.create({
-          ...Match.toPlain(match),
+        const m = {
+          ...match,
           opponent: {
             address: address({ public: p2k }, config.chainId),
             publicKey: p2k,
           },
-        })
+        }
 
         return { match: m, error: { code: 1 } }
       }
@@ -238,13 +259,13 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
 
         const p2k = transfers[0].senderPublicKey
 
-        const m = Match.create({
-          ...Match.toPlain(match),
+        const m = {
+          ...match,
           opponent: {
             address: address({ public: p2k }, config.chainId),
             publicKey: p2k,
           },
-        })
+        }
 
         return { match: m, error: { code: 1 } }
       }
@@ -269,9 +290,9 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
         h = x.h
       } catch (error) {
         progress(1)
-        const m = Match.create({
-          ...Match.toPlain(match),
-        })
+        const m = {
+          ...match,
+        }
 
         return { match: m, error }
       }
@@ -283,21 +304,21 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
 
       //update match
 
-      const m = Match.create({
-        ...Match.toPlain(match),
+      const m = {
+        ...match,
         reservationHeight: h,
         opponent: {
           publicKey: player2Key,
           address: address({ public: player2Key }, config.chainId),
           moves: [move[0], move[1], move[2]] as [HandSign, HandSign, HandSign],
         },
-      })
+      }
 
       return { match: m, error: undefined }
     },
 
-    reveal: async (match: Match, move: Uint8Array): Promise<Match> => {
-      ensureStatus(match, MatchStatus.WaitingP1ToReveal, MatchStatus.WaitingBothToReveal)
+    reveal: async (match: IMatch, move: Uint8Array): Promise<IMatch> => {
+      ensureStatus(match, MatchStatus.WaitingToReveal)
 
       //#STEP7# P1 => reveal
       await setKeysAndValues({ publicKey: match.publicKey }, { 'p1m': move })
@@ -308,7 +329,7 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       return match
     },
 
-    declareCashback: async (match: Match, paymentId: string): Promise<{ match: Match, cashback: ITransferTransaction }> => {
+    declareCashback: async (match: IMatch, paymentId: string): Promise<{ match: IMatch, cashback: ITransferTransaction }> => {
       const payment = await api.getTxById(paymentId) as TransferTransaction
       if (payment.type !== TRANSACTION_TYPE.TRANSFER)
         throw new Error('Invalid payment')
@@ -330,7 +351,7 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       return await api.broadcastAndWait(cb) as ITransferTransaction
     },
 
-    declarePayout: async (match: Match): Promise<{ match: Match, payout: IMassTransferTransaction }> => {
+    declarePayout: async (match: IMatch): Promise<{ match: IMatch, payout: IMassTransferTransaction }> => {
       ensureStatus(match, MatchStatus.WaitingForDeclare)
 
       const w = match.result == MatchResult.Draw ? '1' : match.result == MatchResult.Creator ? match.creator.publicKey : match.opponent.publicKey
@@ -354,10 +375,10 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
 
       await api.broadcastAndWait(tx)
 
-      return { match: Match.create({ ...Match.toPlain(match), winner: w }), payout }
+      return { match: { ...match, winner: w, status: MatchStatus.WaitingForPayout }, payout }
     },
 
-    payout: async (match: Match, payout: IMassTransferTransaction): Promise<Match> => {
+    payout: async (match: IMatch, payout: IMassTransferTransaction): Promise<IMatch> => {
       ensureStatus(match, MatchStatus.WaitingForPayout)
 
       if (!match.reservationHeight)
@@ -370,7 +391,7 @@ export const service = (api: IWavesApi, keeper: IKeeper): IService => {
       //#STEP9# payout
       await api.broadcastAndWait(payout)
 
-      return Match.create({ ...Match.toPlain(match), payout: true })
+      return { ...match, status: MatchStatus.Done }
     },
   }
 }

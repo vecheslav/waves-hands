@@ -65,11 +65,7 @@ export class MatchCardComponent implements OnChanges {
     this.pendingLeftPercent = 0
 
     if (
-      (
-        this.match.status === MatchStatus.WaitingBothToReveal ||
-        this.match.status === MatchStatus.WaitingP1ToReveal ||
-        this.match.status === MatchStatus.WaitingP2ToReveal
-      ) &&
+      this.match.status === MatchStatus.WaitingToReveal &&
       this.match.reservationHeight
     ) {
       const heightPassed = this.matchesService.height$.getValue() - this.match.reservationHeight
