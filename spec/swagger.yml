@@ -1,0 +1,60 @@
+swagger: "2.0"
+info:
+  title: Sample API
+  description: API description in Markdown.
+  version: 1.0.0
+schemes:
+  - https
+  - http
+produces:
+  - application/json
+paths:
+  /create:
+    post:
+      summary: Create a match
+      parameters:
+        - in: body
+          name: transferTx
+          schema:
+            $ref: 'TransferTx.yaml'
+      responses:
+        200:
+          description: Returns created match
+          schema:
+            $ref: 'Match.yaml'
+        400:
+          description: Incorrect transfer transaction
+  /join:
+    post:
+      summary: Join a match
+      parameters:
+        - in: body
+          name: transferTx
+          schema:
+            $ref: 'TransferTx.yaml'
+      responses:
+        200:
+          description: Returns a match you joined
+          schema:
+            $ref: 'Match.yaml'
+        400:
+          description: Incorrect transfer transaction
+  /matches/{matchAddress}:
+    get:
+      summary: Return a match by address
+      parameters:
+        - in: path
+          name: matchAddress
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: 'Match.yaml'
+  /matches:
+    get:
+      summary: Returns a list of matches
+      responses:
+        200:
+          description: OK

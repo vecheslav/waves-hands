@@ -1,0 +1,28 @@
+type: object
+title:
+required:
+  - type
+properties:
+  type:
+    type: integer
+    example: 4
+  timestamp:
+    type: integer
+    example: 1550198959018
+  fee:
+    type: integer
+  version:
+    type: number
+  proofs:
+    type: array
+    items:
+      type: string
+  senderPublicKey:
+    type: string
+    example: G7tjS6WbPiX6SnZUraJ2Kx1s98ByNwtkaND43LbKvtJF
+  recipient:
+    type: string
+  amount:
+    type: integer
+  attachment:
+    type: string

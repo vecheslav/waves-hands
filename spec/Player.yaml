@@ -1,0 +1,21 @@
+type: object
+title:
+required:
+  - address
+properties:
+  address:
+    type: string
+    example: 3MzyQ1QgHC2KSAQ5y9eCaHQ7pxrBhKMnAJt
+  publicKey:
+    type: string
+    example: G7tjS6WbPiX6SnZUraJ2Kx1s98ByNwtkaND43LbKvtJF
+  moves:
+    type: array
+    items:
+      type: string
+      enum:
+        - rock
+        - paper
+        - scissors
+    minItems: 3
+    maxItems: 3

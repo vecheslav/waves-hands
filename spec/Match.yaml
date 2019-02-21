@@ -1,0 +1,38 @@
+type: object
+title:
+required:
+  - address
+properties:
+  address:
+    type: string
+    example: 3MzyQ1QgHC2KSAQ5y9eCaHQ7pxrBhKMnAJt
+  publicKey:
+    type: string
+    example: G7tjS6WbPiX6SnZUraJ2Kx1s98ByNwtkaND43LbKvtJF
+  timestamp:
+    type: integer
+    example: 1550236136177
+  creator:
+    $ref: 'Player.yaml'
+  opponent:
+    $ref: 'Player.yaml'
+  reservationHeight:
+    type: number
+    example: 495563
+  status:
+    type: string
+    enum:
+      - waiting
+      - reveal
+      - declare
+      - payout
+      - done
+  winner:
+    type: string
+    example: 3MzyQ1QgHC2KSAQ5y9eCaHQ7pxrBhKMnAJt
+  result:
+    type: string
+    enum:
+      - creator
+      - opponent
+      - draw
