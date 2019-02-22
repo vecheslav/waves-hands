@@ -41,7 +41,7 @@ paths:
           description: Incorrect transfer transaction
   /matches/{matchAddress}:
     get:
-      summary: Return a match by address
+      summary: Returns a match by address
       parameters:
         - in: path
           name: matchAddress
